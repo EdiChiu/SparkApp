@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		854DBFD12CE861C700BF118B /* CalendarKit in Frameworks */ = {isa = PBXBuildFile; productRef = 854DBFD02CE861C700BF118B /* CalendarKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		854DBF7D2CE8600A00BF118B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,12 +33,44 @@
 		854DBF862CE8600A00BF118B /* SparkUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SparkUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		854DBF6E2CE8600800BF118B /* Spark */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Spark;
-			sourceTree = "<group>";
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		854DBFAF2CE8603F00BF118B /* Exceptions for "Spark" folder in "Spark" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+				ContentView.swift,
+				DataManager.swift,
+				"GoogleService-Info.plist ",
+				LoginView.swift,
+				"Preview Content/Preview Assets.xcassets",
+				Profile.swift,
+				SharedData.swift,
+				SignUpView.swift,
+				SparkApp.swift,
+				SplashScreen.swift,
+			);
+			target = 854DBF6B2CE8600800BF118B /* Spark */;
 		};
+		854DBFB02CE8603F00BF118B /* Exceptions for "Spark" folder in "SparkUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+				ContentView.swift,
+				DataManager.swift,
+				"GoogleService-Info.plist ",
+				LoginView.swift,
+				"Preview Content/Preview Assets.xcassets",
+				Profile.swift,
+				SharedData.swift,
+				SignUpView.swift,
+				SparkApp.swift,
+				SplashScreen.swift,
+			);
+			target = 854DBF852CE8600A00BF118B /* SparkUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
 		854DBF7F2CE8600A00BF118B /* SparkTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = SparkTests;
@@ -45,6 +81,15 @@
 			path = SparkUITests;
 			sourceTree = "<group>";
 		};
+		854DBFAA2CE8603F00BF118B /* Spark */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				854DBFAF2CE8603F00BF118B /* Exceptions for "Spark" folder in "Spark" target */,
+				854DBFB02CE8603F00BF118B /* Exceptions for "Spark" folder in "SparkUITests" target */,
+			);
+			path = Spark;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +97,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				854DBFD12CE861C700BF118B /* CalendarKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,7 +121,7 @@
 		854DBF632CE8600800BF118B = {
 			isa = PBXGroup;
 			children = (
-				854DBF6E2CE8600800BF118B /* Spark */,
+				854DBFAA2CE8603F00BF118B /* Spark */,
 				854DBF7F2CE8600A00BF118B /* SparkTests */,
 				854DBF892CE8600A00BF118B /* SparkUITests */,
 				854DBF6D2CE8600800BF118B /* Products */,
@@ -107,11 +153,9 @@
 			);
 			dependencies = (
 			);
-			fileSystemSynchronizedGroups = (
-				854DBF6E2CE8600800BF118B /* Spark */,
-			);
 			name = Spark;
 			packageProductDependencies = (
+				854DBFD02CE861C700BF118B /* CalendarKit */,
 			);
 			productName = Spark;
 			productReference = 854DBF6C2CE8600800BF118B /* Spark.app */;
@@ -155,6 +199,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				854DBF892CE8600A00BF118B /* SparkUITests */,
+				854DBFAA2CE8603F00BF118B /* Spark */,
 			);
 			name = SparkUITests;
 			packageProductDependencies = (
@@ -195,6 +240,9 @@
 			);
 			mainGroup = 854DBF632CE8600800BF118B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				854DBFCF2CE861C700BF118B /* XCRemoteSwiftPackageReference "CalendarKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 854DBF6D2CE8600800BF118B /* Products */;
 			projectDirPath = "";
@@ -398,6 +446,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Spark/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to calendar";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -426,6 +475,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Spark/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to calendar";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -552,6 +602,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		854DBFCF2CE861C700BF118B /* XCRemoteSwiftPackageReference "CalendarKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/richardtop/CalendarKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.11;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		854DBFD02CE861C700BF118B /* CalendarKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 854DBFCF2CE861C700BF118B /* XCRemoteSwiftPackageReference "CalendarKit" */;
+			productName = CalendarKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 854DBF642CE8600800BF118B /* Project object */;
 }

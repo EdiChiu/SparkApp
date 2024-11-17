@@ -7,18 +7,49 @@
 
 import SwiftUI
 
+enum Tab {
+    case profile, friendsAvailability, currentEvents // Updated case from addEvent to friendsAvailability
+}
+
+enum ProfileNavigation: Hashable {
+    case child
+}
+
+enum EventNavigation: Hashable {
+    case child
+}
+
 struct ContentView: View {
+    @State private var selectedTab: Tab = .profile
+    @State private var profileStack: [ProfileNavigation] = []
+    @State private var eventStack: [EventNavigation] = []
+    @StateObject private var sharedData = SharedData()
+    @State private var tabSelected: tabTracker = .profile
+    
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            Spacer()
+            switch selectedTab {
+            case .profile:
+                ProfileView()
+                    .environmentObject(sharedData)
+            case .friendsAvailability: // Updated case
+                FriendsAvailabilityView() // Replaced AddEventView with FriendsAvailabilityView
+                    .environmentObject(sharedData)
+            case .currentEvents:
+                CurrentEventsView()
+                    .environmentObject(sharedData)
+            }
+            Spacer()
+            CustomTabBar(tabSelected: $tabSelected, selectedTab: $selectedTab)
+                .padding(.bottom, -30)
         }
-        .padding()
     }
 }
 
-#Preview {
-    ContentView()
+struct ContentView_Preview: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+            .environmentObject(SharedData())
+    }
 }

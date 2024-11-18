@@ -48,6 +48,13 @@
 				SignUpView.swift,
 				SparkApp.swift,
 				SplashScreen.swift,
+				Tabs/AddEventView.swift,
+				Tabs/CalendarViewController.swift,
+				Tabs/CurrentEventsView.swift,
+				Tabs/EKWrapper.swift,
+				Tabs/ProfileView.swift,
+				Tabs/TabBar/CustomTabBar.swift,
+				Tabs/TabBar/tabBarButtons.swift,
 			);
 			target = 854DBF6B2CE8600800BF118B /* Spark */;
 		};

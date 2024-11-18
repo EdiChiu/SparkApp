@@ -63,6 +63,8 @@
 				DataManager.swift,
 				"GoogleService-Info.plist",
 				LoginView.swift,
+				MVVM/Model.swift,
+				MVVM/ViewModel.swift,
 				"Preview Content/Preview Assets.xcassets",
 				Profile.swift,
 				SharedData.swift,

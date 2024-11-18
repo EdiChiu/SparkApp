@@ -61,6 +61,8 @@
 				Assets.xcassets,
 				ContentView.swift,
 				DataManager.swift,
+				FindFriendsView.swift,
+				FriendsAvailableView.swift,
 				"GoogleService-Info.plist",
 				LoginView.swift,
 				MVVM/Model.swift,
@@ -84,9 +86,10 @@
 		854DBFB02CE8603F00BF118B /* Exceptions for "Spark" folder in "SparkUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Assets.xcassets,
 				ContentView.swift,
 				DataManager.swift,
+				FindFriendsView.swift,
+				FriendsAvailableView.swift,
 				LoginView.swift,
 				"Preview Content/Preview Assets.xcassets",
 				Profile.swift,

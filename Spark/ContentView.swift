@@ -4,21 +4,16 @@
 //
 //  Created by Edison Chiu on 11/15/24.
 //
-
 import SwiftUI
-
 enum Tab {
     case profile, friendsAvailability, currentEvents // Updated case from addEvent to friendsAvailability
 }
-
 enum ProfileNavigation: Hashable {
     case child
 }
-
 enum EventNavigation: Hashable {
     case child
 }
-
 struct ContentView: View {
     @State private var selectedTab: Tab = .profile
     @State private var profileStack: [ProfileNavigation] = []
@@ -46,10 +41,12 @@ struct ContentView: View {
         }
     }
 }
-
 struct ContentView_Preview: PreviewProvider {
     static var previews: some View {
         ContentView()
             .environmentObject(SharedData())
     }
 }
+
+
+

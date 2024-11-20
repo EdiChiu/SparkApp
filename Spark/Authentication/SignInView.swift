@@ -35,7 +35,8 @@ struct SignInView: View {
     @Binding var showSignInView: Bool
     
     var body: some View {
-        VStack {
+        VStack (spacing: 30) {
+            
             TextField("Email...", text: $viewModel.email)
                 .padding()
                 .background(Color.gray.opacity(0.4))
@@ -45,6 +46,7 @@ struct SignInView: View {
                 .padding()
                 .background(Color.gray.opacity(0.4))
                 .cornerRadius(10)
+            
             
             Button {
                 Task {
@@ -64,20 +66,22 @@ struct SignInView: View {
                     }
                 }
             } label: {
-                Text("Sign In")
-                    .font(.headline)
+                Text("Log In")
+                    .bold()
+                    .frame(width: 200, height: 40)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(.linearGradient(colors: [.orange, .red], startPoint: .top, endPoint: .bottomTrailing))
+                    )
                     .foregroundColor(.white)
-                    .frame(height:55)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .cornerRadius(10)
+                    .offset(y:100)
             }
             
-            Spacer()
+            Spacer().frame(height:50)
         }
         
         .padding()
-        .navigationTitle("Sign In With Email")
+        .navigationTitle("Welcome")
     }
 }
 struct SignInViews_: PreviewProvider {

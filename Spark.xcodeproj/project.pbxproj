@@ -67,7 +67,6 @@
 				ContentView.swift,
 				DataManager.swift,
 				FindFriendsView.swift,
-				FriendsAvailableView.swift,
 				"GoogleService-Info.plist",
 				MVVM/Model.swift,
 				MVVM/ViewModel.swift,
@@ -81,9 +80,10 @@
 				Tabs/CalendarViewController.swift,
 				Tabs/CurrentEventsView.swift,
 				Tabs/EKWrapper.swift,
+				Tabs/FriendsAvailableView.swift,
 				Tabs/ProfileView.swift,
 				Tabs/TabBar/CustomTabBar.swift,
-				Tabs/TabBar/tabBarButtons.swift,
+				Tabs/TabBar/TabBarButtons.swift,
 			);
 			target = 854DBF6B2CE8600800BF118B /* Spark */;
 		};
@@ -93,13 +93,13 @@
 				ContentView.swift,
 				DataManager.swift,
 				FindFriendsView.swift,
-				FriendsAvailableView.swift,
 				"Preview Content/Preview Assets.xcassets",
 				Profile.swift,
 				SharedData.swift,
 				SignUpView.swift,
 				SparkApp.swift,
 				SplashScreen.swift,
+				Tabs/FriendsAvailableView.swift,
 			);
 			target = 854DBF852CE8600A00BF118B /* SparkUITests */;
 		};

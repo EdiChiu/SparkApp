@@ -1,13 +1,13 @@
 //
-//  tabBarButtons.swift
+//  TabBarButtons.swift
 //  Spark
 //
-//  Created by Edison Chiu on 11/15/24.
+//  Created by Edison Chiu on 11/20/24.
 //
 
 import SwiftUI
 
-struct tabBarButtons: View {
+struct TabBarButtons: View {
     
     var buttonText: String
     var imageName: String

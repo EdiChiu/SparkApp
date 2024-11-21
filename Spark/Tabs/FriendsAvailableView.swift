@@ -76,16 +76,6 @@ struct FriendsAvailableScreen: View {
                 .padding(.horizontal)
                 .padding(.vertical, 10)
 
-                // Bottom Navigation Bar
-                HStack {
-                    NavigationIcon(icon: "house.fill")
-                    Spacer()
-                    NavigationIcon(icon: "clock.fill")
-                    Spacer()
-                    NavigationIcon(icon: "person.fill")
-                }
-                .padding()
-                .background(Color.gray.opacity(0.2))
             }
             .background(Color.white.edgesIgnoringSafeArea(.all))
         }

@@ -58,7 +58,8 @@
 		854DBFAF2CE8603F00BF118B /* Exceptions for "Spark" folder in "Spark" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Assets.xcassets,
+				Assets/Assets.xcassets,
+				Assets/SplashScreen.swift,
 				Authentication/AuthenticationManager.swift,
 				Authentication/LoginView.swift,
 				Authentication/RootView.swift,
@@ -76,7 +77,6 @@
 				SharedData.swift,
 				SignUpView.swift,
 				SparkApp.swift,
-				SplashScreen.swift,
 				Tabs/AddEventView.swift,
 				Tabs/CalendarViewController.swift,
 				Tabs/CurrentEventsView.swift,
@@ -90,6 +90,7 @@
 		854DBFB02CE8603F00BF118B /* Exceptions for "Spark" folder in "SparkUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Assets/SplashScreen.swift,
 				ContentView.swift,
 				DataManager.swift,
 				FindFriendsView.swift,
@@ -99,7 +100,6 @@
 				SharedData.swift,
 				SignUpView.swift,
 				SparkApp.swift,
-				SplashScreen.swift,
 			);
 			target = 854DBF852CE8600A00BF118B /* SparkUITests */;
 		};
@@ -168,12 +168,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5A4459592CF54456001833E8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		854DBF632CE8600800BF118B = {
 			isa = PBXGroup;
 			children = (
 				854DBFAA2CE8603F00BF118B /* Spark */,
 				854DBF7F2CE8600A00BF118B /* SparkTests */,
 				854DBF892CE8600A00BF118B /* SparkUITests */,
+				5A4459592CF54456001833E8 /* Frameworks */,
 				854DBF6D2CE8600800BF118B /* Products */,
 			);
 			sourceTree = "<group>";

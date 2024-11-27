@@ -12,6 +12,7 @@ struct FriendsAvailableScreen: View {
         NavigationStack {
             VStack(spacing: 0) {
             
+                // Header (Logo + Profile Icon)
                 HStack {
                     Spacer()
                     Image("AppLogo")
@@ -23,18 +24,17 @@ struct FriendsAvailableScreen: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 40, height: 40)
-                        .foregroundColor(.black)
+                        .foregroundColor(.primary) // Dynamically changes with mode
                 }
                 .padding()
-                .background(Color.white)
+                .background(Color.white) // Keeps the header white for consistency
 
-             
                 Text("Friends Available")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primary) // Adaptable text color
                     .padding(.top, 10)
 
-            
+                // Filter Buttons
                 HStack(spacing: 15) {
                     NavigationLink(destination: FilteredFriendsListView(title: "Available Friends", statusColor: .green)) {
                         AvailabilityFilterButton(label: "Available", color: .green)
@@ -48,7 +48,7 @@ struct FriendsAvailableScreen: View {
                 }
                 .padding()
 
-            
+                // Friend List
                 ScrollView {
                     VStack(spacing: 15) {
                         FriendRow(name: "Edison Chiu", statusColor: .green)
@@ -58,7 +58,9 @@ struct FriendsAvailableScreen: View {
                     .padding(.horizontal)
                 }
 
-                // Create Event Button
+                Spacer()
+
+                // Create Event Button (not overlapping with Tab Bar)
                 NavigationLink(destination: CreateEventScreen()) {
                     HStack {
                         Text("Create Event")
@@ -72,27 +74,17 @@ struct FriendsAvailableScreen: View {
                     .background(Color.orange)
                     .cornerRadius(25)
                     .frame(maxWidth: .infinity)
+                    .padding(.horizontal)
+                    .padding(.vertical, 10)
                 }
-                .padding(.horizontal)
-                .padding(.vertical, 10)
+                .padding(.bottom, 20) // Adjusted bottom padding to ensure no overlap with Tab Bar
 
-                // Bottom Navigation Bar
-                HStack {
-                    NavigationIcon(icon: "house.fill")
-                    Spacer()
-                    NavigationIcon(icon: "clock.fill")
-                    Spacer()
-                    NavigationIcon(icon: "person.fill")
-                }
-                .padding()
-                .background(Color.gray.opacity(0.2))
             }
-            .background(Color.white.edgesIgnoringSafeArea(.all))
+            .background(Color(.systemBackground).edgesIgnoringSafeArea(.all)) // Automatically adjusts to background color
         }
     }
 }
 
-// Filtered Friends List View
 struct FilteredFriendsListView: View {
     let title: String
     let statusColor: Color
@@ -118,10 +110,10 @@ struct FilteredFriendsListView: View {
         .padding()
         .navigationTitle(title) // Dynamic title based on the availability
         .navigationBarTitleDisplayMode(.inline)
+        .background(Color(.systemBackground)) // Ensure background adapts
     }
 }
 
-// Create Event Screen
 struct CreateEventScreen: View {
     @State private var eventName: String = ""
     @State private var eventDate = Date()
@@ -134,6 +126,7 @@ struct CreateEventScreen: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .padding(.top)
+                .padding(10)
 
             // Event Name
             TextField("Event Name", text: $eventName)
@@ -167,7 +160,7 @@ struct CreateEventScreen: View {
 
             // Submit Button
             Button(action: {
-                // Handle the event creation logic here
+                // Handle event creation
                 print("Event Created: \(eventName), \(eventDate), \(location), \(description)")
             }) {
                 Text("Create Event")
@@ -177,12 +170,14 @@ struct CreateEventScreen: View {
                     .background(Color.orange)
                     .cornerRadius(15)
             }
+            .padding(.bottom)  // Add padding to avoid overlap with the tab bar
 
             Spacer() // Push content to the top
         }
         .padding()
-        .navigationTitle("Create Event") // Title for navigation bar
         .navigationBarTitleDisplayMode(.inline)
+        .background(Color(.systemBackground).edgesIgnoringSafeArea(.all))  // Ensure the background is adaptive
+        .navigationBarBackButtonHidden(false) // Ensure the back button is shown
     }
 }
 
@@ -214,7 +209,7 @@ struct FriendRow: View {
         HStack {
             Text(name)
                 .font(.system(size: 18, weight: .bold))
-                .foregroundColor(.black)
+                .foregroundColor(.primary) // Dynamically adjusts for readability
             Spacer()
             Circle()
                 .fill(statusColor)
@@ -223,28 +218,16 @@ struct FriendRow: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 15)
-                .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                .stroke(Color.primary.opacity(0.2), lineWidth: 1) // Dynamic border color
         )
     }
 }
 
-// Navigation Icon
-struct NavigationIcon: View {
-    var icon: String
-
-    var body: some View {
-        Image(systemName: icon)
-            .resizable()
-            .scaledToFit()
-            .frame(width: 30, height: 30)
-            .foregroundColor(.black)
-    }
-}
-
-// Preview
 struct FriendsAvailableScreen_Previews: PreviewProvider {
     static var previews: some View {
         FriendsAvailableScreen()
+            .environment(\.colorScheme, .light) // Preview in Light mode
+        FriendsAvailableScreen()
+            .environment(\.colorScheme, .dark)  // Preview in Dark mode
     }
 }
-

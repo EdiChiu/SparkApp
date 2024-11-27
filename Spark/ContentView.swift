@@ -4,49 +4,51 @@
 //
 //  Created by Edison Chiu on 11/15/24.
 //
+
 import SwiftUI
-enum Tab {
-    case profile, friendsAvailability, currentEvents // Updated case from addEvent to friendsAvailability
-}
-enum ProfileNavigation: Hashable {
-    case child
-}
-enum EventNavigation: Hashable {
-    case child
-}
+
 struct ContentView: View {
-    @State private var selectedTab: Tab = .profile
-    @State private var profileStack: [ProfileNavigation] = []
-    @State private var eventStack: [EventNavigation] = []
     @StateObject private var sharedData = SharedData()
-    @State private var tabSelected: tabTracker = .profile
-    
+
     var body: some View {
-        VStack {
-            Spacer()
-            switch selectedTab {
-            case .profile:
-                ProfileView()
-                    .environmentObject(sharedData)
-            case .friendsAvailability: // Updated case
-                FriendsAvailabilityView() // Replaced AddEventView with FriendsAvailabilityView
-                    .environmentObject(sharedData)
-            case .currentEvents:
-                CurrentEventsView()
-                    .environmentObject(sharedData)
-            }
-            Spacer()
-            CustomTabBar(tabSelected: $tabSelected, selectedTab: $selectedTab)
-                .padding(.bottom, -30)
+        TabView {
+            FriendsAvailableScreen()
+                .tabItem {
+                    VStack {
+                        Image(systemName: "person.2.fill")
+                        Text("Friends")
+                    }
+                }
+                .tag(0)
+                .environmentObject(sharedData)
+
+            CurrentEventsView()
+                .tabItem {
+                    VStack {
+                        Image(systemName: "calendar")
+                        Text("Events")
+                    }
+                }
+                .tag(1)
+                .environmentObject(sharedData)
+
+            ProfileView()
+                .tabItem {
+                    VStack {
+                        Image(systemName: "person.crop.circle")
+                        Text("Profile")
+                    }
+                }
+                .tag(2)
+                .environmentObject(sharedData)
         }
+        .accentColor(.orange) // Customize tab item selection color
     }
 }
+
 struct ContentView_Preview: PreviewProvider {
     static var previews: some View {
         ContentView()
             .environmentObject(SharedData())
     }
 }
-
-
-

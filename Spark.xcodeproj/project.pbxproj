@@ -67,7 +67,6 @@
 				ContentView.swift,
 				DataManager.swift,
 				FindFriendsView.swift,
-				FriendsAvailableView.swift,
 				"GoogleService-Info.plist",
 				MVVM/Model.swift,
 				MVVM/ViewModel.swift,
@@ -78,12 +77,13 @@
 				SparkApp.swift,
 				SplashScreen.swift,
 				Tabs/AddEventView.swift,
-				Tabs/CalendarViewController.swift,
-				Tabs/CurrentEventsView.swift,
-				Tabs/EKWrapper.swift,
-				Tabs/ProfileView.swift,
+				Tabs/FriendsAvailableView.swift,
+				Tabs/ProfileTab/CalendarImplementation/CalendarViewController.swift,
+				Tabs/ProfileTab/CalendarImplementation/CurrentEventsView.swift,
+				Tabs/ProfileTab/CalendarImplementation/EKWrapper.swift,
+				Tabs/ProfileTab/ProfileView.swift,
 				Tabs/TabBar/CustomTabBar.swift,
-				Tabs/TabBar/tabBarButtons.swift,
+				Tabs/TabBar/TabBarButtons.swift,
 			);
 			target = 854DBF6B2CE8600800BF118B /* Spark */;
 		};
@@ -93,13 +93,13 @@
 				ContentView.swift,
 				DataManager.swift,
 				FindFriendsView.swift,
-				FriendsAvailableView.swift,
 				"Preview Content/Preview Assets.xcassets",
 				Profile.swift,
 				SharedData.swift,
 				SignUpView.swift,
 				SparkApp.swift,
 				SplashScreen.swift,
+				Tabs/FriendsAvailableView.swift,
 			);
 			target = 854DBF852CE8600A00BF118B /* SparkUITests */;
 		};
@@ -509,6 +509,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Spark/Preview Content\"";
+				DEVELOPMENT_TEAM = HLJN8S8QKQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to calendar";
@@ -517,6 +518,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -538,6 +540,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Spark/Preview Content\"";
+				DEVELOPMENT_TEAM = HLJN8S8QKQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to calendar";
@@ -546,6 +549,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

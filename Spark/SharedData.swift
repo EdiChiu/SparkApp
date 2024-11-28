@@ -11,3 +11,4 @@ import Combine
 class SharedData: ObservableObject {
     // Shared data properties go here
 }
+

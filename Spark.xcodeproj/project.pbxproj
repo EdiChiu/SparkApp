@@ -60,6 +60,8 @@
 			membershipExceptions = (
 				Assets/Assets.xcassets,
 				Assets/SplashScreen.swift,
+				Assets/TabBar/CustomTabBar.swift,
+				Assets/TabBar/TabBarButtons.swift,
 				ContentView.swift,
 				Core/Authentication/AuthenticationManager.swift,
 				Core/Authentication/SignInView.swift,
@@ -75,15 +77,12 @@
 				SharedData.swift,
 				SignUpView.swift,
 				SparkApp.swift,
-				Tabs/AddEventView.swift,
-				Tabs/FriendsAvailableView.swift,
+				Tabs/FriendsAvailableTab/FriendsAvailableView.swift,
 				Tabs/ProfileTab/CalendarImplementation/CalendarViewController.swift,
 				Tabs/ProfileTab/CalendarImplementation/CurrentEventsView.swift,
 				Tabs/ProfileTab/CalendarImplementation/EKWrapper.swift,
 				Tabs/ProfileTab/ProfileView.swift,
 				Tabs/ProfileTab/ProfileViewModel.swift,
-				Tabs/TabBar/CustomTabBar.swift,
-				Tabs/TabBar/TabBarButtons.swift,
 			);
 			target = 854DBF6B2CE8600800BF118B /* Spark */;
 		};
@@ -96,7 +95,7 @@
 				SharedData.swift,
 				SignUpView.swift,
 				SparkApp.swift,
-				Tabs/FriendsAvailableView.swift,
+				Tabs/FriendsAvailableTab/FriendsAvailableView.swift,
 			);
 			target = 854DBF852CE8600A00BF118B /* SparkUITests */;
 		};

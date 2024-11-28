@@ -1,10 +1,3 @@
-//
-//  ProfileViewModel.swift
-//  Spark
-//
-//  Created by Edison Chiu on 11/27/24.
-//
-
 import Foundation
 import EventKit
 import FirebaseCore
@@ -17,6 +10,7 @@ class ProfileViewModel: ObservableObject {
     
     init() {
         requestAccessToCalendar()
+        subscribeToEventChanges() // Subscribe to calendar event changes
     }
     
     private func requestAccessToCalendar() {
@@ -25,6 +19,8 @@ class ProfileViewModel: ObservableObject {
                 guard let self = self else { return }
                 if granted {
                     self.fetchUpcomingWeekEvents()
+                } else {
+                    print("Calendar access denied: \(error?.localizedDescription ?? "No error")")
                 }
             }
         }
@@ -36,7 +32,17 @@ class ProfileViewModel: ObservableObject {
         }
     }
 
-    private func fetchUpcomingWeekEvents() {
+    private func subscribeToEventChanges() {
+        // Subscribe to notifications about changes to the event store
+        NotificationCenter.default.addObserver(self, selector: #selector(eventStoreChanged), name: .EKEventStoreChanged, object: eventStore)
+    }
+
+    @objc private func eventStoreChanged(_ notification: Notification) {
+        // Fetch and sync events when a change occurs in the calendar
+        fetchUpcomingWeekEvents()
+    }
+
+    func fetchUpcomingWeekEvents() {
         let calendar = Calendar.current
         let today = Date()
         guard let nextWeek = calendar.date(byAdding: .day, value: 7, to: today) else { return }
@@ -45,37 +51,58 @@ class ProfileViewModel: ObservableObject {
         let events = eventStore.events(matching: predicate)
         DispatchQueue.main.async {
             self.upcomingEvents = events
-            self.saveEventsToFirestore(events: events) // Save events to Firestore
+            self.syncEventsWithFirestore(events: events) // Sync events to Firestore
         }
     }
     
-    func saveEventsToFirestore(events: [EKEvent]) {
-        // Map EKEvent data into an array of dictionarie
-        let eventDataArray: [[String: Any]] = events.map { event in
-            [
-                "eventId": event.eventIdentifier ?? UUID().uuidString,
-                "title": event.title ?? "No Title",
-                "startDate": event.startDate,
-                "endDate": event.endDate,
-                "location": event.location ?? "No Location",
-                "description": event.notes ?? "",
-                "organizer": event.organizer?.name ?? "Unknown Organizer",
-                "attendees": event.attendees?.compactMap { $0.name } ?? [],
-                "calendarId": event.calendar.calendarIdentifier
-            ]
-        }
+    func syncEventsWithFirestore(events: [EKEvent]) {
+        let userId = "testUser" // Replace with dynamic user ID if available
+        let userEventsCollection = db.collection("users").document(userId).collection("events")
         
         Task {
             do {
-                // Update the "events" document by appending the event data array
-                try await db.collection("events").document("events").setData([
-                    "upcomingEvents": FieldValue.arrayUnion(eventDataArray)
-                ], merge: true)
+                // Fetch existing events from Firestore to compare
+                let snapshot = try await userEventsCollection.getDocuments()
+                let firestoreEventIds = snapshot.documents.map { $0.documentID }
                 
-                print("Events successfully saved!")
+                // Find the event IDs from the Apple Calendar
+                let calendarEventIds = events.map { $0.eventIdentifier ?? UUID().uuidString }
+                
+                // Delete events from Firestore that no longer exist in the calendar
+                for firestoreEventId in firestoreEventIds {
+                    if !calendarEventIds.contains(firestoreEventId) {
+                        try await userEventsCollection.document(firestoreEventId).delete()
+                        print("Deleted event with ID: \(firestoreEventId)")
+                    }
+                }
+                
+                // Add or update events in Firestore
+                for event in events {
+                    let eventData: [String: Any] = [
+                        "eventId": event.eventIdentifier ?? UUID().uuidString,
+                        "title": event.title ?? "No Title",
+                        "startDate": event.startDate,
+                        "endDate": event.endDate,
+                        "location": event.location ?? "No Location",
+                        "description": event.notes ?? "",
+                        "organizer": event.organizer?.name ?? "Unknown Organizer",
+                        "attendees": event.attendees?.compactMap { $0.name } ?? [],
+                        "calendarId": event.calendar.calendarIdentifier
+                    ]
+                    
+                    let docId = event.eventIdentifier ?? UUID().uuidString
+                    try await userEventsCollection.document(docId).setData(eventData, merge: true)
+                }
+                
+                print("Events successfully synced!")
             } catch {
-                print("Error saving events: \(error.localizedDescription)")
+                print("Error syncing events: \(error.localizedDescription)")
             }
         }
+    }
+    
+    deinit {
+        // Remove observer when the ViewModel is deinitialized
+        NotificationCenter.default.removeObserver(self, name: .EKEventStoreChanged, object: eventStore)
     }
 }

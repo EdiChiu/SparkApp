@@ -64,7 +64,9 @@ final class AuthenticationManager {
     }
     
     func signOut() throws {
+        print("Attempting to sign out")
         try Auth.auth().signOut()
+        print("Sucessfully signed out!")
     }
     
     func delete() async throws {

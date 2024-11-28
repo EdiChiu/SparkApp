@@ -11,6 +11,7 @@ struct ProfileView: View {
     @State private var Title = "Profile"
     @State private var isAvailable = true
     @StateObject private var viewModel = ProfileViewModel() // ViewModel instance
+    @Binding var showSignInView: Bool
     
     var body: some View {
         VStack(spacing: 15) {
@@ -46,7 +47,7 @@ struct ProfileView: View {
                 
                 // Preferences or Settings
                 Section(header: Text("Settings")) {
-                    NavigationLink(destination: Text("Account Settings")) {
+                    NavigationLink(destination: SettingsView(showSignInView: $showSignInView)) {
                         Label("Account", systemImage: "person")
                     }
                     NavigationLink(destination: Text("Privacy Settings")) {
@@ -85,7 +86,7 @@ private let eventDateFormatter: DateFormatter = {
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            ProfileView()
+            ProfileView(showSignInView: .constant(false))
         }
     }
 }

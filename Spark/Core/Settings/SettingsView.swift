@@ -11,7 +11,6 @@ struct SettingsView: View {
     @Binding var showSignInView: Bool
     
     var body: some View {
-        NavigationView {
             List {
                 Button {
                     Task {
@@ -47,7 +46,6 @@ struct SettingsView: View {
             }
             .listStyle(InsetGroupedListStyle())
             .navigationBarTitle("Settings")
-        }
     }
 }
 struct SettingsView_Previews: PreviewProvider {

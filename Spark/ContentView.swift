@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var sharedData = SharedData()
+    @Binding var showSignInView: Bool
 
     var body: some View {
         TabView {
@@ -32,7 +33,7 @@ struct ContentView: View {
                 .tag(1)
                 .environmentObject(sharedData)
 
-            ProfileView()
+            ProfileView(showSignInView: $showSignInView)
                 .tabItem {
                     VStack {
                         Image(systemName: "person.crop.circle")
@@ -48,7 +49,7 @@ struct ContentView: View {
 
 struct ContentView_Preview: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(showSignInView: .constant(false))
             .environmentObject(SharedData())
     }
 }

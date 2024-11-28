@@ -11,8 +11,19 @@ struct RootView: View {
     var body: some View {
         ZStack {
             NavigationStack {
-                NewProfileView(showSignInView: $showSignInView)
+                CustomTabBar(showSignInView: $showSignInView)
             }
+//            VStack {
+//                Spacer()
+//                Button("Force Logout") {
+//                    showSignInView = true
+//                }
+//                .padding()
+//                .background(Color.red)
+//                .foregroundColor(.white)
+//                .cornerRadius(10)
+//                .padding(.bottom, 50) // Position the button at the bottom
+//            }
         }
         .onAppear() {
             let authUser = try? AuthenticationManager.shared.getAuthenticatedUser()

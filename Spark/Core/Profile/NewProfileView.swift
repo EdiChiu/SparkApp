@@ -40,6 +40,7 @@ struct NewProfileView: View {
                 } label: {
                     Image(systemName: "gear")
                         .font(.headline)
+                        .foregroundColor(Color.blue)
                 }
 
             }

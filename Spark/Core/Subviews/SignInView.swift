@@ -5,30 +5,6 @@
 //  Created by Diego Lagunas on 11/19/24.
 //
 import SwiftUI
-@MainActor
-final class SignInViewModel: ObservableObject {
-    
-    @Published var email = ""
-    @Published var password = ""
-    
-    func signUp() async throws {
-        guard !email.isEmpty, !password.isEmpty else {
-            print("No email or password found.")
-            return
-        }
-        try await AuthenticationManager.shared.createUser(email: email, password: password)
-    }
-    
-    func signIn() async throws {
-        guard !email.isEmpty, !password.isEmpty else {
-            print("No email or password found.")
-            return
-        }
-        try await AuthenticationManager.shared.signInUser(email: email, password: password)
-    }
-    
-    
-}
 struct SignInView: View {
     
     @StateObject private var viewModel = SignInViewModel()
@@ -55,14 +31,14 @@ struct SignInView: View {
                         showSignInView = false
                         return
                     } catch {
-                        print(error)
+                        print("Unable to sign up\(error)")
                     }
                     do {
                         try await viewModel.signIn()
                         showSignInView = false
                         return
                     } catch {
-                        print(error)
+                        print("Unable to sign in\(error)")
                     }
                 }
             } label: {

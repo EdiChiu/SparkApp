@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CustomTabBar: View {
     @State private var selectedTab: Int = 0
+    @Binding var showSignInView: Bool
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -30,7 +31,7 @@ struct CustomTabBar: View {
                 }
                 .tag(1)
 
-            ProfileView()
+            ProfileView(showSignInView: $showSignInView)
                 .tabItem {
                     VStack {
                         Image(systemName: "person.crop.circle")
@@ -46,6 +47,8 @@ struct CustomTabBar: View {
 
 struct CustomTabBar_Previews: PreviewProvider {
     static var previews: some View {
-        CustomTabBar()
+        NavigationStack {
+            CustomTabBar(showSignInView: .constant(false))
+        }
     }
 }

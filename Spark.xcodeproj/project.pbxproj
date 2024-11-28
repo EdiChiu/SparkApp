@@ -59,17 +59,17 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Assets/Assets.xcassets,
-				Assets/SplashScreen.swift,
 				Assets/TabBar/CustomTabBar.swift,
 				Assets/TabBar/TabBarButtons.swift,
 				ContentView.swift,
 				Core/Authentication/AuthenticationManager.swift,
-				Core/Authentication/SignInView.swift,
+				Core/Authentication/SignInViewModel.swift,
 				Core/Profile/NewProfileView.swift,
 				Core/RootView.swift,
 				Core/Settings/SettingsView.swift,
 				Core/Settings/SettingsViewModel.swift,
 				Core/Subviews/LoginView.swift,
+				Core/Subviews/SignInView.swift,
 				"GoogleService-Info.plist",
 				MVVM/Model.swift,
 				MVVM/ViewModel.swift,
@@ -89,7 +89,6 @@
 		854DBFB02CE8603F00BF118B /* Exceptions for "Spark" folder in "SparkUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Assets/SplashScreen.swift,
 				ContentView.swift,
 				"Preview Content/Preview Assets.xcassets",
 				SharedData.swift,

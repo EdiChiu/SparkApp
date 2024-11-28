@@ -68,13 +68,10 @@
 				Core/Settings/SettingsView.swift,
 				Core/Settings/SettingsViewModel.swift,
 				Core/Subviews/LoginView.swift,
-				DataManager.swift,
-				FindFriendsView.swift,
 				"GoogleService-Info.plist",
 				MVVM/Model.swift,
 				MVVM/ViewModel.swift,
 				"Preview Content/Preview Assets.xcassets",
-				Profile.swift,
 				SharedData.swift,
 				SignUpView.swift,
 				SparkApp.swift,
@@ -84,6 +81,7 @@
 				Tabs/ProfileTab/CalendarImplementation/CurrentEventsView.swift,
 				Tabs/ProfileTab/CalendarImplementation/EKWrapper.swift,
 				Tabs/ProfileTab/ProfileView.swift,
+				Tabs/ProfileTab/ProfileViewModel.swift,
 				Tabs/TabBar/CustomTabBar.swift,
 				Tabs/TabBar/TabBarButtons.swift,
 			);
@@ -94,14 +92,10 @@
 			membershipExceptions = (
 				Assets/SplashScreen.swift,
 				ContentView.swift,
-				DataManager.swift,
-				FindFriendsView.swift,
 				"Preview Content/Preview Assets.xcassets",
-				Profile.swift,
 				SharedData.swift,
 				SignUpView.swift,
 				SparkApp.swift,
-				SplashScreen.swift,
 				Tabs/FriendsAvailableView.swift,
 			);
 			target = 854DBF852CE8600A00BF118B /* SparkUITests */;

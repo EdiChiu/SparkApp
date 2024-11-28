@@ -8,52 +8,43 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @State private var userName = "Edison Chiu"
-    @State private var statusMessage = "Hey there! I'm using Twine."
+    @State private var Title = "Profile"
     @State private var isAvailable = true
+    @StateObject private var viewModel = ProfileViewModel() // ViewModel instance
     
     var body: some View {
         VStack(spacing: 15) {
-            // Profile Picture
-            Image(systemName: "person.circle.fill")
-                .resizable()
-                .frame(width: 120, height: 120)
-                .foregroundColor(.blue)
-                .padding(.top, 30)
-            
-            // Username
-            Text(userName)
+
+            // Title
+            Text(Title)
                 .font(.title)
                 .fontWeight(.bold)
-            
-            // Status Message
-            Text(statusMessage)
-                .font(.subheadline)
-                .foregroundColor(.gray)
-                .padding(.bottom, 10)
             
             // Availability Toggle
             Toggle("Available for Sponti", isOn: $isAvailable)
                 .padding()
                 .toggleStyle(SwitchToggleStyle(tint: .green))
             
-            // Edit Profile Button
-            Button(action: {
-                // Action for editing profile goes here
-            }) {
-                Text("Edit Profile")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .cornerRadius(10)
-                    .padding(.horizontal, 30)
-            }
-            .padding(.bottom, 20)
-            
-            // Preferences or Settings
+            // Upcoming Events Section
             List {
+                Section(header: Text("Upcoming Events")) {
+                    if viewModel.upcomingEvents.isEmpty {
+                        Text("No events for the upcoming week.")
+                            .foregroundColor(.gray)
+                    } else {
+                        ForEach(viewModel.upcomingEvents, id: \.eventIdentifier) { event in
+                            VStack(alignment: .leading) {
+                                Text(event.title)
+                                    .font(.headline)
+                                Text("\(event.startDate, formatter: eventDateFormatter) - \(event.endDate, formatter: eventDateFormatter)")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                    }
+                }
+                
+                // Preferences or Settings
                 Section(header: Text("Settings")) {
                     NavigationLink(destination: Text("Account Settings")) {
                         Label("Account", systemImage: "person")
@@ -83,6 +74,14 @@ struct ProfileView: View {
     }
 }
 
+// Date formatter for events
+private let eventDateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateStyle = .short
+    formatter.timeStyle = .short
+    return formatter
+}()
+
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
@@ -90,3 +89,5 @@ struct ProfileView_Previews: PreviewProvider {
         }
     }
 }
+
+

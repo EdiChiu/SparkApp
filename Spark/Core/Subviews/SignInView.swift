@@ -67,13 +67,6 @@ struct SignInView: View {
             Button {
                 Task {
                     do {
-                        try await viewModel.signUp()
-                        showSignInView = false
-                        return
-                    } catch {
-                        print("Unable to sign up\(error)")
-                    }
-                    do {
                         try await viewModel.signIn()
                         showSignInView = false
                         return
@@ -92,7 +85,7 @@ struct SignInView: View {
                     .foregroundColor(.white)
             }
             
-            NavigationLink(destination: SignUpView()) {
+            NavigationLink(destination: SignUpView(showSignUpView: $showSignInView)) {
                 Text("Don't have an account? Sign up")
                     .font(.system(size: 16))
                     .foregroundColor(.blue)

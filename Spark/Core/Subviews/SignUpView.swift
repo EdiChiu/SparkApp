@@ -5,9 +5,10 @@
 //  Created by Diego Lagunas on 11/19/24.
 //
 import SwiftUI
-
 struct SignUpView: View {
     
+    @StateObject private var viewModel = SignInViewModel()
+    @Binding var showSignUpView: Bool
     @State private var fullName: String = ""
     @State private var lastName: String = ""
     @State private var email: String = ""
@@ -79,7 +80,13 @@ struct SignUpView: View {
             // Sign Up Button
             Button {
                 Task {
-                    print("Sign Up Button Pressed")
+                    do {
+                        try await viewModel.signUp()
+                        showSignUpView = false
+                        return
+                    } catch {
+                        print("Unable to sign up\(error)")
+                    }
                 }
             } label: {
                 Text("Sign Up")
@@ -93,7 +100,7 @@ struct SignUpView: View {
                     .padding()
             }
             
-            NavigationLink(destination: SignInView(showSignInView: .constant(true))) {
+            NavigationLink(destination: SignInView(showSignInView: $showSignUpView)) {
                 Text("Already have an account? Sign in")
                     .font(.system(size: 16))
                     .foregroundColor(.blue)
@@ -120,7 +127,7 @@ struct SignUpView: View {
 struct SignUpView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            SignUpView()
+            SignUpView(showSignUpView: .constant(false))
         }
     }
 }

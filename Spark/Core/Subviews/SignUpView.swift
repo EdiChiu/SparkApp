@@ -5,29 +5,42 @@
 //  Created by Diego Lagunas on 11/19/24.
 //
 import SwiftUI
-struct SignInView: View {
+
+struct SignUpView: View {
     
-    @StateObject private var viewModel = SignInViewModel()
-    @Binding var showSignInView: Bool
+    @State private var fullName: String = ""
+    @State private var lastName: String = ""
+    @State private var email: String = ""
+    @State private var password: String = ""
     @State private var isPasswordVisible: Bool = false
     @State private var passwordError: String? = nil
     
+    private let maxPasswordLength = 15
+    
     var body: some View {
-        VStack (spacing: 30) {
-            //Used for email
-            TextField("Email...", text: $viewModel.email)
+        VStack(spacing: 30) {
+            TextField("Full Name", text: $fullName)
                 .padding()
                 .background(Color.gray.opacity(0.4))
                 .cornerRadius(10)
-            //Used for password
+            
+            TextField("Last Name", text: $lastName)
+                .padding()
+                .background(Color.gray.opacity(0.4))
+                .cornerRadius(10)
+            
+            TextField("Email...", text: $email)
+                .padding()
+                .background(Color.gray.opacity(0.4))
+                .cornerRadius(10)
+            
             HStack {
                 if isPasswordVisible {
                     TextField("Password...", text: Binding(
-                        get: { viewModel.password },
+                        get: { password },
                         set: { newValue in
-                            //determines max password length
-                            if newValue.count <= 15 {
-                                viewModel.password = newValue
+                            if newValue.count <= maxPasswordLength {
+                                password = newValue
                                 validatePassword(newValue)
                             }
                         }
@@ -35,25 +48,24 @@ struct SignInView: View {
                     .padding()
                 } else {
                     SecureField("Password...", text: Binding(
-                        get: { viewModel.password },
+                        get: { password },
                         set: { newValue in
-                            //determines max password length
-                            if newValue.count <= 15 {
-                                viewModel.password = newValue
+                            if newValue.count <= maxPasswordLength {
+                                password = newValue
                                 validatePassword(newValue)
                             }
                         }
                     ))
                     .padding()
                 }
-                //toggle used to indicate whether users can see password or not
+                
                 Button(action: {
                     isPasswordVisible.toggle()
                 }) {
                     Image(systemName: isPasswordVisible ? "eye" : "eye.slash")
                         .foregroundColor(.black)
-                        .padding(.trailing, 10)
                 }
+                .padding(.trailing, 10)
             }
             .background(Color.gray.opacity(0.4))
             .cornerRadius(10)
@@ -64,25 +76,13 @@ struct SignInView: View {
                     .font(.caption)
             }
             
+            // Sign Up Button
             Button {
                 Task {
-                    do {
-                        try await viewModel.signUp()
-                        showSignInView = false
-                        return
-                    } catch {
-                        print("Unable to sign up\(error)")
-                    }
-                    do {
-                        try await viewModel.signIn()
-                        showSignInView = false
-                        return
-                    } catch {
-                        print("Unable to sign in\(error)")
-                    }
+                    print("Sign Up Button Pressed")
                 }
             } label: {
-                Text("Log In")
+                Text("Sign Up")
                     .bold()
                     .frame(width: 200, height: 40)
                     .background(
@@ -90,10 +90,11 @@ struct SignInView: View {
                             .fill(.linearGradient(colors: [.orange, .red], startPoint: .top, endPoint: .bottomTrailing))
                     )
                     .foregroundColor(.white)
+                    .padding()
             }
             
-            NavigationLink(destination: SignUpView()) {
-                Text("Don't have an account? Sign up")
+            NavigationLink(destination: SignInView(showSignInView: .constant(true))) {
+                Text("Already have an account? Sign in")
                     .font(.system(size: 16))
                     .foregroundColor(.blue)
                     .padding(.top, 10)
@@ -101,27 +102,25 @@ struct SignInView: View {
             
             Spacer()
         }
-        
         .padding()
-        .padding(.top, 175)
-        .navigationTitle("Sign In")
+        .padding(.top, 100)
+        .navigationTitle("Sign Up")
         .navigationBarBackButtonHidden(true)
     }
+    
     private func validatePassword(_ password: String) {
-        if password.count > 15 {
-            passwordError = "Password cannot exceed 15 characters."
+        if password.count > maxPasswordLength {
+            passwordError = "Password cannot exceed \(maxPasswordLength) characters."
         } else {
             passwordError = nil
         }
     }
 }
 
-struct SignInViews_: PreviewProvider {
+struct SignUpView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            SignInView(showSignInView: .constant(false))
+            SignUpView()
         }
     }
 }
-
-

@@ -1,11 +1,11 @@
 //
-//  LoginView.swift
+//  AuthenticationView.swift
 //  Spark
 //
-//  Created by Edison Chiu on 11/15/24.
+//  Created by Diego Lagunas on 11/15/24.
 //
 import SwiftUI
-struct LoginView: View {
+struct AuthenticationView: View {
     
     @Binding var showSignInView: Bool
     var body: some View {
@@ -27,13 +27,14 @@ struct LoginView: View {
         .navigationTitle("Sign In")
     }
 }
-struct LoginView_Previews: PreviewProvider {
+struct AuthenticationView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            LoginView(showSignInView: .constant(false))
+            AuthenticationView(showSignInView: .constant(false))
         }
     }
 }
+
 
 
 

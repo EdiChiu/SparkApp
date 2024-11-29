@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  CustomTabBar.swift
 //  Spark
 //
 //  Created by Edison Chiu on 11/15/24.
@@ -7,12 +7,13 @@
 
 import SwiftUI
 
-struct ContentView: View {
-    @StateObject private var sharedData = SharedData()
+struct CustomTabBar: View {
+    @State private var selectedTab: Int = 0
     @Binding var showSignInView: Bool
+    @Binding var showSignUpView: Bool
 
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             FriendsAvailableScreen()
                 .tabItem {
                     VStack {
@@ -21,7 +22,6 @@ struct ContentView: View {
                     }
                 }
                 .tag(0)
-                .environmentObject(sharedData)
 
             CurrentEventsView()
                 .tabItem {
@@ -31,7 +31,6 @@ struct ContentView: View {
                     }
                 }
                 .tag(1)
-                .environmentObject(sharedData)
 
             ProfileView(showSignInView: $showSignInView)
                 .tabItem {
@@ -41,15 +40,16 @@ struct ContentView: View {
                     }
                 }
                 .tag(2)
-                .environmentObject(sharedData)
         }
         .accentColor(.orange) // Customize tab item selection color
+        .edgesIgnoringSafeArea(.bottom)
     }
 }
 
-struct ContentView_Preview: PreviewProvider {
+struct CustomTabBar_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(showSignInView: .constant(false))
-            .environmentObject(SharedData())
+        NavigationStack {
+            CustomTabBar(showSignInView: .constant(false), showSignUpView: .constant(false))
+        }
     }
 }

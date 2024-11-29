@@ -58,28 +58,31 @@
 		854DBFAF2CE8603F00BF118B /* Exceptions for "Spark" folder in "Spark" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Assets.xcassets,
+				Assets/Assets.xcassets,
+				Assets/TabBar/CustomTabBar.swift,
+				Assets/TabBar/TabBarButtons.swift,
 				ContentView.swift,
-				DataManager.swift,
-				FindFriendsView.swift,
-				FriendsAvailableView.swift,
+				Core/Authentication/AuthenticationManager.swift,
+				Core/Authentication/SignInViewModel.swift,
+				Core/Profile/NewProfileView.swift,
+				Core/RootView.swift,
+				Core/Settings/SettingsView.swift,
+				Core/Settings/SettingsViewModel.swift,
+				Core/Subviews/AuthenticationView.swift,
+				Core/Subviews/SignInView.swift,
+				Core/Subviews/SignUpView.swift,
 				"GoogleService-Info.plist",
-				LoginView.swift,
 				MVVM/Model.swift,
 				MVVM/ViewModel.swift,
 				"Preview Content/Preview Assets.xcassets",
-				Profile.swift,
 				SharedData.swift,
-				SignUpView.swift,
 				SparkApp.swift,
-				SplashScreen.swift,
-				Tabs/AddEventView.swift,
-				Tabs/CalendarViewController.swift,
-				Tabs/CurrentEventsView.swift,
-				Tabs/EKWrapper.swift,
-				Tabs/ProfileView.swift,
-				Tabs/TabBar/CustomTabBar.swift,
-				Tabs/TabBar/tabBarButtons.swift,
+				Tabs/FriendsAvailableTab/FriendsAvailableView.swift,
+				Tabs/ProfileTab/CalendarImplementation/CalendarViewController.swift,
+				Tabs/ProfileTab/CalendarImplementation/CurrentEventsView.swift,
+				Tabs/ProfileTab/CalendarImplementation/EKWrapper.swift,
+				Tabs/ProfileTab/ProfileView.swift,
+				Tabs/ProfileTab/ProfileViewModel.swift,
 			);
 			target = 854DBF6B2CE8600800BF118B /* Spark */;
 		};
@@ -87,16 +90,10 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				ContentView.swift,
-				DataManager.swift,
-				FindFriendsView.swift,
-				FriendsAvailableView.swift,
-				LoginView.swift,
 				"Preview Content/Preview Assets.xcassets",
-				Profile.swift,
 				SharedData.swift,
-				SignUpView.swift,
 				SparkApp.swift,
-				SplashScreen.swift,
+				Tabs/FriendsAvailableTab/FriendsAvailableView.swift,
 			);
 			target = 854DBF852CE8600A00BF118B /* SparkUITests */;
 		};
@@ -165,12 +162,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5A4459592CF54456001833E8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		854DBF632CE8600800BF118B = {
 			isa = PBXGroup;
 			children = (
 				854DBFAA2CE8603F00BF118B /* Spark */,
 				854DBF7F2CE8600A00BF118B /* SparkTests */,
 				854DBF892CE8600A00BF118B /* SparkUITests */,
+				5A4459592CF54456001833E8 /* Frameworks */,
 				854DBF6D2CE8600800BF118B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -506,6 +511,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Spark/Preview Content\"";
+				DEVELOPMENT_TEAM = HLJN8S8QKQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to calendar";
@@ -514,6 +520,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -535,6 +542,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Spark/Preview Content\"";
+				DEVELOPMENT_TEAM = HLJN8S8QKQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to calendar";
@@ -543,6 +551,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

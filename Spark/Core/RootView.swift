@@ -8,22 +8,12 @@ import SwiftUI
 struct RootView: View {
     
     @State private var showSignInView: Bool = false
+    @State private var showSignUpView: Bool = false
     var body: some View {
         ZStack {
             NavigationStack {
                 CustomTabBar(showSignInView: $showSignInView)
             }
-//            VStack {
-//                Spacer()
-//                Button("Force Logout") {
-//                    showSignInView = true
-//                }
-//                .padding()
-//                .background(Color.red)
-//                .foregroundColor(.white)
-//                .cornerRadius(10)
-//                .padding(.bottom, 50) // Position the button at the bottom
-//            }
         }
         .onAppear() {
             let authUser = try? AuthenticationManager.shared.getAuthenticatedUser()
@@ -31,7 +21,7 @@ struct RootView: View {
         }
         .fullScreenCover(isPresented: $showSignInView) {
             NavigationStack {
-                AuthenticationView(showSignInView : $showSignInView)
+                AuthenticationView(showSignInView : $showSignInView, showSignUpView: $showSignUpView)
             }
         }
     }

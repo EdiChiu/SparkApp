@@ -8,8 +8,9 @@ import SwiftUI
 struct AuthenticationView: View {
     
     @Binding var showSignInView: Bool
+    @Binding var showSignUpView: Bool
     var body: some View {
-        VStack {
+        VStack (spacing: 40){
             NavigationLink {
                 SignInView(showSignInView: $showSignInView)
             } label: {
@@ -21,16 +22,26 @@ struct AuthenticationView: View {
                     .background(Color.blue)
                     .cornerRadius(10)
             }
-            Spacer()
+            NavigationLink {
+                SignUpView(showSignUpView: $showSignUpView)
+            } label: {
+                Text("Create Account")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(height:55)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue)
+                    .cornerRadius(10)
+            }
         }
         .padding()
-        .navigationTitle("Sign In")
+        .navigationTitle("Welcome")
     }
 }
 struct AuthenticationView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            AuthenticationView(showSignInView: .constant(false))
+            AuthenticationView(showSignInView: .constant(false), showSignUpView: .constant(false))
         }
     }
 }

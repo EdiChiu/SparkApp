@@ -10,7 +10,6 @@ struct SignInView: View {
     @StateObject private var viewModel = SignInViewModel()
     @Binding var showSignInView: Bool
     @State private var isPasswordVisible: Bool = false
-    @State private var passwordError: String? = nil
     
     var body: some View {
         VStack (spacing: 30) {
@@ -22,46 +21,29 @@ struct SignInView: View {
             //Used for password
             HStack {
                 if isPasswordVisible {
-                    TextField("Password...", text: Binding(
-                        get: {viewModel.password },
-                        set: { newValue in
-                            //determines max password length
-                            if newValue.count <= 15 {
-                                viewModel.password = newValue
-                                validatePassword(newValue)
-                            }
-                        }
-                    ))
-                    .padding()
+                    TextField("Password...", text: $viewModel.password)
+                        .padding()
                 } else {
-                    SecureField("Password...", text: Binding(
-                        get: { viewModel.password },
-                        set: { newValue in
-                            //determines max password length
-                            if newValue.count <= 15 {
-                                viewModel.password = newValue
-                                validatePassword(newValue)
-                            }
-                        }
-                    ))
-                    .padding()
+                    SecureField("Password...", text: $viewModel.password)
+                        .padding()
                 }
-                //toggle used to indicate whether users can see password or not
+                // Eye button for toggling visibility
                 Button(action: {
                     isPasswordVisible.toggle()
                 }) {
                     Image(systemName: isPasswordVisible ? "eye" : "eye.slash")
                         .foregroundColor(.black)
-                        .padding(.trailing, 10)
                 }
+                .padding(.trailing, 10)
             }
             .background(Color.gray.opacity(0.4))
             .cornerRadius(10)
             
-            if let error = passwordError {
-                Text(error)
+            if let errorMessage = viewModel.errorMessage {
+                Text(errorMessage)
                     .foregroundColor(.red)
                     .font(.caption)
+                    .padding(.top, 10)
             }
             
             Button {
@@ -71,7 +53,7 @@ struct SignInView: View {
                         showSignInView = false
                         return
                     } catch {
-                        print("Unable to sign in\(error)")
+                        print("Unable to sign in \(error)")
                     }
                 }
             } label: {
@@ -99,13 +81,6 @@ struct SignInView: View {
         .padding(.top, 175)
         .navigationTitle("Sign In")
         .navigationBarBackButtonHidden(true)
-    }
-    private func validatePassword(_ password: String) {
-        if password.count > 15 {
-            passwordError = "Password cannot exceed 15 characters."
-        } else {
-            passwordError = nil
-        }
     }
 }
 

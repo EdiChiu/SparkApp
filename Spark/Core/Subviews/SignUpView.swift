@@ -11,10 +11,7 @@ struct SignUpView: View {
     @Binding var showSignUpView: Bool
     @State private var fullName: String = ""
     @State private var lastName: String = ""
-    @State private var email: String = ""
-    @State private var password: String = ""
     @State private var isPasswordVisible: Bool = false
-    @State private var passwordError: String? = nil
     
     private let maxPasswordLength = 15
     
@@ -37,29 +34,13 @@ struct SignUpView: View {
             
             HStack {
                 if isPasswordVisible {
-                    TextField("Password...", text: Binding(
-                        get: { viewModel.password },
-                        set: { newValue in
-                            if newValue.count <= maxPasswordLength {
-                                viewModel.password = newValue
-                                validatePassword(newValue)
-                            }
-                        }
-                    ))
-                    .padding()
+                    TextField("Password...", text: $viewModel.password)
+                        .padding()
                 } else {
-                    SecureField("Password...", text: Binding(
-                        get: { password },
-                        set: { newValue in
-                            if newValue.count <= maxPasswordLength {
-                                viewModel.password = newValue
-                                validatePassword(newValue)
-                            }
-                        }
-                    ))
-                    .padding()
+                    SecureField("Password...", text: $viewModel.password)
+                        .padding()
                 }
-                
+                // Eye button for toggling visibility
                 Button(action: {
                     isPasswordVisible.toggle()
                 }) {
@@ -71,10 +52,11 @@ struct SignUpView: View {
             .background(Color.gray.opacity(0.4))
             .cornerRadius(10)
             
-            if let error = passwordError {
-                Text(error)
+            if let errorMessage = viewModel.errorMessage {
+                Text(errorMessage)
                     .foregroundColor(.red)
                     .font(.caption)
+                    .padding(.top, 10)
             }
             
             // Sign Up Button
@@ -85,7 +67,7 @@ struct SignUpView: View {
                         showSignUpView = false
                         return
                     } catch {
-                        print("Unable to sign up\(error)")
+                        print("Unable to sign up \(error)")
                     }
                 }
             } label: {
@@ -113,14 +95,6 @@ struct SignUpView: View {
         .padding(.top, 100)
         .navigationTitle("Sign Up")
         .navigationBarBackButtonHidden(true)
-    }
-    
-    private func validatePassword(_ password: String) {
-        if password.count > maxPasswordLength {
-            passwordError = "Password cannot exceed \(maxPasswordLength) characters."
-        } else {
-            passwordError = nil
-        }
     }
 }
 

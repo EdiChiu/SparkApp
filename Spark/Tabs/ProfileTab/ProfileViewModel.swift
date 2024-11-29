@@ -10,7 +10,7 @@ class ProfileViewModel: ObservableObject {
     
     init() {
         requestAccessToCalendar()
-        subscribeToEventChanges() // Subscribe to calendar event changes
+        subscribeToEventChanges()
     }
     
     private func requestAccessToCalendar() {

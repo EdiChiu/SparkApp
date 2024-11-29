@@ -5,21 +5,34 @@
 //  Created by Diego Lagunas on 11/19/24.
 //
 import SwiftUI
-struct SignInView: View {
+struct SignUpView: View {
     
     @StateObject private var viewModel = SignInViewModel()
-    @Binding var showSignInView: Bool
     @Binding var showSignUpView: Bool
+    @Binding var showSignInView: Bool
+    @State private var fullName: String = ""
+    @State private var lastName: String = ""
     @State private var isPasswordVisible: Bool = false
     
+    private let maxPasswordLength = 15
+    
     var body: some View {
-        VStack (spacing: 30) {
-            //Used for email
+        VStack(spacing: 30) {
+            TextField("Full Name", text: $fullName)
+                .padding()
+                .background(Color.gray.opacity(0.4))
+                .cornerRadius(10)
+            
+            TextField("Last Name", text: $lastName)
+                .padding()
+                .background(Color.gray.opacity(0.4))
+                .cornerRadius(10)
+            
             TextField("Email...", text: $viewModel.email)
                 .padding()
                 .background(Color.gray.opacity(0.4))
                 .cornerRadius(10)
-            //Used for password
+            
             HStack {
                 if isPasswordVisible {
                     TextField("Password...", text: $viewModel.password)
@@ -47,19 +60,20 @@ struct SignInView: View {
                     .padding(.top, 10)
             }
             
+            // Sign Up Button
             Button {
                 Task {
                     do {
-                        try await viewModel.signIn()
-                        showSignInView = false
+                        try await viewModel.signUp()
                         showSignUpView = false
+                        showSignInView = false
                         return
                     } catch {
-                        print("Unable to sign in \(error)")
+                        print("Unable to sign up \(error)")
                     }
                 }
             } label: {
-                Text("Log In")
+                Text("Sign Up")
                     .bold()
                     .frame(width: 200, height: 40)
                     .background(
@@ -67,10 +81,11 @@ struct SignInView: View {
                             .fill(.linearGradient(colors: [.orange, .red], startPoint: .top, endPoint: .bottomTrailing))
                     )
                     .foregroundColor(.white)
+                    .padding()
             }
             
-            NavigationLink(destination: SignUpView(showSignUpView: $showSignUpView, showSignInView: $showSignInView)) {
-                Text("Don't have an account? Sign up")
+            NavigationLink(destination: SignInView(showSignInView: $showSignUpView, showSignUpView: $showSignUpView)) {
+                Text("Already have an account? Sign in")
                     .font(.system(size: 16))
                     .foregroundColor(.blue)
                     .padding(.top, 10)
@@ -78,20 +93,17 @@ struct SignInView: View {
             
             Spacer()
         }
-        
         .padding()
-        .padding(.top, 175)
-        .navigationTitle("Sign In")
+        .padding(.top, 100)
+        .navigationTitle("Sign Up")
         .navigationBarBackButtonHidden(true)
     }
 }
 
-struct SignInViews_: PreviewProvider {
+struct SignUpView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            SignInView(showSignInView: .constant(false), showSignUpView: .constant(false))
+            SignUpView(showSignUpView: .constant(false), showSignInView: .constant(false))
         }
     }
 }
-
-

@@ -10,6 +10,7 @@ import SwiftUI
 struct CustomTabBar: View {
     @State private var selectedTab: Int = 0
     @Binding var showSignInView: Bool
+    @Binding var showSignUpView: Bool
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -48,7 +49,7 @@ struct CustomTabBar: View {
 struct CustomTabBar_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            CustomTabBar(showSignInView: .constant(false))
+            CustomTabBar(showSignInView: .constant(false), showSignUpView: .constant(false))
         }
     }
 }

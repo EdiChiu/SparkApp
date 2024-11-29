@@ -30,7 +30,7 @@ struct SignUpView: View {
                 .background(Color.gray.opacity(0.4))
                 .cornerRadius(10)
             
-            TextField("Email...", text: $email)
+            TextField("Email...", text: $viewModel.email)
                 .padding()
                 .background(Color.gray.opacity(0.4))
                 .cornerRadius(10)
@@ -38,10 +38,10 @@ struct SignUpView: View {
             HStack {
                 if isPasswordVisible {
                     TextField("Password...", text: Binding(
-                        get: { password },
+                        get: { viewModel.password },
                         set: { newValue in
                             if newValue.count <= maxPasswordLength {
-                                password = newValue
+                                viewModel.password = newValue
                                 validatePassword(newValue)
                             }
                         }
@@ -52,7 +52,7 @@ struct SignUpView: View {
                         get: { password },
                         set: { newValue in
                             if newValue.count <= maxPasswordLength {
-                                password = newValue
+                                viewModel.password = newValue
                                 validatePassword(newValue)
                             }
                         }

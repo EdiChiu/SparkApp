@@ -23,7 +23,7 @@ struct SignInView: View {
             HStack {
                 if isPasswordVisible {
                     TextField("Password...", text: Binding(
-                        get: { viewModel.password },
+                        get: {viewModel.password },
                         set: { newValue in
                             //determines max password length
                             if newValue.count <= 15 {

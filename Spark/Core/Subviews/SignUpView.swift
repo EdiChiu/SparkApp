@@ -9,6 +9,7 @@ struct SignUpView: View {
     
     @StateObject private var viewModel = SignInViewModel()
     @Binding var showSignUpView: Bool
+    @Binding var showSignInView: Bool
     @State private var fullName: String = ""
     @State private var lastName: String = ""
     @State private var isPasswordVisible: Bool = false
@@ -65,6 +66,7 @@ struct SignUpView: View {
                     do {
                         try await viewModel.signUp()
                         showSignUpView = false
+                        showSignInView = false
                         return
                     } catch {
                         print("Unable to sign up \(error)")
@@ -82,7 +84,7 @@ struct SignUpView: View {
                     .padding()
             }
             
-            NavigationLink(destination: SignInView(showSignInView: $showSignUpView)) {
+            NavigationLink(destination: SignInView(showSignInView: $showSignUpView, showSignUpView: $showSignUpView)) {
                 Text("Already have an account? Sign in")
                     .font(.system(size: 16))
                     .foregroundColor(.blue)
@@ -101,7 +103,7 @@ struct SignUpView: View {
 struct SignUpView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            SignUpView(showSignUpView: .constant(false))
+            SignUpView(showSignUpView: .constant(false), showSignInView: .constant(false))
         }
     }
 }

@@ -9,6 +9,7 @@ struct SignInView: View {
     
     @StateObject private var viewModel = SignInViewModel()
     @Binding var showSignInView: Bool
+    @Binding var showSignUpView: Bool
     @State private var isPasswordVisible: Bool = false
     
     var body: some View {
@@ -51,6 +52,7 @@ struct SignInView: View {
                     do {
                         try await viewModel.signIn()
                         showSignInView = false
+                        showSignUpView = false
                         return
                     } catch {
                         print("Unable to sign in \(error)")
@@ -67,7 +69,7 @@ struct SignInView: View {
                     .foregroundColor(.white)
             }
             
-            NavigationLink(destination: SignUpView(showSignUpView: $showSignInView)) {
+            NavigationLink(destination: SignUpView(showSignUpView: $showSignUpView, showSignInView: $showSignInView)) {
                 Text("Don't have an account? Sign up")
                     .font(.system(size: 16))
                     .foregroundColor(.blue)
@@ -87,7 +89,7 @@ struct SignInView: View {
 struct SignInViews_: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            SignInView(showSignInView: .constant(false))
+            SignInView(showSignInView: .constant(false), showSignUpView: .constant(false))
         }
     }
 }

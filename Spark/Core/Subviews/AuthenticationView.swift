@@ -12,7 +12,7 @@ struct AuthenticationView: View {
     var body: some View {
         VStack (spacing: 40){
             NavigationLink {
-                SignInView(showSignInView: $showSignInView)
+                SignInView(showSignInView: $showSignInView, showSignUpView: $showSignUpView)
             } label: {
                 Text("Sign In With Email")
                     .font(.headline)
@@ -23,7 +23,7 @@ struct AuthenticationView: View {
                     .cornerRadius(10)
             }
             NavigationLink {
-                SignUpView(showSignUpView: $showSignUpView)
+                SignUpView(showSignUpView: $showSignUpView, showSignInView: $showSignInView)
             } label: {
                 Text("Create Account")
                     .font(.headline)

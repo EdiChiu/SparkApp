@@ -9,6 +9,7 @@ struct AuthenticationView: View {
     
     @Binding var showSignInView: Bool
     @Binding var showSignUpView: Bool
+    @StateObject private var profileViewModel = ProfileViewModel()
     var body: some View {
         VStack (spacing: 40){
             NavigationLink {
@@ -23,7 +24,7 @@ struct AuthenticationView: View {
                     .cornerRadius(10)
             }
             NavigationLink {
-                SignUpView(showSignUpView: $showSignUpView, showSignInView: $showSignInView)
+                SignUpView(profileViewModel: profileViewModel, showSignUpView: $showSignUpView, showSignInView: $showSignInView)
             } label: {
                 Text("Create Account")
                     .font(.headline)

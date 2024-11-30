@@ -11,6 +11,7 @@ struct SignInView: View {
     @Binding var showSignInView: Bool
     @Binding var showSignUpView: Bool
     @State private var isPasswordVisible: Bool = false
+    @StateObject private var profileViewModel = ProfileViewModel()
     
     var body: some View {
         VStack (spacing: 30) {
@@ -69,7 +70,7 @@ struct SignInView: View {
                     .foregroundColor(.white)
             }
             
-            NavigationLink(destination: SignUpView(showSignUpView: $showSignUpView, showSignInView: $showSignInView)) {
+            NavigationLink(destination: SignUpView(profileViewModel: profileViewModel, showSignUpView: $showSignUpView, showSignInView: $showSignInView)) {
                 Text("Don't have an account? Sign up")
                     .font(.system(size: 16))
                     .foregroundColor(.blue)

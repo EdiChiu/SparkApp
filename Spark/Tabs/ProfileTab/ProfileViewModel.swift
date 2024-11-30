@@ -5,6 +5,9 @@ import FirebaseFirestore
 
 class ProfileViewModel: ObservableObject {
     @Published var upcomingEvents: [EKEvent] = []
+    @Published var firstName: String = ""
+    @Published var lastName: String = ""
+    @Published var email: String = ""
     private var eventStore = EKEventStore()
     private let db = Firestore.firestore()
     
@@ -100,6 +103,25 @@ class ProfileViewModel: ObservableObject {
             }
         }
     }
+    
+    func saveUserProfile(userId: String) async throws {
+            let userProfile = UserProfile(
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                status: "active",
+                calendarEvents: [] // Empty initially
+            )
+            // Save the profile to Firestore
+            try await db.collection("users").document(userId).setData([
+                "firstName": userProfile.firstName,
+                "lastName": userProfile.lastName,
+                "email": userProfile.email,
+                "status": userProfile.status,
+                "calendarEvents": []
+            ], merge: true)
+            print("User profile saved successfully.")
+        }
     
     deinit {
         // Remove observer when the ViewModel is deinitialized

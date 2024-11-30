@@ -20,7 +20,7 @@ struct FriendsAvailableScreen: View {
                         .scaledToFit()
                         .frame(width: 50, height: 50)
                     Spacer()
-                    NavigationLink(destination: AddFriendsView()) {
+                    NavigationLink(destination: AddUserView()) {
                         Image(systemName: "person.crop.circle.badge.plus")
                             .resizable()
                             .scaledToFit()
@@ -84,6 +84,7 @@ struct FriendsAvailableScreen: View {
             }
             .background(Color(.systemBackground).edgesIgnoringSafeArea(.all)) // Automatically adjusts to background color
         }
+        .accentColor(Color.blue)
     }
 }
 

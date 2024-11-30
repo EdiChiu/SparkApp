@@ -20,11 +20,13 @@ struct FriendsAvailableScreen: View {
                         .scaledToFit()
                         .frame(width: 50, height: 50)
                     Spacer()
-                    Image(systemName: "person.circle")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(.primary) // Dynamically changes with mode
+                    NavigationLink(destination: AddFriendsView()) {
+                        Image(systemName: "person.crop.circle.badge.plus")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.primary)
+                    }
                 }
                 .padding()
                 .background(Color.white) // Keeps the header white for consistency

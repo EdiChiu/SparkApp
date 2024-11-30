@@ -29,7 +29,7 @@ struct FriendsAvailableScreen: View {
                     }
                 }
                 .padding()
-                .background(Color.white) // Keeps the header white for consistency
+                //.background(Color.white) // Keeps the header white for consistency
 
                 Text("Friends Available")
                     .font(.system(size: 24, weight: .bold))

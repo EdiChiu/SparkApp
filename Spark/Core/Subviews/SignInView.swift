@@ -11,7 +11,7 @@ struct SignInView: View {
     @Binding var showSignInView: Bool
     @Binding var showSignUpView: Bool
     @State private var isPasswordVisible: Bool = false
-    @StateObject private var profileViewModel = ProfileViewModel()
+    @StateObject private var profileViewModel = ProfileViewModel(userId: UUID().uuidString)
     
     var body: some View {
         VStack (spacing: 30) {

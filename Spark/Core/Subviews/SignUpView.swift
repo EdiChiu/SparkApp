@@ -68,7 +68,7 @@ struct SignUpView: View {
                         profileViewModel.firstName = fullName
                         profileViewModel.lastName = lastName
                         profileViewModel.email = viewModel.email
-                        try await profileViewModel.saveUserProfile(userId: "testUser")
+                        try await profileViewModel.saveUserProfile()
                         
                         showSignUpView = false
                         showSignInView = false
@@ -101,5 +101,19 @@ struct SignUpView: View {
         .padding(.top, 100)
         .navigationTitle("Sign Up")
         .navigationBarBackButtonHidden(true)
+    }
+}
+
+struct SignUpView_Previews: PreviewProvider {
+    static var previews: some View {
+        // Create a mock ProfileViewModel instance
+        let mockProfileViewModel = ProfileViewModel(userId: "testUserId")
+        
+        // Provide the mock ProfileViewModel to the SignUpView
+        NavigationStack {
+            SignUpView(profileViewModel: mockProfileViewModel,
+                       showSignUpView: .constant(false),
+                       showSignInView: .constant(false))
+        }
     }
 }

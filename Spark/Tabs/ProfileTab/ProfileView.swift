@@ -10,7 +10,7 @@ import SwiftUI
 struct ProfileView: View {
     @State private var Title = "Profile"
     @State private var isAvailable = true
-    @StateObject private var viewModel = ProfileViewModel() // ViewModel instance
+    @StateObject private var viewModel = ProfileViewModel(userId: UUID().uuidString)
     @Binding var showSignInView: Bool
     
     var body: some View {

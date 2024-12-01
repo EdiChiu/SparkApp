@@ -20,9 +20,4 @@ struct CalendarEvent: Codable {
     var title: String
     var startDate: Date
     var endDate: Date
-    var location: String
-    var description: String
-    var organizer: String
-    var attendees: [String]
-    var calendarId: String
 }

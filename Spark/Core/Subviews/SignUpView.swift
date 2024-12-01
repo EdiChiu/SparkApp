@@ -4,17 +4,16 @@
 //
 //  Created by Diego Lagunas on 11/19/24.
 //
+
 import SwiftUI
 struct SignUpView: View {
-    
     @StateObject private var viewModel = SignInViewModel()
+    @ObservedObject var profileViewModel: ProfileViewModel // Inject ProfileViewModel
     @Binding var showSignUpView: Bool
     @Binding var showSignInView: Bool
     @State private var fullName: String = ""
     @State private var lastName: String = ""
     @State private var isPasswordVisible: Bool = false
-    
-    private let maxPasswordLength = 15
     
     var body: some View {
         VStack(spacing: 30) {
@@ -41,7 +40,6 @@ struct SignUpView: View {
                     SecureField("Password...", text: $viewModel.password)
                         .padding()
                 }
-                // Eye button for toggling visibility
                 Button(action: {
                     isPasswordVisible.toggle()
                 }) {
@@ -60,16 +58,22 @@ struct SignUpView: View {
                     .padding(.top, 10)
             }
             
-            // Sign Up Button
             Button {
                 Task {
                     do {
+                        // Attempt sign-up with the current ViewModel
                         try await viewModel.signUp()
+                        
+                        // Save the profile with the ProfileViewModel
+                        profileViewModel.firstName = fullName
+                        profileViewModel.lastName = lastName
+                        profileViewModel.email = viewModel.email
+                        try await profileViewModel.saveUserProfile()
+                        
                         showSignUpView = false
                         showSignInView = false
-                        return
                     } catch {
-                        print("Unable to sign up \(error)")
+                        print("Unable to sign up or save profile: \(error.localizedDescription)")
                     }
                 }
             } label: {
@@ -102,8 +106,14 @@ struct SignUpView: View {
 
 struct SignUpView_Previews: PreviewProvider {
     static var previews: some View {
+        // Create a mock ProfileViewModel instance
+        let mockProfileViewModel = ProfileViewModel(userId: "testUserId")
+        
+        // Provide the mock ProfileViewModel to the SignUpView
         NavigationStack {
-            SignUpView(showSignUpView: .constant(false), showSignInView: .constant(false))
+            SignUpView(profileViewModel: mockProfileViewModel,
+                       showSignUpView: .constant(false),
+                       showSignInView: .constant(false))
         }
     }
 }

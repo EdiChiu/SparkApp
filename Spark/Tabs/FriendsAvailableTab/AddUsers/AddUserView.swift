@@ -7,49 +7,41 @@
 
 import SwiftUI
 
+struct Person: Identifiable {
+    let id = UUID()
+    let name: String
+}
+
 struct AddUserView: View {
-    @State private var searchText = ""
-    @State private var users = ["john_doe", "jane_smith", "alex_brown"] // Example data
-
-    var body: some View {
-        NavigationStack {
-            VStack {
-                TextField("Enter username", text: $searchText)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
-
-                Button(action: {
-                    // Add search logic here later
-                }) {
-                    Text("Search")
-                        .padding()
-                        .foregroundColor(.white)
-                        .background(Color.blue)
-                        .cornerRadius(8)
-                }
-                .padding()
-
-                List(filteredUsers, id: \.self) { user in
-                    HStack {
-                        Text(user)
-                        Spacer()
-                        Button("Add") {
-                            // Add user logic here later
-                        }
-                        .foregroundColor(.blue)
-                    }
-                }
-            }
-            .navigationTitle("Add Users")
-        }
-    }
-
-    // Filter users based on search text
-    var filteredUsers: [String] {
+    @State private var searchText: String = ""
+    @State private var users: [Person] = [
+        Person(name: "Alice Johnson"),
+        Person(name: "Bob Smith"),
+        Person(name: "Charlie Brown"),
+        Person(name: "Diana Prince"),
+        Person(name: "Ethan Hunt"),
+        Person(name: "Fiona Gallagher"),
+        Person(name: "George Costanza"),
+        Person(name: "Hannah Montana"),
+        Person(name: "Isaac Newton"),
+        Person(name: "Jessica Jones")
+    ]
+    
+    var filteredUsers: [Person] {
         if searchText.isEmpty {
             return users
         } else {
-            return users.filter { $0.contains(searchText) }
+            return users.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+        }
+    }
+    
+    var body: some View {
+        NavigationView {
+            List(filteredUsers) { user in
+                Text(user.name)
+            }
+            .searchable(text: $searchText, prompt: "Search users...")
+            .navigationTitle("Add User")
         }
     }
 }

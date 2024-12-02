@@ -10,7 +10,7 @@ import SwiftUI
 struct ProfileView: View {
     @State private var Title = "Profile"
     @State private var isAvailable = true
-    @StateObject private var viewModel = ProfileViewModel() // ViewModel instance
+    @StateObject private var viewModel = ProfileViewModel(userId: UUID().uuidString)
     @Binding var showSignInView: Bool
     
     var body: some View {
@@ -28,22 +28,6 @@ struct ProfileView: View {
             
             // Upcoming Events Section
             List {
-                Section(header: Text("Upcoming Events")) {
-                    if viewModel.upcomingEvents.isEmpty {
-                        Text("No events for the upcoming week.")
-                            .foregroundColor(.gray)
-                    } else {
-                        ForEach(viewModel.upcomingEvents, id: \.eventIdentifier) { event in
-                            VStack(alignment: .leading) {
-                                Text(event.title)
-                                    .font(.headline)
-                                Text("\(event.startDate, formatter: eventDateFormatter) - \(event.endDate, formatter: eventDateFormatter)")
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-                            }
-                        }
-                    }
-                }
                 
                 // Preferences or Settings
                 Section(header: Text("Settings")) {

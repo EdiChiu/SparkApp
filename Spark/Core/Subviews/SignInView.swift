@@ -5,49 +5,70 @@
 //  Created by Diego Lagunas on 11/19/24.
 //
 import SwiftUI
+
 struct SignInView: View {
-    
     @StateObject private var viewModel = SignInViewModel()
     @Binding var showSignInView: Bool
     @Binding var showSignUpView: Bool
     @State private var isPasswordVisible: Bool = false
-    
+    @StateObject private var profileViewModel = ProfileViewModel(userId: UUID().uuidString)
+
     var body: some View {
-        VStack (spacing: 30) {
-            //Used for email
-            TextField("Email...", text: $viewModel.email)
+        VStack(spacing: 20) {
+        
+            Image("AppLogo")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 80, height: 80)
+                .foregroundStyle(LinearGradient(colors: [.orange, .red], startPoint: .top, endPoint: .bottomTrailing))
+
+            Spacer().frame(height: 20)
+
+         
+            TextField("Email or Phone", text: $viewModel.email)
                 .padding()
-                .background(Color.gray.opacity(0.4))
-                .cornerRadius(10)
-            //Used for password
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.red, lineWidth: 2)
+                )
+                .padding(.horizontal)
+
+          
             HStack {
                 if isPasswordVisible {
-                    TextField("Password...", text: $viewModel.password)
+                    TextField("Password", text: $viewModel.password)
                         .padding()
                 } else {
-                    SecureField("Password...", text: $viewModel.password)
+                    SecureField("Password", text: $viewModel.password)
                         .padding()
                 }
-                // Eye button for toggling visibility
+             
                 Button(action: {
                     isPasswordVisible.toggle()
                 }) {
                     Image(systemName: isPasswordVisible ? "eye" : "eye.slash")
-                        .foregroundColor(.black)
+                        .foregroundColor(.gray)
                 }
                 .padding(.trailing, 10)
             }
-            .background(Color.gray.opacity(0.4))
-            .cornerRadius(10)
-            
-            if let errorMessage = viewModel.errorMessage {
-                Text(errorMessage)
-                    .foregroundColor(.red)
-                    .font(.caption)
-                    .padding(.top, 10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.red, lineWidth: 2)
+            )
+            .padding(.horizontal)
+
+         
+            Button(action: {
+     
+            }) {
+                Text("Forgot Password?")
+                    .font(.system(size: 14))
+                    .foregroundColor(.purple)
             }
-            
-            Button {
+            .padding(.trailing)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+
+            Button(action: {
                 Task {
                     do {
                         try await viewModel.signIn()
@@ -58,31 +79,29 @@ struct SignInView: View {
                         print("Unable to sign in \(error)")
                     }
                 }
-            } label: {
+            }) {
                 Text("Log In")
                     .bold()
-                    .frame(width: 200, height: 40)
+                    .frame(maxWidth: .infinity, minHeight: 50)
                     .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(.linearGradient(colors: [.orange, .red], startPoint: .top, endPoint: .bottomTrailing))
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(LinearGradient(colors: [.orange, .red], startPoint: .top, endPoint: .bottomTrailing))
                     )
                     .foregroundColor(.white)
             }
-            
-            NavigationLink(destination: SignUpView(showSignUpView: $showSignUpView, showSignInView: $showSignInView)) {
-                Text("Don't have an account? Sign up")
-                    .font(.system(size: 16))
+            .padding(.horizontal)
+
+            NavigationLink(destination: SignUpView(profileViewModel: profileViewModel, showSignUpView: $showSignUpView, showSignInView: $showSignInView)) {
+                Text("Don’t Have An Account? Sign Up Instead")
+                    .font(.system(size: 14))
                     .foregroundColor(.blue)
-                    .padding(.top, 10)
             }
-            
+
             Spacer()
         }
-        
         .padding()
-        .padding(.top, 175)
-        .navigationTitle("Sign In")
-        .navigationBarBackButtonHidden(true)
+        .navigationTitle("")
+        .navigationBarHidden(true)
     }
 }
 

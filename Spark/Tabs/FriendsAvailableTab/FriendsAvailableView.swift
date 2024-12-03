@@ -15,19 +15,21 @@ struct FriendsAvailableScreen: View {
                 // Header (Logo + Profile Icon)
                 HStack {
                     Spacer()
-                    Image("AppLogo")
+                    Image("ExtendedLogo")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 50, height: 50)
                     Spacer()
-                    Image(systemName: "person.circle")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(.primary) // Dynamically changes with mode
+                    NavigationLink(destination: AddUserView()) {
+                        Image(systemName: "person.crop.circle.badge.plus")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.primary)
+                    }
                 }
                 .padding()
-                .background(Color.white) // Keeps the header white for consistency
+                //.background(Color.white) // Keeps the header white for consistency
 
                 Text("Friends Available")
                     .font(.system(size: 24, weight: .bold))
@@ -82,6 +84,7 @@ struct FriendsAvailableScreen: View {
             }
             .background(Color(.systemBackground).edgesIgnoringSafeArea(.all)) // Automatically adjusts to background color
         }
+        .accentColor(Color.blue)
     }
 }
 

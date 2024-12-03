@@ -20,9 +20,9 @@ struct AuthenticationView: View {
             
             VStack(spacing: 20) {
                
-                Button(action: {
-                    showSignUpView = true
-                }) {
+                NavigationLink {
+                    SignInView(showSignInView: $showSignInView, showSignUpView: $showSignUpView)
+                } label: {
                     Text("Create Account")
                         .font(.headline)
                         .foregroundColor(.white)
@@ -39,9 +39,9 @@ struct AuthenticationView: View {
                 }
                 .padding(.horizontal, 30)
 
-                Button(action: {
-                    showSignInView = true
-                }) {
+                NavigationLink {
+                    SignUpView(showSignUpView: $showSignUpView, showSignInView: $showSignInView)
+                } label: {
                     Text("Log In")
                         .font(.headline)
                         .foregroundColor(.white)

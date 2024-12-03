@@ -76,6 +76,8 @@
 				"Preview Content/Preview Assets.xcassets",
 				SharedData.swift,
 				SparkApp.swift,
+				Tabs/FriendsAvailableTab/AddUsers/AddUserView.swift,
+				Tabs/FriendsAvailableTab/AddUsers/SearchBar.swift,
 				Tabs/FriendsAvailableTab/FriendsAvailableView.swift,
 				Tabs/ProfileTab/CalendarImplementation/CalendarViewController.swift,
 				Tabs/ProfileTab/CalendarImplementation/CurrentEventsView.swift,

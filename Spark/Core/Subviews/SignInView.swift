@@ -91,7 +91,7 @@ struct SignInView: View {
             }
             .padding(.horizontal)
 
-            NavigationLink(destination: SignUpView(profileViewModel: profileViewModel, showSignUpView: $showSignUpView, showSignInView: $showSignInView)) {
+            NavigationLink(destination: SignUpView( showSignUpView: $showSignUpView, showSignInView: $showSignInView)) {
                 Text("Don’t Have An Account? Sign Up Instead")
                     .font(.system(size: 14))
                     .foregroundColor(.blue)

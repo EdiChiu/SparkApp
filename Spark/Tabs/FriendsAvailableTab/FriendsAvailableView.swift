@@ -15,7 +15,7 @@ struct FriendsAvailableScreen: View {
                 // Header (Logo + Profile Icon)
                 HStack {
                     Spacer()
-                    Image("AppLogo")
+                    Image("ExtendedLogo")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 50, height: 50)

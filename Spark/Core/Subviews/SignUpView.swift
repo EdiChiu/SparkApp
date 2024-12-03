@@ -8,6 +8,7 @@ import SwiftUI
 struct SignUpView: View {
     
     @StateObject private var viewModel = SignInViewModel()
+    @ObservedObject var profileViewModel: ProfileViewModel
     @Binding var showSignUpView: Bool
     @Binding var showSignInView: Bool
     @State private var fullName: String = ""
@@ -67,6 +68,10 @@ struct SignUpView: View {
                         try await viewModel.signUp()
                         showSignUpView = false
                         showSignInView = false
+                        profileViewModel.firstName = fullName
+                        profileViewModel.lastName = lastName
+                        profileViewModel.email = viewModel.email
+                        try await profileViewModel.saveUserProfile()
                         return
                     } catch {
                         print("Unable to sign up \(error)")
@@ -102,8 +107,9 @@ struct SignUpView: View {
 
 struct SignUpView_Previews: PreviewProvider {
     static var previews: some View {
+        let mockProfileViewModel = ProfileViewModel(userId: "testUserId")
         NavigationStack {
-            SignUpView(showSignUpView: .constant(false), showSignInView: .constant(false))
+            SignUpView(profileViewModel: mockProfileViewModel, showSignUpView: .constant(false), showSignInView: .constant(false))
         }
     }
 }

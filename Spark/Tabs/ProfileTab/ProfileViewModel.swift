@@ -8,8 +8,6 @@ class ProfileViewModel: ObservableObject {
     @Published var firstName: String = ""
     @Published var lastName: String = ""
     @Published var email: String = ""
-    @Published var friendRequests: [FriendRequest] = []
-    @Published var friends: [String] = []
     private var eventStore = EKEventStore()
     private let db = Firestore.firestore()
     private var userId: String

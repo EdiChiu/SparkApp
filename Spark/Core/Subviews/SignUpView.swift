@@ -13,6 +13,7 @@ struct SignUpView: View {
     @Binding var showSignInView: Bool
     @State private var fullName: String = ""
     @State private var lastName: String = ""
+    @State private var userName: String = ""
     @State private var isPasswordVisible: Bool = false
     
     private let maxPasswordLength = 15
@@ -25,6 +26,11 @@ struct SignUpView: View {
                 .cornerRadius(10)
             
             TextField("Last Name", text: $lastName)
+                .padding()
+                .background(Color.gray.opacity(0.4))
+                .cornerRadius(10)
+            
+            TextField("User Name", text: $userName)
                 .padding()
                 .background(Color.gray.opacity(0.4))
                 .cornerRadius(10)
@@ -70,6 +76,7 @@ struct SignUpView: View {
                         showSignInView = false
                         profileViewModel.firstName = fullName
                         profileViewModel.lastName = lastName
+                        profileViewModel.userName = userName
                         profileViewModel.email = viewModel.email
                         try await profileViewModel.saveUserProfile()
                         return

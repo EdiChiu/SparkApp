@@ -16,8 +16,11 @@ class AddUserViewModel: ObservableObject {
             
             if let documents = snapshot?.documents {
                 let users = documents.compactMap { document -> AppUser? in
-                    guard let email = document.data()["email"] as? String else { return nil }
-                    return AppUser(uid: document.documentID, email: email)
+                    guard let email = document.data()["email"] as? String,
+                          let userName = document.data()["userName"] as? String,
+                          let firstName = document.data()["firstName"] as? String,
+                          let lastName = document.data()["lastName"] as? String else { return nil }
+                    return AppUser(uid: document.documentID, userName: userName, firstName: firstName, lastName: lastName, email: email)
                 }
                 
                 DispatchQueue.main.async {
@@ -33,7 +36,7 @@ class AddUserViewModel: ObservableObject {
         if searchText.isEmpty {
             filteredUsers = users
         } else {
-            filteredUsers = users.filter { $0.email.localizedCaseInsensitiveContains(searchText) }
+            filteredUsers = users.filter { $0.userName.localizedCaseInsensitiveContains(searchText) }
         }
     }
     
@@ -61,10 +64,3 @@ class AddUserViewModel: ObservableObject {
     }
 }
 
-// Model for AppUser
-struct AppUser: Identifiable {
-    let uid: String
-    let email: String
-    
-    var id: String { uid }
-}

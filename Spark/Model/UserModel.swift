@@ -10,6 +10,7 @@ import Foundation
 struct UserProfile: Codable {
     var firstName: String
     var lastName: String
+    var userName: String
     var email: String
     var status: String
     var calendarEvents: [CalendarEvent] = []

@@ -2,46 +2,53 @@
 //  AddUserView.swift
 //  Spark
 //
-//  Created by Diego Lagunas on 11/29/24.
+//  Created by Edison Chiu on 12/3/24.
 //
 
 import SwiftUI
-
-struct Person: Identifiable {
-    let id = UUID()
-    let name: String
-}
+import FirebaseFirestore
 
 struct AddUserView: View {
+    @StateObject private var viewModel = AddUserViewModel()
     @State private var searchText: String = ""
-    @State private var users: [Person] = [
-        Person(name: "Alice Johnson"),
-        Person(name: "Bob Smith"),
-        Person(name: "Charlie Brown"),
-        Person(name: "Diana Prince"),
-        Person(name: "Ethan Hunt"),
-        Person(name: "Fiona Gallagher"),
-        Person(name: "George Costanza"),
-        Person(name: "Hannah Montana"),
-        Person(name: "Isaac Newton"),
-        Person(name: "Jessica Jones")
-    ]
-    
-    var filteredUsers: [Person] {
-        if searchText.isEmpty {
-            return users
-        } else {
-            return users.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
-        }
-    }
-    
+
     var body: some View {
         NavigationView {
-            List(filteredUsers) { user in
-                Text(user.name)
+            VStack {
+                Text("Add Friends")
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .padding(.top, 20)
+                
+                // Search Bar
+                TextField("Search by email...", text: $searchText)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
+                    .onChange(of: searchText) { _ in
+                        viewModel.filterUsers(by: searchText)
+                    }
+                
+                // Filtered List of Users
+                List(viewModel.filteredUsers, id: \.uid) { user in
+                    HStack {
+                        Text(user.email)
+                            .font(.body)
+                        Spacer()
+                        Button(action: {
+                            viewModel.sendFriendRequest(to: user.uid)
+                        }) {
+                            Text("Add Friend")
+                                .foregroundColor(.blue)
+                        }
+                    }
+                }
+                .listStyle(InsetGroupedListStyle())
+                
+                Spacer()
             }
-            .searchable(text: $searchText, prompt: "Search users...")
-            .navigationTitle("Add User")
+            .onAppear {
+                viewModel.fetchAllUsers()
+            }
         }
     }
 }

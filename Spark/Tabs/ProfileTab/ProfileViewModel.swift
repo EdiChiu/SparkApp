@@ -15,7 +15,6 @@ class ProfileViewModel: ObservableObject {
     init(userId: String) {
         self.userId = userId
         requestAccessToCalendar()
-//        fetchFriendRequests()
     }
     
     private func requestAccessToCalendar() {
@@ -69,12 +68,6 @@ class ProfileViewModel: ObservableObject {
                         "title": event.title ?? "No Title",
                         "startDate": event.startDate,
                         "endDate": event.endDate,
-                        // don't need this information for now
-//                        "location": event.location ?? "No Location",
-//                        "description": event.notes ?? "",
-//                        "organizer": event.organizer?.name ?? "Unknown Organizer",
-//                        "attendees": event.attendees?.compactMap { $0.name } ?? [],
-//                        "calendarId": event.calendar.calendarIdentifier
                     ]
                 }
                 

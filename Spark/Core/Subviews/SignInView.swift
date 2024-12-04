@@ -15,12 +15,14 @@ struct SignInView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-        
+            
+            Spacer()
+                .frame(height: 100)
+            
             Image("AppLogo")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 80, height: 80)
-                .foregroundStyle(LinearGradient(colors: [.orange, .red], startPoint: .top, endPoint: .bottomTrailing))
 
             Spacer().frame(height: 20)
 
@@ -92,7 +94,7 @@ struct SignInView: View {
             .padding(.horizontal)
 
             NavigationLink(destination: SignUpView(profileViewModel: profileViewModel, showSignUpView: $showSignUpView, showSignInView: $showSignInView)) {
-                Text("Don’t Have An Account? Sign Up Instead")
+                Text("Don’t Have An Account? Sign Up")
                     .font(.system(size: 14))
                     .foregroundColor(.blue)
             }
@@ -100,8 +102,7 @@ struct SignInView: View {
             Spacer()
         }
         .padding()
-        .navigationTitle("")
-        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
     }
 }
 

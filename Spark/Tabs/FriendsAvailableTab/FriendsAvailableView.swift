@@ -18,7 +18,8 @@ struct FriendsAvailableScreen: View {
                     Image("ExtendedLogo")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 50, height: 50)
+                        .frame(width: 100, height: 100)
+                        .offset(x: 15)
                     Spacer()
                     NavigationLink(destination: AddUserView()) {
                         Image(systemName: "person.crop.circle.badge.plus")

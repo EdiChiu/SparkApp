@@ -7,6 +7,7 @@ class ProfileViewModel: ObservableObject {
     @Published var upcomingEvents: [EKEvent] = []
     @Published var firstName: String = ""
     @Published var lastName: String = ""
+    @Published var userName: String = ""
     @Published var email: String = ""
     private var eventStore = EKEventStore()
     private let db = Firestore.firestore()
@@ -98,6 +99,7 @@ class ProfileViewModel: ObservableObject {
         try await db.collection("users").document(userId).setData([
             "firstName": firstName,
             "lastName": lastName,
+            "userName": userName,
             "email": email,
             "status": "active"
         ], merge: true)

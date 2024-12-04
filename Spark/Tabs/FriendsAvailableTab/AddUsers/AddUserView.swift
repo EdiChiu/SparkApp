@@ -31,8 +31,17 @@ struct AddUserView: View {
                 // Filtered List of Users
                 List(viewModel.filteredUsers, id: \.uid) { user in
                     HStack {
-                        Text(user.email)
-                            .font(.body)
+                        VStack(alignment: .leading) {
+                            Text(user.userName)
+                                .font(.headline)
+                                .bold()
+                            
+                            Text("\(user.firstName) \(user.lastName)")
+                                .font(.subheadline)
+                                .foregroundColor(.gray) // Optional, to make it look less prominent
+                        }
+                        .padding(.vertical, 5)
+                        
                         Spacer()
                         Button(action: {
                             viewModel.sendFriendRequest(to: user.uid)

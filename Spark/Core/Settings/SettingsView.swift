@@ -46,6 +46,7 @@ struct SettingsView: View {
             }
             .listStyle(InsetGroupedListStyle())
             .navigationBarTitle("Settings")
+            .navigationBarTitleDisplayMode(.large)
     }
 }
 struct SettingsView_Previews: PreviewProvider {

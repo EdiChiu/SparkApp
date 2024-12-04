@@ -22,7 +22,7 @@ struct ProfileView: View {
                 .fontWeight(.bold)
             
             // Availability Toggle
-            Toggle("Available for Sponti", isOn: $isAvailable)
+            Toggle("Do Not Disturb", isOn: $isAvailable)
                 .padding()
                 .toggleStyle(SwitchToggleStyle(tint: .green))
             
@@ -40,14 +40,8 @@ struct ProfileView: View {
                     NavigationLink(destination: Text("Notifications")) {
                         Label("Notifications", systemImage: "bell")
                     }
-                }
-                
-                Section(header: Text("App Info")) {
-                    NavigationLink(destination: Text("Help & Support")) {
-                        Label("Help", systemImage: "questionmark.circle")
-                    }
-                    NavigationLink(destination: Text("About Twine")) {
-                        Label("About", systemImage: "info.circle")
+                    NavigationLink(destination: Text("Calendar")) {
+                        Label("Calendar", systemImage: "calendar")
                     }
                 }
             }

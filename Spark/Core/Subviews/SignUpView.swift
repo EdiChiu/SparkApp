@@ -100,7 +100,7 @@ struct SignUpView: View {
             Spacer()
         }
         .padding()
-        .padding(.top, 20)
+        .padding(.top, 50)
         .navigationBarBackButtonHidden(true)
     }
 }

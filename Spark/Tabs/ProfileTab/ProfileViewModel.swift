@@ -7,6 +7,7 @@ class ProfileViewModel: ObservableObject {
     @Published var upcomingEvents: [EKEvent] = []
     @Published var firstName: String = ""
     @Published var lastName: String = ""
+    @Published var userName: String = ""
     @Published var email: String = ""
     private var eventStore = EKEventStore()
     private let db = Firestore.firestore()
@@ -15,7 +16,6 @@ class ProfileViewModel: ObservableObject {
     init(userId: String) {
         self.userId = userId
         requestAccessToCalendar()
-//        fetchFriendRequests()
     }
     
     private func requestAccessToCalendar() {
@@ -69,12 +69,6 @@ class ProfileViewModel: ObservableObject {
                         "title": event.title ?? "No Title",
                         "startDate": event.startDate,
                         "endDate": event.endDate,
-                        // don't need this information for now
-//                        "location": event.location ?? "No Location",
-//                        "description": event.notes ?? "",
-//                        "organizer": event.organizer?.name ?? "Unknown Organizer",
-//                        "attendees": event.attendees?.compactMap { $0.name } ?? [],
-//                        "calendarId": event.calendar.calendarIdentifier
                     ]
                 }
                 
@@ -105,6 +99,7 @@ class ProfileViewModel: ObservableObject {
         try await db.collection("users").document(userId).setData([
             "firstName": firstName,
             "lastName": lastName,
+            "userName": userName,
             "email": email,
             "status": "active"
         ], merge: true)

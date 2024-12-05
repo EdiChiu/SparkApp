@@ -17,9 +17,8 @@ struct AuthenticationView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 150, height: 150)
-                .padding(.top, 50)
             
-            VStack(spacing: 20) {
+            VStack(spacing: 25) {
                
                 NavigationLink {
                     SignInView(showSignInView: $showSignInView, showSignUpView: $showSignUpView)
@@ -63,6 +62,7 @@ struct AuthenticationView: View {
             Spacer()
         }
         .padding()
+        .padding(.top, 135)
         .navigationBarHidden(true)
     }
 }

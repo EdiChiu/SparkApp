@@ -28,6 +28,7 @@ struct FriendsAvailableScreen: View {
                             .frame(width: 40, height: 40)
                             .foregroundColor(.primary)
                     }
+                    
                 }
                 .padding()
                 //.background(Color.white) // Keeps the header white for consistency

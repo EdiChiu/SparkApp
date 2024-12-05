@@ -11,7 +11,7 @@ struct SignUpView: View {
     @ObservedObject var profileViewModel: ProfileViewModel
     @Binding var showSignUpView: Bool
     @Binding var showSignInView: Bool
-    @State private var fullName: String = ""
+    @State private var firstName: String = ""
     @State private var lastName: String = ""
     @State private var userName: String = ""
     @State private var isPasswordVisible: Bool = false
@@ -19,26 +19,19 @@ struct SignUpView: View {
     private let maxPasswordLength = 15
     
     var body: some View {
-        VStack(spacing: 30) {
-            TextField("Full Name", text: $fullName)
-                .padding()
-                .background(Color.gray.opacity(0.4))
-                .cornerRadius(10)
+        VStack(spacing: 20) {
+            Image("AppLogo")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 80, height: 80)
+                .padding(.bottom, 20)
             
-            TextField("Last Name", text: $lastName)
-                .padding()
-                .background(Color.gray.opacity(0.4))
-                .cornerRadius(10)
-            
-            TextField("User Name", text: $userName)
-                .padding()
-                .background(Color.gray.opacity(0.4))
-                .cornerRadius(10)
-            
-            TextField("Email...", text: $viewModel.email)
-                .padding()
-                .background(Color.gray.opacity(0.4))
-                .cornerRadius(10)
+            VStack(spacing: 15) {
+                CustomTextField(placeholder: "First Name", text: $firstName)
+                CustomTextField(placeholder: "Last Name", text: $lastName)
+                CustomTextField(placeholder: "User Name", text: $userName)
+                CustomTextField(placeholder: "Email", text: $viewModel.email)
+            }
             
             HStack {
                 if isPasswordVisible {
@@ -74,7 +67,7 @@ struct SignUpView: View {
                         try await viewModel.signUp()
                         showSignUpView = false
                         showSignInView = false
-                        profileViewModel.firstName = fullName
+                        profileViewModel.firstName = firstName
                         profileViewModel.lastName = lastName
                         profileViewModel.userName = userName
                         profileViewModel.email = viewModel.email
@@ -86,29 +79,41 @@ struct SignUpView: View {
                 }
             } label: {
                 Text("Sign Up")
-                    .bold()
+                    .font(.headline)
                     .frame(width: 200, height: 40)
                     .background(
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
                             .fill(.linearGradient(colors: [.orange, .red], startPoint: .top, endPoint: .bottomTrailing))
                     )
                     .foregroundColor(.white)
-                    .padding()
             }
             
             NavigationLink(destination: SignInView(showSignInView: $showSignUpView, showSignUpView: $showSignUpView)) {
                 Text("Already have an account? Sign in")
-                    .font(.system(size: 16))
+                    .font(.system(size: 14))
                     .foregroundColor(.blue)
-                    .padding(.top, 10)
             }
             
             Spacer()
         }
         .padding()
-        .padding(.top, 100)
-        .navigationTitle("Sign Up")
+        .padding(.top, 20)
         .navigationBarBackButtonHidden(true)
+    }
+}
+
+struct CustomTextField: View {
+    let placeholder: String
+    @Binding var text: String
+
+    var body: some View {
+        TextField(placeholder, text: $text)
+            .padding()
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.red, lineWidth: 2)
+            )
+            .padding(.horizontal, 10)
     }
 }
 

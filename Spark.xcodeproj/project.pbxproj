@@ -64,7 +64,6 @@
 				ContentView.swift,
 				Core/Authentication/AuthenticationManager.swift,
 				Core/Authentication/SignInViewModel.swift,
-				Core/Profile/NewProfileView.swift,
 				Core/RootView.swift,
 				Core/Settings/SettingsView.swift,
 				Core/Settings/SettingsViewModel.swift,

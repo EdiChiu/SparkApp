@@ -2,6 +2,8 @@ import Foundation
 import EventKit
 import FirebaseCore
 import FirebaseFirestore
+import FirebaseAuth
+
 
 class ProfileViewModel: ObservableObject {
     @Published var upcomingEvents: [EKEvent] = []
@@ -9,12 +11,11 @@ class ProfileViewModel: ObservableObject {
     @Published var lastName: String = ""
     @Published var userName: String = ""
     @Published var email: String = ""
+    @Published var friends: [String] = []
     private var eventStore = EKEventStore()
     private let db = Firestore.firestore()
-    private var userId: String
     
-    init(userId: String) {
-        self.userId = userId
+    init() {
         requestAccessToCalendar()
     }
     
@@ -52,7 +53,12 @@ class ProfileViewModel: ObservableObject {
     }
     
     func syncEventsWithFirestore(events: [EKEvent]) {
-        let userDocRef = db.collection("users").document(userId)
+        guard let currentUser = Auth.auth().currentUser else {
+            print("User is not logged in. Events will not be synced.")
+            return
+        }
+        
+        let userDocRef = db.collection("users").document(currentUser.uid)
         
         Task {
             do {
@@ -96,12 +102,13 @@ class ProfileViewModel: ObservableObject {
     
     func saveUserProfile() async throws {
         // Save the user's basic profile data
-        try await db.collection("users").document(userId).setData([
+        try await db.collection("users").document(Auth.auth().currentUser!.uid).setData([
             "firstName": firstName,
             "lastName": lastName,
             "userName": userName,
             "email": email,
-            "status": "active"
+            "status": "active",
+            "friends": friends,
         ], merge: true)
         
         // Fetch and save calendar events

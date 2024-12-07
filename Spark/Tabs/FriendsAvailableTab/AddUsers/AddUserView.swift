@@ -21,7 +21,7 @@ struct AddUserView: View {
                     .padding(.top, 20)
                 
                 // Search Bar
-                TextField("Search by email...", text: $searchText)
+                TextField("Search by User Name...", text: $searchText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding(.horizontal)
                     .onChange(of: searchText) { _ in
@@ -38,13 +38,13 @@ struct AddUserView: View {
                             
                             Text("\(user.firstName) \(user.lastName)")
                                 .font(.subheadline)
-                                .foregroundColor(.gray) // Optional, to make it look less prominent
+                                .foregroundColor(.gray)
                         }
                         .padding(.vertical, 5)
                         
                         Spacer()
                         Button(action: {
-                            viewModel.sendFriendRequest(to: user.uid)
+                            viewModel.addFriend(to: user.uid)
                         }) {
                             Text("Add Friend")
                                 .foregroundColor(.blue)

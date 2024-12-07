@@ -114,7 +114,7 @@ struct SignUpView: View {
 
 struct SignUpView_Previews: PreviewProvider {
     static var previews: some View {
-        let mockProfileViewModel = ProfileViewModel(userId: "testUserId")
+        let mockProfileViewModel = ProfileViewModel()
         NavigationStack {
             SignUpView(profileViewModel: mockProfileViewModel, showSignUpView: .constant(false), showSignInView: .constant(false))
         }

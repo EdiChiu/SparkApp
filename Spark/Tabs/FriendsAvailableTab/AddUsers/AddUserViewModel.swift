@@ -57,11 +57,6 @@ class AddUserViewModel: ObservableObject {
         let currentUserRef = db.collection("users").document(currentUserId)
         let targetUserRef = db.collection("users").document(uid)
         
-        
-        print("Current user ID: \(currentUserId)")
-        print("Target user ID passed: \(uid)")
-        print("Current user's Firestore document path: \(currentUserRef.path)")
-        print("Target user's Firestore document path: \(targetUserRef.path)")
         // Update the current user's "friends" array
         currentUserRef.updateData([
             "friends": FieldValue.arrayUnion([uid])

@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct FriendsAvailableScreen: View {
+    @StateObject private var viewModel = FriendsAvailableViewModel()
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-            
                 // Header (Logo + Profile Icon)
                 HStack {
                     Spacer()
@@ -28,38 +29,66 @@ struct FriendsAvailableScreen: View {
                             .frame(width: 40, height: 40)
                             .foregroundColor(.primary)
                     }
-                    
                 }
                 .padding()
-                //.background(Color.white) // Keeps the header white for consistency
 
                 Text("Friends Available")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.primary) // Adaptable text color
+                    .foregroundColor(.primary)
                     .padding(.top, 10)
 
                 // Filter Buttons
                 HStack(spacing: 15) {
-                    NavigationLink(destination: FilteredFriendsListView(title: "Available Friends", statusColor: .green)) {
+                    NavigationLink(
+                        destination: FilteredFriendsListView(
+                            title: "Available Friends",
+                            status: "Available",
+                            viewModel: viewModel,
+                            statusColor: .green
+                        )
+                    ) {
                         AvailabilityFilterButton(label: "Available", color: .green)
                     }
-                    NavigationLink(destination: FilteredFriendsListView(title: "Free Soon Friends", statusColor: .yellow)) {
+                    NavigationLink(
+                        destination: FilteredFriendsListView(
+                            title: "Free Soon Friends",
+                            status: "Free Soon",
+                            viewModel: viewModel,
+                            statusColor: .yellow
+                        )
+                    ) {
                         AvailabilityFilterButton(label: "Free Soon", color: .yellow)
                     }
-                    NavigationLink(destination: FilteredFriendsListView(title: "Busy Friends", statusColor: .red)) {
+                    NavigationLink(
+                        destination: FilteredFriendsListView(
+                            title: "Busy Friends",
+                            status: "Busy",
+                            viewModel: viewModel,
+                            statusColor: .red
+                        )
+                    ) {
                         AvailabilityFilterButton(label: "Busy", color: .red)
                     }
                 }
                 .padding()
 
                 // Friend List
-                ScrollView {
-                    VStack(spacing: 15) {
-                        FriendRow(name: "Edison Chiu", statusColor: .green)
-                        FriendRow(name: "Diego Lagunas", statusColor: .green)
-                        FriendRow(name: "Frank Blackman Jr.", statusColor: .green)
+                if viewModel.isLoading {
+                    ProgressView("Loading Friends...")
+                        .padding(.top, 20)
+                } else if viewModel.friends.isEmpty {
+                    Text("No friends available.")
+                        .padding(.top, 20)
+                        .foregroundColor(.secondary)
+                } else {
+                    ScrollView {
+                        VStack(spacing: 15) {
+                            ForEach(viewModel.friends, id: \.name) { friend in
+                                FriendRow(name: friend.name, statusColor: colorForStatus(friend.status))
+                            }
+                        }
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
                 }
 
                 Spacer()
@@ -82,16 +111,30 @@ struct FriendsAvailableScreen: View {
                     .padding(.vertical, 10)
                 }
                 .padding(.bottom, 20) // Adjusted bottom padding to ensure no overlap with Tab Bar
-
             }
             .background(Color(.systemBackground).edgesIgnoringSafeArea(.all)) // Automatically adjusts to background color
+            .onAppear {
+                viewModel.fetchFriends()
+            }
         }
         .accentColor(Color.blue)
+    }
+
+    // Helper function to determine color based on friend status
+    private func colorForStatus(_ status: String) -> Color {
+        switch status.lowercased() {
+        case "available": return .green
+        case "free soon": return .yellow
+        case "busy": return .red
+        default: return .gray
+        }
     }
 }
 
 struct FilteredFriendsListView: View {
     let title: String
+    let status: String
+    @ObservedObject var viewModel: FriendsAvailableViewModel
     let statusColor: Color
 
     var body: some View {
@@ -103,9 +146,9 @@ struct FilteredFriendsListView: View {
 
             ScrollView {
                 VStack(spacing: 15) {
-                    FriendRow(name: "Frank Blackman Jr.", statusColor: statusColor)
-                    FriendRow(name: "Diego Lagunas", statusColor: statusColor)
-                    FriendRow(name: "Edison Chiu", statusColor: statusColor)
+                    ForEach(viewModel.filterFriends(by: status), id: \.name) { friend in
+                        FriendRow(name: friend.name, statusColor: statusColor)
+                    }
                 }
                 .padding(.horizontal)
             }
@@ -113,12 +156,11 @@ struct FilteredFriendsListView: View {
             Spacer()
         }
         .padding()
-        .navigationTitle(title) // Dynamic title based on the availability
+        .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
-        .background(Color(.systemBackground)) // Ensure background adapts
+        .background(Color(.systemBackground))
     }
 }
-
 struct CreateEventScreen: View {
     @State private var eventName: String = ""
     @State private var eventDate = Date()

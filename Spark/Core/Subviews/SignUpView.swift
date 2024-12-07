@@ -9,8 +9,7 @@ struct SignUpView: View {
     
     @StateObject private var viewModel = SignInViewModel()
     @ObservedObject var profileViewModel: ProfileViewModel
-    @Binding var showSignUpView: Bool
-    @Binding var showSignInView: Bool
+    var onAuthFlowChange: (RootView.AuthFlow) -> Void
     @State private var firstName: String = ""
     @State private var lastName: String = ""
     @State private var userName: String = ""
@@ -68,14 +67,12 @@ struct SignUpView: View {
                 Task {
                     do {
                         try await viewModel.signUp()
-                        showSignUpView = false
-                        showSignInView = false
                         profileViewModel.firstName = firstName
                         profileViewModel.lastName = lastName
                         profileViewModel.userName = userName
                         profileViewModel.email = viewModel.email
                         try await profileViewModel.saveUserProfile()
-                        return
+                        onAuthFlowChange(.mainApp)
                     } catch {
                         print("Unable to sign up \(error)")
                     }
@@ -91,7 +88,9 @@ struct SignUpView: View {
                     .foregroundColor(.white)
             }
             
-            NavigationLink(destination: SignInView(showSignInView: $showSignUpView, showSignUpView: $showSignUpView)) {
+            Button(action: {
+                onAuthFlowChange(.signIn) // Navigate to Sign In view
+            }) {
                 Text("Already have an account? Sign in")
                     .font(.system(size: 14))
                     .foregroundColor(.blue)
@@ -124,7 +123,7 @@ struct SignUpView_Previews: PreviewProvider {
     static var previews: some View {
         let mockProfileViewModel = ProfileViewModel()
         NavigationStack {
-            SignUpView(profileViewModel: mockProfileViewModel, showSignUpView: .constant(false), showSignInView: .constant(false))
+            SignUpView(profileViewModel: mockProfileViewModel, onAuthFlowChange: { _ in })
         }
     }
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct FriendsAvailableScreen: View {
     @StateObject private var viewModel = FriendsAvailableViewModel()
+    @State private var selectedFriends: [String] = [] // Array to store selected friend UIDs
 
     var body: some View {
         NavigationStack {
@@ -44,7 +45,8 @@ struct FriendsAvailableScreen: View {
                             title: "Available Friends",
                             status: "Available",
                             viewModel: viewModel,
-                            statusColor: .green
+                            statusColor: .green,
+                            selectedFriends: $selectedFriends
                         )
                     ) {
                         AvailabilityFilterButton(label: "Available", color: .green)
@@ -54,7 +56,8 @@ struct FriendsAvailableScreen: View {
                             title: "Free Soon Friends",
                             status: "Free Soon",
                             viewModel: viewModel,
-                            statusColor: .yellow
+                            statusColor: .yellow,
+                            selectedFriends: $selectedFriends
                         )
                     ) {
                         AvailabilityFilterButton(label: "Free Soon", color: .yellow)
@@ -64,7 +67,8 @@ struct FriendsAvailableScreen: View {
                             title: "Busy Friends",
                             status: "Busy",
                             viewModel: viewModel,
-                            statusColor: .red
+                            statusColor: .red,
+                            selectedFriends: $selectedFriends
                         )
                     ) {
                         AvailabilityFilterButton(label: "Busy", color: .red)
@@ -84,7 +88,18 @@ struct FriendsAvailableScreen: View {
                     ScrollView {
                         VStack(spacing: 15) {
                             ForEach(viewModel.friends, id: \.name) { friend in
-                                FriendRow(name: friend.name, statusColor: colorForStatus(friend.status))
+                                SelectableFriendRow(
+                                    name: friend.name,
+                                    statusColor: colorForStatus(friend.status),
+                                    isSelected: selectedFriends.contains(friend.name),
+                                    toggleSelection: {
+                                        if let index = selectedFriends.firstIndex(of: friend.name) {
+                                            selectedFriends.remove(at: index) // Deselect
+                                        } else {
+                                            selectedFriends.append(friend.name) // Select
+                                        }
+                                    }
+                                )
                             }
                         }
                         .padding(.horizontal)
@@ -93,7 +108,7 @@ struct FriendsAvailableScreen: View {
 
                 Spacer()
 
-                // Create Event Button (not overlapping with Tab Bar)
+                // Create Event Button
                 NavigationLink(destination: CreateEventScreen()) {
                     HStack {
                         Text("Create Event")
@@ -109,10 +124,12 @@ struct FriendsAvailableScreen: View {
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal)
                     .padding(.vertical, 10)
+                    .opacity(selectedFriends.isEmpty ? 0.5 : 1.0) // Adjust opacity
                 }
-                .padding(.bottom, 20) // Adjusted bottom padding to ensure no overlap with Tab Bar
+                .disabled(selectedFriends.isEmpty) // Disable if no friends selected
+                .padding(.bottom, 20)
             }
-            .background(Color(.systemBackground).edgesIgnoringSafeArea(.all)) // Automatically adjusts to background color
+            .background(Color(.systemBackground).edgesIgnoringSafeArea(.all))
             .onAppear {
                 viewModel.fetchFriends()
             }
@@ -131,11 +148,46 @@ struct FriendsAvailableScreen: View {
     }
 }
 
+struct SelectableFriendRow: View {
+    var name: String
+    var statusColor: Color
+    var isSelected: Bool
+    var toggleSelection: () -> Void
+
+    var body: some View {
+        HStack {
+            // Selection indicator
+            Circle()
+                .stroke(isSelected ? Color.blue : Color.gray, lineWidth: 2)
+                .background(isSelected ? Circle().fill(Color.blue) : nil)
+                .frame(width: 18, height: 18)
+                .onTapGesture {
+                    toggleSelection()
+                }
+
+            // Friend name and status
+            Text(name)
+                .font(.system(size: 18, weight: .bold))
+                .foregroundColor(.primary)
+            Spacer()
+            Circle()
+                .fill(statusColor)
+                .frame(width: 16, height: 16)
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 15)
+                .stroke(Color.primary.opacity(0.2), lineWidth: 1)
+        )
+    }
+}
+
 struct FilteredFriendsListView: View {
     let title: String
     let status: String
     @ObservedObject var viewModel: FriendsAvailableViewModel
     let statusColor: Color
+    @Binding var selectedFriends: [String]
 
     var body: some View {
         VStack(spacing: 15) {
@@ -147,7 +199,18 @@ struct FilteredFriendsListView: View {
             ScrollView {
                 VStack(spacing: 15) {
                     ForEach(viewModel.filterFriends(by: status), id: \.name) { friend in
-                        FriendRow(name: friend.name, statusColor: statusColor)
+                        SelectableFriendRow(
+                            name: friend.name,
+                            statusColor: statusColor,
+                            isSelected: selectedFriends.contains(friend.name),
+                            toggleSelection: {
+                                if let index = selectedFriends.firstIndex(of: friend.name) {
+                                    selectedFriends.remove(at: index)
+                                } else {
+                                    selectedFriends.append(friend.name)
+                                }
+                            }
+                        )
                     }
                 }
                 .padding(.horizontal)
@@ -161,6 +224,7 @@ struct FilteredFriendsListView: View {
         .background(Color(.systemBackground))
     }
 }
+
 struct CreateEventScreen: View {
     @State private var eventName: String = ""
     @State private var eventDate = Date()

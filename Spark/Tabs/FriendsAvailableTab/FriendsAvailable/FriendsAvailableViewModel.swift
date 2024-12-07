@@ -10,7 +10,13 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class FriendsAvailableViewModel: ObservableObject {
-    @Published var friends: [(name: String, status: String)] = [] // Store name and status as tuples
+    struct Friend {
+        let uid: String
+        let name: String
+        let status: String
+    }
+
+    @Published var friends: [Friend] = [] // Store friends as structs containing uid, name, and status
     @Published var isLoading: Bool = false
 
     private var db = Firestore.firestore()
@@ -36,9 +42,9 @@ class FriendsAvailableViewModel: ObservableObject {
                 self?.isLoading = false
             } else if let document = document, document.exists {
                 print("User document fetched successfully. Data: \(document.data() ?? [:])")
-                if let rawData = document.data(), let friends = rawData["friends"] as? [String] {
-                    print("Friend IDs: \(friends)")
-                    self?.updateFriendsStatus(friendIDs: friends)
+                if let rawData = document.data(), let friendIDs = rawData["friends"] as? [String] {
+                    print("Friend IDs: \(friendIDs)")
+                    self?.updateFriendsStatus(friendIDs: friendIDs)
                 } else {
                     print("No friends to fetch.")
                     DispatchQueue.main.async {
@@ -62,7 +68,7 @@ class FriendsAvailableViewModel: ObservableObject {
             return
         }
 
-        let group = DispatchGroup() // Synchronize multiple updates
+        let group = DispatchGroup()
 
         for friendID in friendIDs {
             group.enter()
@@ -90,7 +96,7 @@ class FriendsAvailableViewModel: ObservableObject {
         }
 
         group.notify(queue: .main) {
-            self.fetchFriendsDetails(friendIDs: friendIDs) // Fetch updated details after updating statuses
+            self.fetchFriendsDetails(friendIDs: friendIDs)
         }
     }
 
@@ -121,7 +127,7 @@ class FriendsAvailableViewModel: ObservableObject {
             return
         }
 
-        var fetchedFriends: [(name: String, status: String)] = []
+        var fetchedFriends: [Friend] = []
         let group = DispatchGroup()
 
         for friendID in friendIDs {
@@ -135,7 +141,7 @@ class FriendsAvailableViewModel: ObservableObject {
                        let lastName = data["lastName"] as? String,
                        let status = data["status"] as? String {
                         let fullName = "\(firstName) \(lastName)"
-                        fetchedFriends.append((name: fullName, status: status))
+                        fetchedFriends.append(Friend(uid: friendID, name: fullName, status: status))
                     } else {
                         print("Friend \(friendID) is missing firstName, lastName, or status.")
                     }
@@ -151,7 +157,7 @@ class FriendsAvailableViewModel: ObservableObject {
         }
     }
 
-    func filterFriends(by status: String) -> [(name: String, status: String)] {
+    func filterFriends(by status: String) -> [Friend] {
         return friends.filter { $0.status.lowercased() == status.lowercased() }
     }
 }

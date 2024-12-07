@@ -4,7 +4,6 @@ import FirebaseCore
 import FirebaseFirestore
 import FirebaseAuth
 
-
 class ProfileViewModel: ObservableObject {
     @Published var upcomingEvents: [EKEvent] = []
     @Published var firstName: String = ""
@@ -17,6 +16,7 @@ class ProfileViewModel: ObservableObject {
     
     init() {
         requestAccessToCalendar()
+        registerForCalendarChanges()
     }
     
     private func requestAccessToCalendar() {
@@ -36,6 +36,21 @@ class ProfileViewModel: ObservableObject {
         } else {
             eventStore.requestAccess(to: .event, completion: completionHandler)
         }
+    }
+
+    // Listen for changes in the Apple Calendar
+    private func registerForCalendarChanges() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleCalendarChange),
+            name: .EKEventStoreChanged,
+            object: eventStore
+        )
+    }
+    
+    @objc private func handleCalendarChange() {
+        print("Apple Calendar changed, syncing with Firestore...")
+        fetchUpcomingMonthEvents()
     }
 
     // Fetch events for the upcoming month
@@ -107,7 +122,7 @@ class ProfileViewModel: ObservableObject {
             "lastName": lastName,
             "userName": userName,
             "email": email,
-            "status": "active",
+            "status": "Available",
             "friends": friends,
         ], merge: true)
         
@@ -116,8 +131,6 @@ class ProfileViewModel: ObservableObject {
     }
     
     deinit {
-        // No need for observer removal, as we don't subscribe to event changes anymore
+        NotificationCenter.default.removeObserver(self, name: .EKEventStoreChanged, object: eventStore)
     }
-    
-    
 }

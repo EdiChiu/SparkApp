@@ -9,7 +9,7 @@ import SwiftUI
 struct AuthenticationView: View {
     @Binding var showSignInView: Bool
     @Binding var showSignUpView: Bool
-    @StateObject private var profileViewModel = ProfileViewModel(userId: UUID().uuidString)
+    @StateObject private var profileViewModel = ProfileViewModel()
 
     var body: some View {
         VStack(spacing: 40) {

@@ -35,23 +35,26 @@ struct SignUpView: View {
             
             HStack {
                 if isPasswordVisible {
-                    TextField("Password...", text: $viewModel.password)
+                    TextField("Password", text: $viewModel.password)
                         .padding()
                 } else {
-                    SecureField("Password...", text: $viewModel.password)
+                    SecureField("Password", text: $viewModel.password)
                         .padding()
                 }
-                // Eye button for toggling visibility
+             
                 Button(action: {
                     isPasswordVisible.toggle()
                 }) {
                     Image(systemName: isPasswordVisible ? "eye" : "eye.slash")
-                        .foregroundColor(.black)
+                        .foregroundColor(.gray)
                 }
                 .padding(.trailing, 10)
             }
-            .background(Color.gray.opacity(0.4))
-            .cornerRadius(10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.red, lineWidth: 2)
+            )
+            .padding(.horizontal, 10)
             
             if let errorMessage = viewModel.errorMessage {
                 Text(errorMessage)

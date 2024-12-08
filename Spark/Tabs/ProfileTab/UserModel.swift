@@ -14,6 +14,7 @@ struct UserProfile: Codable {
     var email: String
     var status: String
     var calendarEvents: [CalendarEvent] = []
+    var friends: [String] = []
 }
 
 struct CalendarEvent: Codable {

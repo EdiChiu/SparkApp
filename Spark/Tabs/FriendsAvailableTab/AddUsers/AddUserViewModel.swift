@@ -1,4 +1,5 @@
 import Foundation
+import FirebaseAuth
 import FirebaseFirestore
 
 class AddUserViewModel: ObservableObject {
@@ -40,27 +41,32 @@ class AddUserViewModel: ObservableObject {
         }
     }
     
-    // Send a friend request
-    func sendFriendRequest(to uid: String) {
-        guard let currentUserId = getCurrentUserId(), currentUserId != uid else { return }
+    // Add a friend
+    func addFriend(to uid: String) {
+        print("addFriend called with UID: \(uid)")
+        guard let currentUserId = Auth.auth().currentUser?.uid else {
+            print("No authenticated user found.")
+            return
+        }
         
+        guard currentUserId != uid else {
+            print("Cannot add yourself as a friend.")
+            return
+        }
+        
+        let currentUserRef = db.collection("users").document(currentUserId)
         let targetUserRef = db.collection("users").document(uid)
         
-        targetUserRef.updateData([
-            "friendRequests": FieldValue.arrayUnion([currentUserId])
+        // Update the current user's "friends" array
+        currentUserRef.updateData([
+            "friends": FieldValue.arrayUnion([uid])
         ]) { error in
             if let error = error {
-                print("Error sending friend request: \(error.localizedDescription)")
+                print("Error adding friend to current user: \(error.localizedDescription)")
             } else {
-                print("Friend request sent to \(uid)")
+                print("Added \(uid) to current user's friends list")
             }
         }
-    }
-    
-    // Mock function to get the current user ID
-    private func getCurrentUserId() -> String? {
-        // Replace with your actual implementation
-        return "currentUserId"
     }
 }
 

@@ -2,6 +2,7 @@ import Foundation
 import EventKit
 import FirebaseCore
 import FirebaseFirestore
+import FirebaseAuth
 
 class ProfileViewModel: ObservableObject {
     @Published var upcomingEvents: [EKEvent] = []
@@ -9,13 +10,13 @@ class ProfileViewModel: ObservableObject {
     @Published var lastName: String = ""
     @Published var userName: String = ""
     @Published var email: String = ""
+    @Published var friends: [String] = []
     private var eventStore = EKEventStore()
     private let db = Firestore.firestore()
-    private var userId: String
     
-    init(userId: String) {
-        self.userId = userId
+    init() {
         requestAccessToCalendar()
+        registerForCalendarChanges()
     }
     
     private func requestAccessToCalendar() {
@@ -37,6 +38,21 @@ class ProfileViewModel: ObservableObject {
         }
     }
 
+    // Listen for changes in the Apple Calendar
+    private func registerForCalendarChanges() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleCalendarChange),
+            name: .EKEventStoreChanged,
+            object: eventStore
+        )
+    }
+    
+    @objc private func handleCalendarChange() {
+        print("Apple Calendar changed, syncing with Firestore...")
+        fetchUpcomingMonthEvents()
+    }
+
     // Fetch events for the upcoming month
     func fetchUpcomingMonthEvents() {
         let calendar = Calendar.current
@@ -52,7 +68,12 @@ class ProfileViewModel: ObservableObject {
     }
     
     func syncEventsWithFirestore(events: [EKEvent]) {
-        let userDocRef = db.collection("users").document(userId)
+        guard let currentUser = Auth.auth().currentUser else {
+            print("User is not logged in. Events will not be synced.")
+            return
+        }
+        
+        let userDocRef = db.collection("users").document(currentUser.uid)
         
         Task {
             do {
@@ -96,12 +117,13 @@ class ProfileViewModel: ObservableObject {
     
     func saveUserProfile() async throws {
         // Save the user's basic profile data
-        try await db.collection("users").document(userId).setData([
+        try await db.collection("users").document(Auth.auth().currentUser!.uid).setData([
             "firstName": firstName,
             "lastName": lastName,
             "userName": userName,
             "email": email,
-            "status": "active"
+            "status": "Available",
+            "friends": friends,
         ], merge: true)
         
         // Fetch and save calendar events
@@ -109,8 +131,6 @@ class ProfileViewModel: ObservableObject {
     }
     
     deinit {
-        // No need for observer removal, as we don't subscribe to event changes anymore
+        NotificationCenter.default.removeObserver(self, name: .EKEventStoreChanged, object: eventStore)
     }
-    
-    
 }

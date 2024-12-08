@@ -7,22 +7,20 @@
 import SwiftUI
 
 struct AuthenticationView: View {
-    @Binding var showSignInView: Bool
-    @Binding var showSignUpView: Bool
-    @StateObject private var profileViewModel = ProfileViewModel(userId: UUID().uuidString)
+    var onAuthFlowChange: (RootView.AuthFlow) -> Void
+    @StateObject private var profileViewModel = ProfileViewModel()
 
     var body: some View {
         VStack(spacing: 40) {
-            Image("AppLogo")
+            Image("PNGAppLogo")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 150, height: 150)
-                .padding(.top, 50)
             
-            VStack(spacing: 20) {
+            VStack(spacing: 25) {
                
-                NavigationLink {
-                    SignInView(showSignInView: $showSignInView, showSignUpView: $showSignUpView)
+                Button {
+                    onAuthFlowChange(.signIn)
                 } label: {
                     Text("Log In")
                         .font(.headline)
@@ -40,8 +38,8 @@ struct AuthenticationView: View {
                 }
                 .padding(.horizontal, 30)
 
-                NavigationLink {
-                    SignUpView(profileViewModel: profileViewModel,showSignUpView: $showSignUpView, showSignInView: $showSignInView)
+                Button {
+                    onAuthFlowChange(.signUp)
                 } label: {
                     Text("Sign Up")
                         .font(.headline)
@@ -63,6 +61,7 @@ struct AuthenticationView: View {
             Spacer()
         }
         .padding()
+        .padding(.top, 135)
         .navigationBarHidden(true)
     }
 }
@@ -70,7 +69,7 @@ struct AuthenticationView: View {
 struct AuthenticationView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            AuthenticationView(showSignInView: .constant(false), showSignUpView: .constant(false))
+            AuthenticationView(onAuthFlowChange: { _ in })
         }
     }
 }

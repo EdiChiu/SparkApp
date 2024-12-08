@@ -5,27 +5,51 @@
 //  Created by Diego Lagunas on 11/19/24.
 //
 import SwiftUI
+
 struct RootView: View {
+    enum AuthFlow {
+        case authentication
+        case signIn
+        case signUp
+        case mainApp
+    }
+    @State private var authFlow: AuthFlow = .authentication
     
-    @State private var showSignInView: Bool = false
-    @State private var showSignUpView: Bool = false
     var body: some View {
         ZStack {
-            NavigationStack {
-                CustomTabBar(showSignInView: $showSignInView, showSignUpView: $showSignUpView)
-            }
+            switch authFlow {
+            case .authentication:
+                NavigationStack {
+                    AuthenticationView(onAuthFlowChange: { flow in
+                        authFlow = flow
+                    })
+                }
+            case .signIn:
+                NavigationStack {
+                    SignInView(onAuthFlowChange: { flow in
+                        authFlow = flow
+                    })
+                }
+            case .signUp:
+                NavigationStack {
+                    SignUpView(
+                        profileViewModel: ProfileViewModel(),
+                        onAuthFlowChange: { flow in
+                        authFlow = flow
+                    })
+                }
+            case .mainApp:
+                    CustomTabBar(authFlow: $authFlow)
+                }
         }
-        .onAppear() {
+        .onAppear {
+            // Check if the user is authenticated
             let authUser = try? AuthenticationManager.shared.getAuthenticatedUser()
-            self.showSignInView = authUser == nil
-        }
-        .fullScreenCover(isPresented: $showSignInView) {
-            NavigationStack {
-                AuthenticationView(showSignInView : $showSignInView, showSignUpView: $showSignUpView)
-            }
+            self.authFlow = authUser == nil ? .authentication : .mainApp
         }
     }
 }
+
 struct RootView_Previews: PreviewProvider {
     static var previews: some View {
         RootView()

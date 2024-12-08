@@ -61,10 +61,8 @@
 				Assets/Assets.xcassets,
 				Assets/TabBar/CustomTabBar.swift,
 				Assets/TabBar/TabBarButtons.swift,
-				ContentView.swift,
 				Core/Authentication/AuthenticationManager.swift,
 				Core/Authentication/SignInViewModel.swift,
-				Core/Profile/NewProfileView.swift,
 				Core/RootView.swift,
 				Core/Settings/SettingsView.swift,
 				Core/Settings/SettingsViewModel.swift,
@@ -72,30 +70,30 @@
 				Core/Subviews/SignInView.swift,
 				Core/Subviews/SignUpView.swift,
 				"GoogleService-Info.plist",
-				Model/UserModel.swift,
 				"Preview Content/Preview Assets.xcassets",
 				SharedData.swift,
 				SparkApp.swift,
 				Tabs/FriendsAvailableTab/AddUsers/AddUserView.swift,
 				Tabs/FriendsAvailableTab/AddUsers/AddUserViewModel.swift,
 				Tabs/FriendsAvailableTab/AddUsers/AppUserModel.swift,
-				Tabs/FriendsAvailableTab/FriendsAvailableView.swift,
+				Tabs/FriendsAvailableTab/FriendsAvailable/CreateEventView.swift,
+				Tabs/FriendsAvailableTab/FriendsAvailable/FriendsAvailableView.swift,
+				Tabs/FriendsAvailableTab/FriendsAvailable/FriendsAvailableViewModel.swift,
 				Tabs/ProfileTab/CalendarImplementation/CalendarViewController.swift,
 				Tabs/ProfileTab/CalendarImplementation/CurrentEventsView.swift,
 				Tabs/ProfileTab/CalendarImplementation/EKWrapper.swift,
 				Tabs/ProfileTab/ProfileView.swift,
 				Tabs/ProfileTab/ProfileViewModel.swift,
+				Tabs/ProfileTab/UserModel.swift,
 			);
 			target = 854DBF6B2CE8600800BF118B /* Spark */;
 		};
 		854DBFB02CE8603F00BF118B /* Exceptions for "Spark" folder in "SparkUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				ContentView.swift,
 				"Preview Content/Preview Assets.xcassets",
 				SharedData.swift,
 				SparkApp.swift,
-				Tabs/FriendsAvailableTab/FriendsAvailableView.swift,
 			);
 			target = 854DBF852CE8600A00BF118B /* SparkUITests */;
 		};
@@ -516,7 +514,7 @@
 				DEVELOPMENT_TEAM = HLJN8S8QKQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to calendar";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to your calendar data to help your friends view your availability and status.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -547,7 +545,7 @@
 				DEVELOPMENT_TEAM = HLJN8S8QKQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to calendar";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to your calendar data to help your friends view your availability and status.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

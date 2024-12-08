@@ -10,8 +10,8 @@ import SwiftUI
 struct ProfileView: View {
     @State private var Title = "Profile"
     @State private var isAvailable = true
-    @StateObject private var viewModel = ProfileViewModel(userId: UUID().uuidString)
-    @Binding var showSignInView: Bool
+    @StateObject private var viewModel = ProfileViewModel()
+    @Binding var authFlow: RootView.AuthFlow
     
     var body: some View {
         VStack(spacing: 15) {
@@ -22,7 +22,7 @@ struct ProfileView: View {
                 .fontWeight(.bold)
             
             // Availability Toggle
-            Toggle("Available for Sponti", isOn: $isAvailable)
+            Toggle("Do Not Disturb", isOn: $isAvailable)
                 .padding()
                 .toggleStyle(SwitchToggleStyle(tint: .green))
             
@@ -31,7 +31,7 @@ struct ProfileView: View {
                 
                 // Preferences or Settings
                 Section(header: Text("Settings")) {
-                    NavigationLink(destination: SettingsView(showSignInView: $showSignInView)) {
+                    NavigationLink(destination: SettingsView(authFlow: $authFlow)) {
                         Label("Account", systemImage: "person")
                     }
                     NavigationLink(destination: Text("Privacy Settings")) {
@@ -40,14 +40,8 @@ struct ProfileView: View {
                     NavigationLink(destination: Text("Notifications")) {
                         Label("Notifications", systemImage: "bell")
                     }
-                }
-                
-                Section(header: Text("App Info")) {
-                    NavigationLink(destination: Text("Help & Support")) {
-                        Label("Help", systemImage: "questionmark.circle")
-                    }
-                    NavigationLink(destination: Text("About Twine")) {
-                        Label("About", systemImage: "info.circle")
+                    NavigationLink(destination: Text("Calendar")) {
+                        Label("Calendar", systemImage: "calendar")
                     }
                 }
             }
@@ -69,8 +63,8 @@ private let eventDateFormatter: DateFormatter = {
 
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
-            ProfileView(showSignInView: .constant(false))
+        NavigationStack {
+            ProfileView(authFlow: .constant(.mainApp))
         }
     }
 }

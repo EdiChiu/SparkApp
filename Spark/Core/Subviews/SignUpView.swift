@@ -5,13 +5,13 @@
 //  Created by Diego Lagunas on 11/19/24.
 //
 import SwiftUI
+import FirebaseAuth
 struct SignUpView: View {
-    
+    @State private var showError = false
     @StateObject private var viewModel = SignInViewModel()
     @ObservedObject var profileViewModel: ProfileViewModel
-    @Binding var showSignUpView: Bool
-    @Binding var showSignInView: Bool
-    @State private var fullName: String = ""
+    var onAuthFlowChange: (RootView.AuthFlow) -> Void
+    @State private var firstName: String = ""
     @State private var lastName: String = ""
     @State private var userName: String = ""
     @State private var isPasswordVisible: Bool = false
@@ -19,51 +19,47 @@ struct SignUpView: View {
     private let maxPasswordLength = 15
     
     var body: some View {
-        VStack(spacing: 30) {
-            TextField("Full Name", text: $fullName)
-                .padding()
-                .background(Color.gray.opacity(0.4))
-                .cornerRadius(10)
+        VStack(spacing: 20) {
+            Image("PNGAppLogo")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 80, height: 80)
+                .padding(.bottom, 20)
             
-            TextField("Last Name", text: $lastName)
-                .padding()
-                .background(Color.gray.opacity(0.4))
-                .cornerRadius(10)
-            
-            TextField("User Name", text: $userName)
-                .padding()
-                .background(Color.gray.opacity(0.4))
-                .cornerRadius(10)
-            
-            TextField("Email...", text: $viewModel.email)
-                .padding()
-                .background(Color.gray.opacity(0.4))
-                .cornerRadius(10)
+            VStack(spacing: 15) {
+                CustomTextField(placeholder: "First Name", text: $firstName)
+                CustomTextField(placeholder: "Last Name", text: $lastName)
+                CustomTextField(placeholder: "User Name", text: $userName)
+                CustomTextField(placeholder: "Email", text: $viewModel.email)
+            }
             
             HStack {
                 if isPasswordVisible {
-                    TextField("Password...", text: $viewModel.password)
+                    TextField("Password", text: $viewModel.password)
                         .padding()
                 } else {
-                    SecureField("Password...", text: $viewModel.password)
+                    SecureField("Password", text: $viewModel.password)
                         .padding()
                 }
-                // Eye button for toggling visibility
+             
                 Button(action: {
                     isPasswordVisible.toggle()
                 }) {
                     Image(systemName: isPasswordVisible ? "eye" : "eye.slash")
-                        .foregroundColor(.black)
+                        .foregroundColor(.gray)
                 }
                 .padding(.trailing, 10)
             }
-            .background(Color.gray.opacity(0.4))
-            .cornerRadius(10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.red, lineWidth: 2)
+            )
+            .padding(.horizontal, 10)
             
             if let errorMessage = viewModel.errorMessage {
                 Text(errorMessage)
                     .foregroundColor(.red)
-                    .font(.caption)
+                    .font(.subheadline)
                     .padding(.top, 10)
             }
             
@@ -72,51 +68,66 @@ struct SignUpView: View {
                 Task {
                     do {
                         try await viewModel.signUp()
-                        showSignUpView = false
-                        showSignInView = false
-                        profileViewModel.firstName = fullName
-                        profileViewModel.lastName = lastName
-                        profileViewModel.userName = userName
-                        profileViewModel.email = viewModel.email
-                        try await profileViewModel.saveUserProfile()
-                        return
+                        if Auth.auth().currentUser != nil {
+                            profileViewModel.firstName = firstName
+                            profileViewModel.lastName = lastName
+                            profileViewModel.userName = userName
+                            profileViewModel.email = viewModel.email
+                            try await profileViewModel.saveUserProfile()
+                            onAuthFlowChange(.mainApp)
+                        } else {
+                            print("Error: User is not authenticated after sign-up.")
+                        }
                     } catch {
-                        print("Unable to sign up \(error)")
+                        print("Unable to sign up: \(error.localizedDescription)")
                     }
                 }
             } label: {
                 Text("Sign Up")
-                    .bold()
+                    .font(.headline)
                     .frame(width: 200, height: 40)
                     .background(
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
                             .fill(.linearGradient(colors: [.orange, .red], startPoint: .top, endPoint: .bottomTrailing))
                     )
                     .foregroundColor(.white)
-                    .padding()
             }
-            
-            NavigationLink(destination: SignInView(showSignInView: $showSignUpView, showSignUpView: $showSignUpView)) {
+            Button(action: {
+                onAuthFlowChange(.signIn) // Navigate to Sign In view
+            }) {
                 Text("Already have an account? Sign in")
-                    .font(.system(size: 16))
+                    .font(.system(size: 14))
                     .foregroundColor(.blue)
-                    .padding(.top, 10)
             }
             
             Spacer()
         }
         .padding()
-        .padding(.top, 100)
-        .navigationTitle("Sign Up")
+        .padding(.top, 20)
         .navigationBarBackButtonHidden(true)
+    }
+}
+
+struct CustomTextField: View {
+    let placeholder: String
+    @Binding var text: String
+
+    var body: some View {
+        TextField(placeholder, text: $text)
+            .padding()
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.red, lineWidth: 2)
+            )
+            .padding(.horizontal, 10)
     }
 }
 
 struct SignUpView_Previews: PreviewProvider {
     static var previews: some View {
-        let mockProfileViewModel = ProfileViewModel(userId: "testUserId")
+        let mockProfileViewModel = ProfileViewModel()
         NavigationStack {
-            SignUpView(profileViewModel: mockProfileViewModel, showSignUpView: .constant(false), showSignInView: .constant(false))
+            SignUpView(profileViewModel: mockProfileViewModel, onAuthFlowChange: { _ in })
         }
     }
 }

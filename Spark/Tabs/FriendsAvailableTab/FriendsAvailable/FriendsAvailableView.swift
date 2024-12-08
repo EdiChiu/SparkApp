@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FriendsAvailableScreen: View {
     @StateObject private var viewModel = FriendsAvailableViewModel()
-    @State private var selectedFriends: [String] = [] // Array to store selected friend UIDs
+    @State private var selectedFriends: [String] = [] // Store selected friend UIDs
 
     var body: some View {
         NavigationStack {
@@ -87,16 +87,16 @@ struct FriendsAvailableScreen: View {
                 } else {
                     ScrollView {
                         VStack(spacing: 15) {
-                            ForEach(viewModel.friends, id: \.name) { friend in
+                            ForEach(viewModel.friends, id: \.uid) { friend in
                                 SelectableFriendRow(
                                     name: friend.name,
                                     statusColor: colorForStatus(friend.status),
-                                    isSelected: selectedFriends.contains(friend.name),
+                                    isSelected: selectedFriends.contains(friend.uid),
                                     toggleSelection: {
-                                        if let index = selectedFriends.firstIndex(of: friend.name) {
+                                        if let index = selectedFriends.firstIndex(of: friend.uid) {
                                             selectedFriends.remove(at: index) // Deselect
                                         } else {
-                                            selectedFriends.append(friend.name) // Select
+                                            selectedFriends.append(friend.uid) // Select
                                         }
                                     }
                                 )
@@ -109,7 +109,8 @@ struct FriendsAvailableScreen: View {
                 Spacer()
 
                 // Create Event Button
-                NavigationLink(destination: CreateEventScreen()) {
+                NavigationLink(destination: CreateEventScreen(selectedFriends: selectedFriends)
+                                .environmentObject(viewModel)) {
                     HStack {
                         Text("Create Event")
                             .font(.system(size: 21, weight: .bold))
@@ -222,73 +223,6 @@ struct FilteredFriendsListView: View {
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemBackground))
-    }
-}
-
-struct CreateEventScreen: View {
-    @State private var eventName: String = ""
-    @State private var eventDate = Date()
-    @State private var location: String = ""
-    @State private var description: String = ""
-
-    var body: some View {
-        VStack(spacing: 20) {
-            Text("Create New Event")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding(.top)
-                .padding(10)
-
-            // Event Name
-            TextField("Event Name", text: $eventName)
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(10)
-                .textInputAutocapitalization(.words)
-
-            // Event Date
-            VStack(alignment: .leading) {
-                Text("Event Date:")
-                    .font(.headline)
-                DatePicker("Select Date", selection: $eventDate, displayedComponents: .date)
-                    .labelsHidden()
-                    .datePickerStyle(GraphicalDatePickerStyle())
-            }
-
-            // Location
-            TextField("Location", text: $location)
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(10)
-                .textInputAutocapitalization(.words)
-
-            // Description
-            TextField("Description", text: $description, axis: .vertical)
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(10)
-                .lineLimit(4)
-
-            // Submit Button
-            Button(action: {
-                // Handle event creation
-                print("Event Created: \(eventName), \(eventDate), \(location), \(description)")
-            }) {
-                Text("Create Event")
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.orange)
-                    .cornerRadius(15)
-            }
-            .padding(.bottom)  // Add padding to avoid overlap with the tab bar
-
-            Spacer() // Push content to the top
-        }
-        .padding()
-        .navigationBarTitleDisplayMode(.inline)
-        .background(Color(.systemBackground).edgesIgnoringSafeArea(.all))  // Ensure the background is adaptive
-        .navigationBarBackButtonHidden(false) // Ensure the back button is shown
     }
 }
 

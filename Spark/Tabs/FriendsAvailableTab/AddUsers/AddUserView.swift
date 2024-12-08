@@ -14,47 +14,87 @@ struct AddUserView: View {
 
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 20) {
+                // Header
                 Text("Add Friends")
-                    .font(.title)
+                    .font(.largeTitle)
                     .fontWeight(.bold)
-                    .padding(.top, 20)
-                
+                    .padding(.top, 10)
+
                 // Search Bar
-                TextField("Search by User Name...", text: $searchText)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                VStack(spacing: 8) {
+                    HStack {
+                        TextField("Search by Username...", text: $searchText)
+                            .padding(12)
+                            .background(Color(.systemGray6))
+                            .cornerRadius(12)
+                            .textInputAutocapitalization(.never)
+
+                        if !searchText.isEmpty {
+                            Button(action: { searchText = "" }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.gray)
+                                    .padding(.trailing, 5)
+                            }
+                        }
+                    }
                     .padding(.horizontal)
                     .onChange(of: searchText) { _ in
                         viewModel.filterUsers(by: searchText)
                     }
-                
+
+                }
+
                 // Filtered List of Users
-                List(viewModel.filteredUsers, id: \.uid) { user in
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(user.userName)
-                                .font(.headline)
-                                .bold()
-                            
-                            Text("\(user.firstName) \(user.lastName)")
-                                .font(.subheadline)
+                ScrollView {
+                    LazyVStack(spacing: 15) {
+                        if viewModel.filteredUsers.isEmpty {
+                            Text("No users found.")
                                 .foregroundColor(.gray)
-                        }
-                        .padding(.vertical, 5)
-                        
-                        Spacer()
-                        Button(action: {
-                            viewModel.addFriend(to: user.uid)
-                        }) {
-                            Text("Add Friend")
-                                .foregroundColor(.blue)
+                                .padding(.top, 60)
+                        } else {
+                            ForEach(viewModel.filteredUsers, id: \.id) { user in
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 5) {
+                                        Text(user.userName)
+                                            .font(.headline)
+                                            .fontWeight(.bold)
+                                        Text("\(user.firstName) \(user.lastName)")
+                                            .font(.subheadline)
+                                            .foregroundColor(.gray)
+                                    }
+
+                                    Spacer()
+
+                                    Button(action: {
+                                        viewModel.addFriend(to: user.uid)
+                                    }) {
+                                        Text("Add")
+                                            .font(.body)
+                                            .foregroundColor(.white)
+                                            .padding(.vertical, 8)
+                                            .padding(.horizontal, 16)
+                                            .background(Color.blue)
+                                            .cornerRadius(8)
+                                            .shadow(radius: 2)
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                }
+                                .padding()
+                                .background(Color.white)
+                                .cornerRadius(12)
+                                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
+                            }
                         }
                     }
+                    .padding(.horizontal)
                 }
-                .listStyle(InsetGroupedListStyle())
-                
-                Spacer()
+                .background(Color(.systemGroupedBackground))
+                .frame(maxHeight: .infinity)
             }
+            .padding(.top)
+            .background(Color(.systemBackground))
+            .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 viewModel.fetchAllUsers()
             }
@@ -62,8 +102,10 @@ struct AddUserView: View {
     }
 }
 
+// MARK: - Preview
 struct AddUserView_Previews: PreviewProvider {
     static var previews: some View {
         AddUserView()
+            .environmentObject(AddUserViewModel()) // Ensure the environment object is provided
     }
 }

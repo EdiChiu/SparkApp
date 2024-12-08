@@ -51,12 +51,39 @@ struct AddUserView: View {
                         if viewModel.filteredUsers.isEmpty {
                             Text("No users found.")
                                 .foregroundColor(.gray)
-                                .padding(.top, 50)
+                                .padding(.top, 60)
                         } else {
                             ForEach(viewModel.filteredUsers, id: \.id) { user in
-                                UserCard(user: user, action: {
-                                    viewModel.addFriend(to: user.uid)
-                                })
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 5) {
+                                        Text(user.userName)
+                                            .font(.headline)
+                                            .fontWeight(.bold)
+                                        Text("\(user.firstName) \(user.lastName)")
+                                            .font(.subheadline)
+                                            .foregroundColor(.gray)
+                                    }
+
+                                    Spacer()
+
+                                    Button(action: {
+                                        viewModel.addFriend(to: user.uid)
+                                    }) {
+                                        Text("Add")
+                                            .font(.body)
+                                            .foregroundColor(.white)
+                                            .padding(.vertical, 8)
+                                            .padding(.horizontal, 16)
+                                            .background(Color.blue)
+                                            .cornerRadius(8)
+                                            .shadow(radius: 2)
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                }
+                                .padding()
+                                .background(Color.white)
+                                .cornerRadius(12)
+                                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
                             }
                         }
                     }
@@ -72,42 +99,6 @@ struct AddUserView: View {
                 viewModel.fetchAllUsers()
             }
         }
-    }
-}
-
-// MARK: - User Card
-struct UserCard: View {
-    let user: AppUser
-    let action: () -> Void
-
-    var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 5) {
-                Text(user.userName)
-                    .font(.headline)
-                    .fontWeight(.bold)
-                Text("\(user.firstName) \(user.lastName)")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-            }
-
-            Spacer()
-
-            Button(action: action) {
-                Text("Add")
-                    .font(.body)
-                    .foregroundColor(.white)
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 16)
-                    .background(Color.blue)
-                    .cornerRadius(8)
-                    .shadow(radius: 2)
-            }
-        }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
     }
 }
 

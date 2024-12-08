@@ -84,14 +84,14 @@ struct CreateEventScreen: View {
                 }
 
                 // Duration Pickers
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(spacing: 10) {
                     Text("Duration")
                         .font(.headline)
                         .foregroundColor(.gray)
                         .frame(maxWidth: .infinity, alignment: .center)
 
-                    HStack(spacing: 15) {
-                        VStack {
+                    HStack(spacing: 30) {
+                        VStack(spacing: 5) {
                             Text("Hours")
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
@@ -100,12 +100,12 @@ struct CreateEventScreen: View {
                                     Text("\(hour)").tag(hour)
                                 }
                             }
-                            .frame(width: 80, height: 80)
+                            .frame(width: 60, height: 100)
                             .clipped()
                             .pickerStyle(WheelPickerStyle())
                         }
 
-                        VStack {
+                        VStack(spacing: 5) {
                             Text("Minutes")
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
@@ -114,11 +114,12 @@ struct CreateEventScreen: View {
                                     Text("\(minute)").tag(minute)
                                 }
                             }
-                            .frame(width: 80, height: 80)
+                            .frame(width: 60, height: 100)
                             .clipped()
                             .pickerStyle(WheelPickerStyle())
                         }
                     }
+                    .padding(.horizontal, 10)
                 }
 
                 // Selected Friends List

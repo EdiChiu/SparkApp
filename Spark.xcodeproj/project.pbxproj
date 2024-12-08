@@ -75,16 +75,11 @@
 				SparkApp.swift,
 				Tabs/FriendsAvailableTab/AddUsers/AddUserView.swift,
 				Tabs/FriendsAvailableTab/AddUsers/AddUserViewModel.swift,
-				Tabs/FriendsAvailableTab/AddUsers/AppUserModel.swift,
-				Tabs/FriendsAvailableTab/FriendsAvailable/CreateEventView.swift,
-				Tabs/FriendsAvailableTab/FriendsAvailable/FriendsAvailableView.swift,
-				Tabs/FriendsAvailableTab/FriendsAvailable/FriendsAvailableViewModel.swift,
 				Tabs/ProfileTab/CalendarImplementation/CalendarViewController.swift,
 				Tabs/ProfileTab/CalendarImplementation/CurrentEventsView.swift,
 				Tabs/ProfileTab/CalendarImplementation/EKWrapper.swift,
 				Tabs/ProfileTab/ProfileView.swift,
 				Tabs/ProfileTab/ProfileViewModel.swift,
-				Tabs/ProfileTab/UserModel.swift,
 			);
 			target = 854DBF6B2CE8600800BF118B /* Spark */;
 		};

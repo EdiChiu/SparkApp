@@ -7,27 +7,45 @@
 import SwiftUI
 
 struct RootView: View {
-    @State private var showSignInView: Bool = false
-    @State private var showSignUpView: Bool = false
+    enum AuthFlow {
+        case authentication
+        case signIn
+        case signUp
+        case mainApp
+    }
+    @State private var authFlow: AuthFlow = .authentication
     
     var body: some View {
         ZStack {
-            // Show the main app content if user is signed in
-            if !showSignInView {
+            switch authFlow {
+            case .authentication:
                 NavigationStack {
-                    CustomTabBar(showSignInView: $showSignInView, showSignUpView: $showSignUpView)
+                    AuthenticationView(onAuthFlowChange: { flow in
+                        authFlow = flow
+                    })
                 }
-            } else {
-                // Show authentication view if user isn't signed in
+            case .signIn:
                 NavigationStack {
-                    AuthenticationView(showSignInView: $showSignInView, showSignUpView: $showSignUpView)
+                    SignInView(onAuthFlowChange: { flow in
+                        authFlow = flow
+                    })
                 }
-            }
+            case .signUp:
+                NavigationStack {
+                    SignUpView(
+                        profileViewModel: ProfileViewModel(),
+                        onAuthFlowChange: { flow in
+                        authFlow = flow
+                    })
+                }
+            case .mainApp:
+                    CustomTabBar(authFlow: $authFlow)
+                }
         }
         .onAppear {
             // Check if the user is authenticated
             let authUser = try? AuthenticationManager.shared.getAuthenticatedUser()
-            self.showSignInView = authUser == nil
+            self.authFlow = authUser == nil ? .authentication : .mainApp
         }
     }
 }

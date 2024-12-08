@@ -5,12 +5,12 @@
 //  Created by Diego Lagunas on 11/19/24.
 //
 import SwiftUI
+import FirebaseAuth
 struct SignUpView: View {
-    
+    @State private var showError = false
     @StateObject private var viewModel = SignInViewModel()
     @ObservedObject var profileViewModel: ProfileViewModel
-    @Binding var showSignUpView: Bool
-    @Binding var showSignInView: Bool
+    var onAuthFlowChange: (RootView.AuthFlow) -> Void
     @State private var firstName: String = ""
     @State private var lastName: String = ""
     @State private var userName: String = ""
@@ -20,7 +20,7 @@ struct SignUpView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Image("AppLogo")
+            Image("PNGAppLogo")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 80, height: 80)
@@ -35,28 +35,31 @@ struct SignUpView: View {
             
             HStack {
                 if isPasswordVisible {
-                    TextField("Password...", text: $viewModel.password)
+                    TextField("Password", text: $viewModel.password)
                         .padding()
                 } else {
-                    SecureField("Password...", text: $viewModel.password)
+                    SecureField("Password", text: $viewModel.password)
                         .padding()
                 }
-                // Eye button for toggling visibility
+             
                 Button(action: {
                     isPasswordVisible.toggle()
                 }) {
                     Image(systemName: isPasswordVisible ? "eye" : "eye.slash")
-                        .foregroundColor(.black)
+                        .foregroundColor(.gray)
                 }
                 .padding(.trailing, 10)
             }
-            .background(Color.gray.opacity(0.4))
-            .cornerRadius(10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.red, lineWidth: 2)
+            )
+            .padding(.horizontal, 10)
             
             if let errorMessage = viewModel.errorMessage {
                 Text(errorMessage)
                     .foregroundColor(.red)
-                    .font(.caption)
+                    .font(.subheadline)
                     .padding(.top, 10)
             }
             
@@ -65,16 +68,18 @@ struct SignUpView: View {
                 Task {
                     do {
                         try await viewModel.signUp()
-                        showSignUpView = false
-                        showSignInView = false
-                        profileViewModel.firstName = firstName
-                        profileViewModel.lastName = lastName
-                        profileViewModel.userName = userName
-                        profileViewModel.email = viewModel.email
-                        try await profileViewModel.saveUserProfile()
-                        return
+                        if Auth.auth().currentUser != nil {
+                            profileViewModel.firstName = firstName
+                            profileViewModel.lastName = lastName
+                            profileViewModel.userName = userName
+                            profileViewModel.email = viewModel.email
+                            try await profileViewModel.saveUserProfile()
+                            onAuthFlowChange(.mainApp)
+                        } else {
+                            print("Error: User is not authenticated after sign-up.")
+                        }
                     } catch {
-                        print("Unable to sign up \(error)")
+                        print("Unable to sign up: \(error.localizedDescription)")
                     }
                 }
             } label: {
@@ -87,8 +92,9 @@ struct SignUpView: View {
                     )
                     .foregroundColor(.white)
             }
-            
-            NavigationLink(destination: SignInView(showSignInView: $showSignUpView, showSignUpView: $showSignUpView)) {
+            Button(action: {
+                onAuthFlowChange(.signIn) // Navigate to Sign In view
+            }) {
                 Text("Already have an account? Sign in")
                     .font(.system(size: 14))
                     .foregroundColor(.blue)
@@ -121,7 +127,7 @@ struct SignUpView_Previews: PreviewProvider {
     static var previews: some View {
         let mockProfileViewModel = ProfileViewModel()
         NavigationStack {
-            SignUpView(profileViewModel: mockProfileViewModel, showSignUpView: .constant(false), showSignInView: .constant(false))
+            SignUpView(profileViewModel: mockProfileViewModel, onAuthFlowChange: { _ in })
         }
     }
 }

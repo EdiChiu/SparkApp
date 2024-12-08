@@ -5,13 +5,13 @@
 //  Created by Diego Lagunas on 11/19/24.
 //
 import SwiftUI
+import FirebaseAuth
 
 struct SignInView: View {
     @StateObject private var viewModel = SignInViewModel()
-    @Binding var showSignInView: Bool
-    @Binding var showSignUpView: Bool
     @State private var isPasswordVisible: Bool = false
     @StateObject private var profileViewModel = ProfileViewModel()
+    var onAuthFlowChange: (RootView.AuthFlow) -> Void
 
     var body: some View {
         VStack(spacing: 20) {
@@ -19,7 +19,7 @@ struct SignInView: View {
             Spacer()
                 .frame(height: 100)
             
-            Image("AppLogo")
+            Image("PNGAppLogo")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 80, height: 80)
@@ -58,8 +58,16 @@ struct SignInView: View {
                     .stroke(Color.red, lineWidth: 2)
             )
             .padding(.horizontal)
-
-         
+            
+            if let errorMessage = viewModel.errorMessage {
+                Text(errorMessage)
+                    .foregroundColor(.red)
+                    .font(.subheadline)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                }
+            
+            //Forgot Password Button
             Button(action: {
      
             }) {
@@ -69,15 +77,17 @@ struct SignInView: View {
             }
             .padding(.trailing)
             .frame(maxWidth: .infinity, alignment: .trailing)
-
+            
+            //Log In Button
             Button(action: {
                 Task {
                     do {
                         try await viewModel.signIn()
-                        showSignInView = false
-                        showSignUpView = false
-                        return
+                        if viewModel.errorMessage == nil {
+                            onAuthFlowChange(.mainApp)
+                        }
                     } catch {
+                        viewModel.errorMessage = error.localizedDescription
                         print("Unable to sign in \(error)")
                     }
                 }
@@ -92,8 +102,11 @@ struct SignInView: View {
                     .foregroundColor(.white)
             }
             .padding(.horizontal)
-
-            NavigationLink(destination: SignUpView(profileViewModel: profileViewModel, showSignUpView: $showSignUpView, showSignInView: $showSignInView)) {
+            
+            //Navigate to SignUp Page
+            Button(action: {
+                onAuthFlowChange(.signUp) // Navigate to Sign Up view
+            }) {
                 Text("Don’t Have An Account? Sign Up")
                     .font(.system(size: 14))
                     .foregroundColor(.blue)
@@ -109,7 +122,7 @@ struct SignInView: View {
 struct SignInViews_: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            SignInView(showSignInView: .constant(false), showSignUpView: .constant(false))
+            SignInView(onAuthFlowChange: { _ in })
         }
     }
 }

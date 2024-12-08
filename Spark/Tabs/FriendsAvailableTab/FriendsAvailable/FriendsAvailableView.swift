@@ -109,7 +109,8 @@ struct FriendsAvailableScreen: View {
                 Spacer()
 
                 // Create Event Button
-                NavigationLink(destination: CreateEventScreen(selectedFriends: selectedFriends)) {
+                NavigationLink(destination: CreateEventScreen(selectedFriends: selectedFriends)
+                                .environmentObject(viewModel)) {
                     HStack {
                         Text("Create Event")
                             .font(.system(size: 21, weight: .bold))

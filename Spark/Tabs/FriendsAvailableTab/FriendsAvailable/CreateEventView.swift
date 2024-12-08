@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct CreateEventScreen: View {
+    @EnvironmentObject var viewModel: FriendsAvailableViewModel
     @State private var eventName: String = ""
     @State private var location: String = ""
     @State private var description: String = ""
     @State private var durationHours: Int = 0
     @State private var durationMinutes: Int = 0
-    @State private var durationSeconds: Int = 0
     var selectedFriends: [String] // Array of selected friend UIDs
 
     var body: some View {
@@ -30,6 +30,20 @@ struct CreateEventScreen: View {
                 .background(Color.gray.opacity(0.2))
                 .cornerRadius(10)
                 .textInputAutocapitalization(.words)
+            
+            // Location
+            TextField("Location", text: $location)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(10)
+                .textInputAutocapitalization(.words)
+
+            // Description
+            TextField("Description", text: $description, axis: .vertical)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(10)
+                .lineLimit(4)
 
             // Duration Pickers
             VStack(alignment: .leading, spacing: 10) {
@@ -54,21 +68,12 @@ struct CreateEventScreen: View {
                     .pickerStyle(WheelPickerStyle())
                     .frame(maxWidth: 100)
                     .clipped()
-
-                    Picker("Seconds", selection: $durationSeconds) {
-                        ForEach(0..<60, id: \.self) { second in
-                            Text("\(second) \(second == 1 ? "Second" : "Seconds")")
-                        }
-                    }
-                    .pickerStyle(WheelPickerStyle())
-                    .frame(maxWidth: 100)
-                    .clipped()
                 }
             }
 
             // Selected Friends List
             VStack(alignment: .leading, spacing: 10) {
-                Text("Selected Friends (UIDs):")
+                Text("Selected Friends:")
                     .font(.headline)
 
                 if selectedFriends.isEmpty {
@@ -78,12 +83,19 @@ struct CreateEventScreen: View {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 5) {
                             ForEach(selectedFriends, id: \.self) { friendUID in
-                                Text(friendUID)
-                                    .font(.body)
-                                    .padding(.vertical, 5)
-                                    .padding(.horizontal, 10)
-                                    .background(Color.gray.opacity(0.2))
-                                    .cornerRadius(8)
+                                if let friend = viewModel.friends.first(where: { $0.uid == friendUID }) {
+                                    Text(friend.name) // Show concatenated name
+                                        .font(.body)
+                                        .padding(.vertical, 5)
+                                        .padding(.horizontal, 10)
+                                        .background(Color.gray.opacity(0.2))
+                                        .cornerRadius(8)
+                                } else {
+                                    Text(friendUID) // Fallback to UID if name not found
+                                        .font(.body)
+                                        .italic()
+                                        .foregroundColor(.secondary)
+                                }
                             }
                         }
                     }
@@ -91,25 +103,11 @@ struct CreateEventScreen: View {
                 }
             }
 
-            // Location
-            TextField("Location", text: $location)
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(10)
-                .textInputAutocapitalization(.words)
-
-            // Description
-            TextField("Description", text: $description, axis: .vertical)
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(10)
-                .lineLimit(4)
-
             // Submit Button
             Button(action: {
-                let duration = (durationHours * 3600) + (durationMinutes * 60) + durationSeconds
+                let duration = (durationHours * 3600) + (durationMinutes * 60)
                 print("Event Created: \(eventName), Duration: \(duration) seconds, \(location), \(description)")
-                print("Invited Friends UIDs: \(selectedFriends)")
+                print("Invited Friends: \(selectedFriends)")
             }) {
                 Text("Create Event")
                     .foregroundColor(.white)

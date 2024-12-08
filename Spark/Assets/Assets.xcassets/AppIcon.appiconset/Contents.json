@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "AppLogo copy.jpg",
+      "filename" : "JPGAppLogo.jpg",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,7 +13,6 @@
           "value" : "dark"
         }
       ],
-      "filename" : "AppLogo copy 1.jpg",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"

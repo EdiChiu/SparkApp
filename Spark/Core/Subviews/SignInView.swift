@@ -5,6 +5,7 @@
 //  Created by Diego Lagunas on 11/19/24.
 //
 import SwiftUI
+import FirebaseAuth
 
 struct SignInView: View {
     @StateObject private var viewModel = SignInViewModel()
@@ -18,7 +19,7 @@ struct SignInView: View {
             Spacer()
                 .frame(height: 100)
             
-            Image("AppLogo")
+            Image("PNGAppLogo")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 80, height: 80)
@@ -58,6 +59,14 @@ struct SignInView: View {
             )
             .padding(.horizontal)
             
+            if let errorMessage = viewModel.errorMessage {
+                Text(errorMessage)
+                    .foregroundColor(.red)
+                    .font(.subheadline)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                }
+            
             //Forgot Password Button
             Button(action: {
      
@@ -74,9 +83,11 @@ struct SignInView: View {
                 Task {
                     do {
                         try await viewModel.signIn()
-                        onAuthFlowChange(.mainApp)
-                        return
+                        if viewModel.errorMessage == nil {
+                            onAuthFlowChange(.mainApp)
+                        }
                     } catch {
+                        viewModel.errorMessage = error.localizedDescription
                         print("Unable to sign in \(error)")
                     }
                 }

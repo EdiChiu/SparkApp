@@ -5,8 +5,9 @@
 //  Created by Diego Lagunas on 11/19/24.
 //
 import SwiftUI
+import FirebaseAuth
 struct SignUpView: View {
-    
+    @State private var showError = false
     @StateObject private var viewModel = SignInViewModel()
     @ObservedObject var profileViewModel: ProfileViewModel
     var onAuthFlowChange: (RootView.AuthFlow) -> Void
@@ -19,7 +20,7 @@ struct SignUpView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Image("AppLogo")
+            Image("PNGAppLogo")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 80, height: 80)
@@ -58,7 +59,7 @@ struct SignUpView: View {
             if let errorMessage = viewModel.errorMessage {
                 Text(errorMessage)
                     .foregroundColor(.red)
-                    .font(.caption)
+                    .font(.subheadline)
                     .padding(.top, 10)
             }
             
@@ -67,14 +68,18 @@ struct SignUpView: View {
                 Task {
                     do {
                         try await viewModel.signUp()
-                        profileViewModel.firstName = firstName
-                        profileViewModel.lastName = lastName
-                        profileViewModel.userName = userName
-                        profileViewModel.email = viewModel.email
-                        try await profileViewModel.saveUserProfile()
-                        onAuthFlowChange(.mainApp)
+                        if Auth.auth().currentUser != nil {
+                            profileViewModel.firstName = firstName
+                            profileViewModel.lastName = lastName
+                            profileViewModel.userName = userName
+                            profileViewModel.email = viewModel.email
+                            try await profileViewModel.saveUserProfile()
+                            onAuthFlowChange(.mainApp)
+                        } else {
+                            print("Error: User is not authenticated after sign-up.")
+                        }
                     } catch {
-                        print("Unable to sign up \(error)")
+                        print("Unable to sign up: \(error.localizedDescription)")
                     }
                 }
             } label: {
@@ -87,7 +92,6 @@ struct SignUpView: View {
                     )
                     .foregroundColor(.white)
             }
-            
             Button(action: {
                 onAuthFlowChange(.signIn) // Navigate to Sign In view
             }) {

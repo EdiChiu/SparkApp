@@ -12,7 +12,7 @@ struct AuthenticationView: View {
 
     var body: some View {
         VStack(spacing: 40) {
-            Image("AppLogo")
+            Image("PNGAppLogo")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 150, height: 150)

@@ -8,7 +8,7 @@ import SwiftUI
 struct SettingsView: View {
     
     @StateObject private var viewModel = SettingsViewModel()
-    @Binding var showSignInView: Bool
+    @Binding var authFlow: RootView.AuthFlow
     
     var body: some View {
             List {
@@ -16,7 +16,7 @@ struct SettingsView: View {
                     Task {
                         do {
                             try viewModel.signOut()
-                            showSignInView = true
+                            authFlow = .authentication
                         } catch {
                             print(error)
                         }
@@ -30,7 +30,7 @@ struct SettingsView: View {
                     Task {
                         do {
                             try await viewModel.deleteAccount()
-                            showSignInView = true
+                            authFlow = .authentication
                         } catch {
                             print(error)
                         }
@@ -51,7 +51,9 @@ struct SettingsView: View {
 }
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(showSignInView: .constant(false ))
+        NavigationStack {
+            SettingsView(authFlow: .constant(.mainApp))
+        }
     }
 }
 extension SettingsView {

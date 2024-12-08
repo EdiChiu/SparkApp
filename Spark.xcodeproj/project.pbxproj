@@ -61,7 +61,6 @@
 				Assets/Assets.xcassets,
 				Assets/TabBar/CustomTabBar.swift,
 				Assets/TabBar/TabBarButtons.swift,
-				ContentView.swift,
 				Core/Authentication/AuthenticationManager.swift,
 				Core/Authentication/SignInViewModel.swift,
 				Core/RootView.swift,
@@ -91,7 +90,6 @@
 		854DBFB02CE8603F00BF118B /* Exceptions for "Spark" folder in "SparkUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				ContentView.swift,
 				"Preview Content/Preview Assets.xcassets",
 				SharedData.swift,
 				SparkApp.swift,

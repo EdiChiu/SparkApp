@@ -51,7 +51,7 @@ struct ProfileView: View {
                     NavigationLink(destination: Text("Notifications")) {
                         SettingsRow(label: "Notifications", icon: "bell")
                     }
-                    NavigationLink(destination: Text("Calendar")) {
+                    NavigationLink(destination: CurrentEventsView()) {
                         SettingsRow(label: "Calendar", icon: "calendar")
                     }
                 }

@@ -94,6 +94,8 @@
 				"Preview Content/Preview Assets.xcassets",
 				SharedData.swift,
 				SparkApp.swift,
+				Tabs/FriendsAvailableTab/FriendsAvailable/FriendsAvailableView.swift,
+				Tabs/FriendsAvailableTab/FriendsAvailable/FriendsAvailableViewModel.swift,
 			);
 			target = 854DBF852CE8600A00BF118B /* SparkUITests */;
 		};
@@ -511,10 +513,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Spark/Preview Content\"";
-				DEVELOPMENT_TEAM = HLJN8S8QKQ;
+				DEVELOPMENT_TEAM = 8C738HF5A4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to your calendar data to help your friends view your availability and status.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to your calendar to display upcoming events and show other users your availability. ";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -542,10 +544,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Spark/Preview Content\"";
-				DEVELOPMENT_TEAM = HLJN8S8QKQ;
+				DEVELOPMENT_TEAM = 8C738HF5A4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to your calendar data to help your friends view your availability and status.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to your calendar to display upcoming events and show other users your availability. ";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

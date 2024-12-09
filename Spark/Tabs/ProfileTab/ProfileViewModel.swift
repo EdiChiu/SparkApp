@@ -130,6 +130,23 @@ class ProfileViewModel: ObservableObject {
         fetchUpcomingMonthEvents()  // Fetch events for a month when the profile is saved
     }
     
+    func fetchUserProfile() async throws {
+            guard let currentUser = Auth.auth().currentUser else {
+                throw NSError(domain: "No User Logged In", code: 401, userInfo: nil)
+            }
+
+            let userDocRef = db.collection("users").document(currentUser.uid)
+            let snapshot = try await userDocRef.getDocument()
+            guard let data = snapshot.data() else { return }
+
+            DispatchQueue.main.async {
+                self.userName = data["userName"] as? String ?? "Unknown"
+                self.firstName = data["firstName"] as? String ?? "Unknown"
+                self.lastName = data["lastName"] as? String ?? "Unknown"
+                self.email = data["email"] as? String ?? "Unknown"
+            }
+        }
+    
     deinit {
         NotificationCenter.default.removeObserver(self, name: .EKEventStoreChanged, object: eventStore)
     }

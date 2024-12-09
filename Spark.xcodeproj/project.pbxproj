@@ -21,9 +21,9 @@
 		5A3E199F2CEB2D2F00A24999 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 5A3E199E2CEB2D2F00A24999 /* FirebaseRemoteConfig */; };
 		5A3E19A12CEB2D2F00A24999 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 5A3E19A02CEB2D2F00A24999 /* FirebaseStorage */; };
 		5A3E19A32CEB2D2F00A24999 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 5A3E19A22CEB2D2F00A24999 /* FirebaseStorageCombine-Community */; };
-		5A4897E52D0689F6004CB493 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 5A4897E42D0689F6004CB493 /* FirebaseMessaging */; };
-		5A4897E92D06B88B004CB493 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 5A4897E82D06B88B004CB493 /* FirebaseAnalytics */; };
 		854DBFD12CE861C700BF118B /* CalendarKit in Frameworks */ = {isa = PBXBuildFile; productRef = 854DBFD02CE861C700BF118B /* CalendarKit */; };
+		85E0BE0B2D076DA1006146DB /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 85E0BE0A2D076DA1006146DB /* FirebaseAnalytics */; };
+		85E0BE0D2D076DA1006146DB /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 85E0BE0C2D076DA1006146DB /* FirebaseMessaging */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +75,8 @@
 				"Preview Content/Preview Assets.xcassets",
 				SharedData.swift,
 				SparkApp.swift,
+				Tabs/EventsTab/EventsModel.swift,
+				Tabs/EventsTab/EventsViewModel.swift,
 				Tabs/FriendsAvailableTab/AddUsers/AddUserView.swift,
 				Tabs/FriendsAvailableTab/AddUsers/AddUserViewModel.swift,
 				Tabs/FriendsAvailableTab/AddUsers/AppUserModel.swift,
@@ -93,12 +95,9 @@
 		854DBFB02CE8603F00BF118B /* Exceptions for "Spark" folder in "SparkUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
 				"Preview Content/Preview Assets.xcassets",
 				SharedData.swift,
 				SparkApp.swift,
-				Tabs/FriendsAvailableTab/FriendsAvailable/FriendsAvailableView.swift,
-				Tabs/FriendsAvailableTab/FriendsAvailable/FriendsAvailableViewModel.swift,
 			);
 			target = 854DBF852CE8600A00BF118B /* SparkUITests */;
 		};
@@ -132,18 +131,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5A4897E52D0689F6004CB493 /* FirebaseMessaging in Frameworks */,
 				5A3E19892CEB2D2F00A24999 /* FirebaseAppCheck in Frameworks */,
 				854DBFD12CE861C700BF118B /* CalendarKit in Frameworks */,
 				5A3E199D2CEB2D2F00A24999 /* FirebasePerformance in Frameworks */,
 				5A3E198B2CEB2D2F00A24999 /* FirebaseAppDistribution-Beta in Frameworks */,
 				5A3E19972CEB2D2F00A24999 /* FirebaseFirestoreCombine-Community in Frameworks */,
-				5A4897E92D06B88B004CB493 /* FirebaseAnalytics in Frameworks */,
 				5A3E198D2CEB2D2F00A24999 /* FirebaseAuth in Frameworks */,
 				5A3E19912CEB2D2F00A24999 /* FirebaseCore in Frameworks */,
 				5A3E19A32CEB2D2F00A24999 /* FirebaseStorageCombine-Community in Frameworks */,
 				5A3E199B2CEB2D2F00A24999 /* FirebaseInAppMessaging-Beta in Frameworks */,
+				85E0BE0D2D076DA1006146DB /* FirebaseMessaging in Frameworks */,
 				5A3E19952CEB2D2F00A24999 /* FirebaseFirestore in Frameworks */,
+				85E0BE0B2D076DA1006146DB /* FirebaseAnalytics in Frameworks */,
 				5A3E19992CEB2D2F00A24999 /* FirebaseFunctions in Frameworks */,
 				5A3E199F2CEB2D2F00A24999 /* FirebaseRemoteConfig in Frameworks */,
 				5A3E19A12CEB2D2F00A24999 /* FirebaseStorage in Frameworks */,
@@ -229,8 +228,8 @@
 				5A3E199E2CEB2D2F00A24999 /* FirebaseRemoteConfig */,
 				5A3E19A02CEB2D2F00A24999 /* FirebaseStorage */,
 				5A3E19A22CEB2D2F00A24999 /* FirebaseStorageCombine-Community */,
-				5A4897E42D0689F6004CB493 /* FirebaseMessaging */,
-				5A4897E82D06B88B004CB493 /* FirebaseAnalytics */,
+				85E0BE0A2D076DA1006146DB /* FirebaseAnalytics */,
+				85E0BE0C2D076DA1006146DB /* FirebaseMessaging */,
 			);
 			productName = Spark;
 			productReference = 854DBF6C2CE8600800BF118B /* Spark.app */;
@@ -517,15 +516,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Spark/Spark.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Spark/Preview Content\"";
-				DEVELOPMENT_TEAM = 8C738HF5A4;
+				DEVELOPMENT_TEAM = HLJN8S8QKQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Spark/Info.plist;
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to your calendar to display upcoming events and show other users your availability. ";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to your calendar data to help your friends view your availability and status.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -539,13 +537,9 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ecc.Spark;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -554,15 +548,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Spark/Spark.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Spark/Preview Content\"";
-				DEVELOPMENT_TEAM = 8C738HF5A4;
+				DEVELOPMENT_TEAM = HLJN8S8QKQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Spark/Info.plist;
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to your calendar to display upcoming events and show other users your availability. ";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to your calendar data to help your friends view your availability and status.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -576,13 +569,9 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ecc.Spark;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -785,20 +774,20 @@
 			package = 5A3E19872CEB2D2F00A24999 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseStorageCombine-Community";
 		};
-		5A4897E42D0689F6004CB493 /* FirebaseMessaging */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5A3E19872CEB2D2F00A24999 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseMessaging;
-		};
-		5A4897E82D06B88B004CB493 /* FirebaseAnalytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5A3E19872CEB2D2F00A24999 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
-		};
 		854DBFD02CE861C700BF118B /* CalendarKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 854DBFCF2CE861C700BF118B /* XCRemoteSwiftPackageReference "CalendarKit" */;
 			productName = CalendarKit;
+		};
+		85E0BE0A2D076DA1006146DB /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A3E19872CEB2D2F00A24999 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		85E0BE0C2D076DA1006146DB /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A3E19872CEB2D2F00A24999 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

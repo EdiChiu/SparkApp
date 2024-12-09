@@ -21,6 +21,7 @@
 		5A3E199F2CEB2D2F00A24999 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 5A3E199E2CEB2D2F00A24999 /* FirebaseRemoteConfig */; };
 		5A3E19A12CEB2D2F00A24999 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 5A3E19A02CEB2D2F00A24999 /* FirebaseStorage */; };
 		5A3E19A32CEB2D2F00A24999 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 5A3E19A22CEB2D2F00A24999 /* FirebaseStorageCombine-Community */; };
+		5A4897E52D0689F6004CB493 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 5A4897E42D0689F6004CB493 /* FirebaseMessaging */; };
 		854DBFD12CE861C700BF118B /* CalendarKit in Frameworks */ = {isa = PBXBuildFile; productRef = 854DBFD02CE861C700BF118B /* CalendarKit */; };
 /* End PBXBuildFile section */
 
@@ -91,6 +92,7 @@
 		854DBFB02CE8603F00BF118B /* Exceptions for "Spark" folder in "SparkUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Info.plist,
 				"Preview Content/Preview Assets.xcassets",
 				SharedData.swift,
 				SparkApp.swift,
@@ -129,6 +131,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A4897E52D0689F6004CB493 /* FirebaseMessaging in Frameworks */,
 				5A3E19892CEB2D2F00A24999 /* FirebaseAppCheck in Frameworks */,
 				854DBFD12CE861C700BF118B /* CalendarKit in Frameworks */,
 				5A3E199D2CEB2D2F00A24999 /* FirebasePerformance in Frameworks */,
@@ -224,6 +227,7 @@
 				5A3E199E2CEB2D2F00A24999 /* FirebaseRemoteConfig */,
 				5A3E19A02CEB2D2F00A24999 /* FirebaseStorage */,
 				5A3E19A22CEB2D2F00A24999 /* FirebaseStorageCombine-Community */,
+				5A4897E42D0689F6004CB493 /* FirebaseMessaging */,
 			);
 			productName = Spark;
 			productReference = 854DBF6C2CE8600800BF118B /* Spark.app */;
@@ -510,12 +514,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Spark/Spark.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Spark/Preview Content\"";
 				DEVELOPMENT_TEAM = 8C738HF5A4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Spark/Info.plist;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to your calendar to display upcoming events and show other users your availability. ";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -530,9 +536,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ecc.Spark;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -541,12 +551,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Spark/Spark.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Spark/Preview Content\"";
 				DEVELOPMENT_TEAM = 8C738HF5A4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Spark/Info.plist;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "Spark needs access to your calendar to display upcoming events and show other users your availability. ";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -561,9 +573,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ecc.Spark;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -765,6 +781,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5A3E19872CEB2D2F00A24999 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseStorageCombine-Community";
+		};
+		5A4897E42D0689F6004CB493 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A3E19872CEB2D2F00A24999 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 		854DBFD02CE861C700BF118B /* CalendarKit */ = {
 			isa = XCSwiftPackageProductDependency;

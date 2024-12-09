@@ -22,6 +22,7 @@
 		5A3E19A12CEB2D2F00A24999 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 5A3E19A02CEB2D2F00A24999 /* FirebaseStorage */; };
 		5A3E19A32CEB2D2F00A24999 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 5A3E19A22CEB2D2F00A24999 /* FirebaseStorageCombine-Community */; };
 		5A4897E52D0689F6004CB493 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 5A4897E42D0689F6004CB493 /* FirebaseMessaging */; };
+		5A4897E92D06B88B004CB493 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 5A4897E82D06B88B004CB493 /* FirebaseAnalytics */; };
 		854DBFD12CE861C700BF118B /* CalendarKit in Frameworks */ = {isa = PBXBuildFile; productRef = 854DBFD02CE861C700BF118B /* CalendarKit */; };
 /* End PBXBuildFile section */
 
@@ -137,6 +138,7 @@
 				5A3E199D2CEB2D2F00A24999 /* FirebasePerformance in Frameworks */,
 				5A3E198B2CEB2D2F00A24999 /* FirebaseAppDistribution-Beta in Frameworks */,
 				5A3E19972CEB2D2F00A24999 /* FirebaseFirestoreCombine-Community in Frameworks */,
+				5A4897E92D06B88B004CB493 /* FirebaseAnalytics in Frameworks */,
 				5A3E198D2CEB2D2F00A24999 /* FirebaseAuth in Frameworks */,
 				5A3E19912CEB2D2F00A24999 /* FirebaseCore in Frameworks */,
 				5A3E19A32CEB2D2F00A24999 /* FirebaseStorageCombine-Community in Frameworks */,
@@ -228,6 +230,7 @@
 				5A3E19A02CEB2D2F00A24999 /* FirebaseStorage */,
 				5A3E19A22CEB2D2F00A24999 /* FirebaseStorageCombine-Community */,
 				5A4897E42D0689F6004CB493 /* FirebaseMessaging */,
+				5A4897E82D06B88B004CB493 /* FirebaseAnalytics */,
 			);
 			productName = Spark;
 			productReference = 854DBF6C2CE8600800BF118B /* Spark.app */;
@@ -786,6 +789,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5A3E19872CEB2D2F00A24999 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		5A4897E82D06B88B004CB493 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A3E19872CEB2D2F00A24999 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
 		};
 		854DBFD02CE861C700BF118B /* CalendarKit */ = {
 			isa = XCSwiftPackageProductDependency;

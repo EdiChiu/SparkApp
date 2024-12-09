@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 struct ProfileView: View {
     @State private var Title = "Profile"
@@ -15,11 +16,12 @@ struct ProfileView: View {
     
     var body: some View {
         VStack(spacing: 15) {
-
-            // Title
-            Text(Title)
-                .font(.title)
-                .fontWeight(.bold)
+            
+            if !viewModel.userName.isEmpty {
+                Text("Username: \(viewModel.userName)")
+                    .font(.headline)
+                    .padding()
+            }
             
             // Availability Toggle
             Toggle("Do Not Disturb", isOn: $isAvailable)
@@ -47,6 +49,12 @@ struct ProfileView: View {
             }
             .listStyle(GroupedListStyle())
             .padding(.top, 10)
+        }
+        .onAppear {
+            // Fetch profile details, including username
+            Task {
+                try await viewModel.saveUserProfile()
+            }
         }
         .navigationTitle("Profile")
         .padding()

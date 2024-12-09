@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct CreateEventScreen: View {
     @State private var eventName: String = ""
@@ -15,6 +16,7 @@ struct CreateEventScreen: View {
     @State private var durationMinutes: Int = 0
     var selectedFriends: [String] // Array of selected friend UIDs
     @EnvironmentObject var viewModel: FriendsAvailableViewModel
+    @EnvironmentObject var eventsViewModel: EventsViewModel
 
     // Computed property to check if the form is valid
     private var isFormComplete: Bool {
@@ -186,10 +188,12 @@ struct CreateEventScreen: View {
             }
             .padding(.horizontal, 20)
             .padding(.top, 10)
+            .padding(.bottom, 80)
         }
         .background(Color(.systemGroupedBackground))
         .edgesIgnoringSafeArea(.bottom)
         .navigationBarTitleDisplayMode(.inline)
+        
     }
     //Functions used to connect go Firebase
     func sendNotifications(invitedTokens: [String], eventTitle: String) {
@@ -219,4 +223,29 @@ struct CreateEventScreen: View {
             }
         }.resume()
     }
+    
+    private func createEvent() {
+            let duration = (durationHours * 3600) + (durationMinutes * 60)
+            let newEvent = UserEvent(
+                id: UUID().uuidString,
+                title: eventName,
+                location: location,
+                description: description,
+                duration: duration,
+                creatorUID: Auth.auth().currentUser?.uid ?? "",
+                participantsUIDs: selectedFriends,
+                status: .pending
+            )
+
+            eventsViewModel.addEvent(event: newEvent)
+            resetForm()
+        }
+
+        private func resetForm() {
+            eventName = ""
+            location = ""
+            description = ""
+            durationHours = 0
+            durationMinutes = 0
+        }
 }

@@ -146,15 +146,6 @@ class ProfileViewModel: ObservableObject {
                 self.email = data["email"] as? String ?? "Unknown"
             }
         }
-
-        func saveUsername() async throws {
-            guard let currentUser = Auth.auth().currentUser else {
-                throw NSError(domain: "No User Logged In", code: 401, userInfo: nil)
-            }
-
-            let userDocRef = db.collection("users").document(currentUser.uid)
-            try await userDocRef.setData(["userName": self.userName], merge: true)
-    }
     
     deinit {
         NotificationCenter.default.removeObserver(self, name: .EKEventStoreChanged, object: eventStore)

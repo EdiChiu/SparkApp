@@ -1,121 +1,8 @@
-////
-////  ProfileView.swift
-////  Spark
-////
-////  Created by Edison Chiu on 11/15/24.
-////
 //
-//import SwiftUI
-//import FirebaseFirestore
+//  ProfileView.swift
+//  Spark
 //
-//struct ProfileView: View {
-//    @StateObject private var viewModel = ProfileViewModel()
-//    @Binding var authFlow: RootView.AuthFlow
-//    @State private var isEditingUsername = false
-//
-//    var body: some View {
-//        VStack(spacing: 15) {
-//            
-//            // User Info Section
-//            VStack(alignment: .leading, spacing: 10) {
-//                Text("First Name: \(viewModel.firstName)")
-//                    .font(.headline)
-//                Text("Last Name: \(viewModel.lastName)")
-//                    .font(.headline)
-//                Text("Email: \(viewModel.email)")
-//                    .font(.subheadline)
-//                    .foregroundColor(.gray)
-//            }
-//            .padding()
-//
-//            // Username Section
-//            HStack {
-//                if isEditingUsername {
-//                    TextField("Enter new username", text: $viewModel.userName)
-//                        .textFieldStyle(RoundedBorderTextFieldStyle())
-//                        .padding(.trailing, 10)
-//                } else {
-//                    Text("Username: \(viewModel.userName)")
-//                        .font(.headline)
-//                }
-//                Button(isEditingUsername ? "Save" : "Edit") {
-//                    if isEditingUsername {
-//                        saveUsername()
-//                    }
-//                    isEditingUsername.toggle()
-//                }
-//                .buttonStyle(BorderlessButtonStyle())
-//            }
-//            .padding()
-//
-//            // Availability Toggle ADD HERE
-//            
-//            // Upcoming Events Section
-//            List {
-//                Section(header: Text("Settings")) {
-//                    NavigationLink(destination: SettingsView(authFlow: $authFlow)) {
-//                        Label("Account", systemImage: "person")
-//                    }
-//                    NavigationLink(destination: Text("Privacy Settings")) {
-//                        Label("Privacy", systemImage: "lock")
-//                    }
-//                    NavigationLink(destination: Text("Notifications")) {
-//                        Label("Notifications", systemImage: "bell")
-//                    }
-//                    NavigationLink(destination: Text("Calendar")) {
-//                        Label("Calendar", systemImage: "calendar")
-//                    }
-//                }
-//            }
-//            .listStyle(GroupedListStyle())
-//            .padding(.top, 10)
-//        }
-//        .navigationTitle("Profile")
-//        .padding()
-//        .onAppear {
-//            fetchUserProfile()
-//        }
-//    }
-//    
-//    private func fetchUserProfile() {
-//        Task {
-//            do {
-//                try await viewModel.fetchUserProfile()
-//            } catch {
-//                print("Error fetching user profile: \(error.localizedDescription)")
-//            }
-//        }
-//    }
-//
-//    private func saveUsername() {
-//        Task {
-//            do {
-//                try await viewModel.saveUsername()
-//                print("Username successfully updated!")
-//            } catch {
-//                print("Error saving username: \(error.localizedDescription)")
-//            }
-//        }
-//    }
-//}
-//
-//// Date formatter for events
-//private let eventDateFormatter: DateFormatter = {
-//    let formatter = DateFormatter()
-//    formatter.dateStyle = .short
-//    formatter.timeStyle = .short
-//    return formatter
-//}()
-//
-//struct ProfileView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        NavigationStack {
-//            ProfileView(authFlow: .constant(.mainApp))
-//        }
-//    }
-//}
-//
-//
+//  Created by Edison Chiu on 11/15/24.
 //
 
 import SwiftUI
@@ -124,44 +11,26 @@ import FirebaseFirestore
 struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
     @Binding var authFlow: RootView.AuthFlow
-    @State private var isEditingUsername = false
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
+        ZStack(alignment: .top) {
+            // Background Color
+            Color(UIColor.systemGroupedBackground)
+                .edgesIgnoringSafeArea(.all)
+
+            VStack(spacing: 15) {
+                // Title Section
+                Text("Profile")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .padding(.top, 40)
+
                 // User Details Section
-                VStack(alignment: .leading, spacing: 15) {
+                VStack(alignment: .leading, spacing: 10) {
                     DetailRow(label: "First Name", value: viewModel.firstName)
                     DetailRow(label: "Last Name", value: viewModel.lastName)
                     DetailRow(label: "Email", value: viewModel.email)
-                    
-                    HStack {
-                        Text("Username")
-                            .font(.headline)
-                            .foregroundColor(.gray)
-                        Spacer()
-                        if isEditingUsername {
-                            TextField("Enter new username", text: $viewModel.userName)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                        } else {
-                            Text(viewModel.userName)
-                                .font(.body)
-                        }
-                        Button(action: {
-                            if isEditingUsername {
-                                saveUsername()
-                            }
-                            isEditingUsername.toggle()
-                        }) {
-                            Text(isEditingUsername ? "Save" : "Edit")
-                                .font(.subheadline)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 5)
-                                .background(isEditingUsername ? Color.green : Color.blue)
-                                .foregroundColor(.white)
-                                .cornerRadius(8)
-                        }
-                    }
+                    DetailRow(label: "Username", value: viewModel.userName)
                 }
                 .padding()
                 .background(
@@ -188,11 +57,10 @@ struct ProfileView: View {
                 }
                 .padding()
             }
-        }
-        .navigationTitle("Profile")
-        .background(Color(UIColor.systemGroupedBackground).edgesIgnoringSafeArea(.all))
-        .onAppear {
-            fetchUserProfile()
+            .navigationBarHidden(true) // Hide default navigation bar
+            .onAppear {
+                fetchUserProfile()
+            }
         }
     }
     
@@ -202,17 +70,6 @@ struct ProfileView: View {
                 try await viewModel.fetchUserProfile()
             } catch {
                 print("Error fetching user profile: \(error.localizedDescription)")
-            }
-        }
-    }
-
-    private func saveUsername() {
-        Task {
-            do {
-                try await viewModel.saveUsername()
-                print("Username successfully updated!")
-            } catch {
-                print("Error saving username: \(error.localizedDescription)")
             }
         }
     }
@@ -244,9 +101,11 @@ struct SettingsRow: View {
     var body: some View {
         HStack {
             Image(systemName: icon)
-                .foregroundColor(.blue)
+                .foregroundColor(.orange)
+                .frame(width: 30) // Fixed width for icons
             Text(label)
                 .font(.headline)
+                .foregroundColor(.black)
             Spacer()
             Image(systemName: "chevron.right")
                 .foregroundColor(.gray)
@@ -259,7 +118,6 @@ struct SettingsRow: View {
         )
     }
 }
-
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {

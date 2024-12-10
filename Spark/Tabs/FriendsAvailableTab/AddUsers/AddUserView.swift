@@ -72,15 +72,16 @@ struct AddUserView: View {
                                         popupMessage = "\(user.userName) has been added to your friends list!"
                                         showPopup = true
                                     }) {
-                                        Text("Add")
+                                        Text(viewModel.addedUsers[user.uid] == true ? "Added" : "Add")
                                             .font(.body)
                                             .foregroundColor(.white)
                                             .padding(.vertical, 8)
                                             .padding(.horizontal, 16)
-                                            .background(Color.blue)
+                                            .background(viewModel.addedUsers[user.uid] == true ? Color.gray : Color.blue)
                                             .cornerRadius(8)
                                             .shadow(radius: 2)
                                     }
+                                    .disabled(viewModel.addedUsers[user.uid] == true)
                                 }
                                 .padding()
                                 .background(Color.white)

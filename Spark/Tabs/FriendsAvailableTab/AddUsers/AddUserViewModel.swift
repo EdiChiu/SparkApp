@@ -5,6 +5,7 @@ import FirebaseFirestore
 class AddUserViewModel: ObservableObject {
     @Published var users: [AppUser] = []
     @Published var filteredUsers: [AppUser] = []
+    @Published var addedUsers: [String: Bool] = [:]
     private let db = Firestore.firestore()
     
     // Fetch all users from Firestore
@@ -56,7 +57,10 @@ class AddUserViewModel: ObservableObject {
         
         let currentUserRef = db.collection("users").document(currentUserId)
         let targetUserRef = db.collection("users").document(uid)
-        
+        guard addedUsers[uid] != true else {
+            return
+        }
+        addedUsers[uid] = true
         // Update the current user's "friends" array
         currentUserRef.updateData([
             "friends": FieldValue.arrayUnion([uid])

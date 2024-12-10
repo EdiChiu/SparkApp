@@ -5,6 +5,7 @@
 //  Created by 10 GO Participant on 11/25/24.
 //
 import Foundation
+import FirebaseAuth
 
 @MainActor
 final class SettingsViewModel: ObservableObject {
@@ -14,7 +15,9 @@ final class SettingsViewModel: ObservableObject {
     }
     
     func deleteAccount() async throws {
-        try await AuthenticationManager.shared.delete()
+        let userId = Auth.auth().currentUser?.uid ?? ""
+        try await ProfileViewModel().deleteProfileAndCleanup(userId: userId) // Clean up Firestore
+        try await AuthenticationManager.shared.delete() // Delete Firebase Authentication account
     }
     
     func resetPassword() async throws {

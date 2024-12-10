@@ -249,3 +249,4 @@ struct CreateEventScreen: View {
             durationMinutes = 0
         }
 }
+

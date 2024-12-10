@@ -67,23 +67,46 @@ class EventsViewModel: ObservableObject {
         guard let currentUser = Auth.auth().currentUser else { return }
 
         let userDocRef = db.collection("users").document(currentUser.uid)
-        do {
-            let eventData: [String: Any] = [
-                "id": event.id,
-                "title": event.title,
-                "location": event.location,
-                "description": event.description,
-                "duration": event.duration,
-                "creatorUID": event.creatorUID,
-                "participantsUIDs": event.participantsUIDs,
-                "status": event.status.rawValue
-            ]
-            
-            try userDocRef.updateData([
-                "userEvents": FieldValue.arrayUnion([eventData])
-            ])
-        } catch {
-            print("Error adding event: \(error.localizedDescription)")
+        let eventData: [String: Any] = [
+            "id": event.id,
+            "title": event.title,
+            "location": event.location,
+            "description": event.description,
+            "duration": event.duration,
+            "creatorUID": event.creatorUID,
+            "participantsUIDs": event.participantsUIDs,
+            "status": event.status.rawValue
+        ]
+
+        userDocRef.getDocument { snapshot, error in
+            if let error = error {
+                print("Error fetching user document: \(error.localizedDescription)")
+                return
+            }
+
+            if let data = snapshot?.data(), data["userEvents"] != nil {
+                // If the `userEvents` field exists, update it
+                userDocRef.updateData([
+                    "userEvents": FieldValue.arrayUnion([eventData])
+                ]) { error in
+                    if let error = error {
+                        print("Error adding event to existing userEvents: \(error.localizedDescription)")
+                    } else {
+                        print("Event successfully added to existing userEvents.")
+                    }
+                }
+            } else {
+                // If the `userEvents` field doesn't exist, create it
+                userDocRef.setData([
+                    "userEvents": [eventData]
+                ], merge: true) { error in
+                    if let error = error {
+                        print("Error initializing userEvents and adding event: \(error.localizedDescription)")
+                    } else {
+                        print("userEvents initialized and event successfully added.")
+                    }
+                }
+            }
         }
     }
 }

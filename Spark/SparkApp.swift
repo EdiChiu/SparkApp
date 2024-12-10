@@ -79,6 +79,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
 @main
 struct SparkApp: App {
+    
+    @StateObject private var eventsViewModel = EventsViewModel()
+    @StateObject private var friendsAvailableViewModel = FriendsAvailableViewModel()
+    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     init() {
             let appearance = UINavigationBarAppearance()
@@ -95,6 +99,8 @@ struct SparkApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .environmentObject(eventsViewModel)
+                .environmentObject(friendsAvailableViewModel)
         }
     }
 }

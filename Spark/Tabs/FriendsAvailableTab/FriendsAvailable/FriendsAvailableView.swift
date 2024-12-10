@@ -92,7 +92,9 @@ struct FriendsAvailableScreen: View {
                             .padding(.trailing, 5)
                     }
                 }
-
+                Spacer()
+                    .frame(height:20)
+                
                 // Friend List
                 if viewModel.isLoading {
                     ProgressView("Loading Friends...")

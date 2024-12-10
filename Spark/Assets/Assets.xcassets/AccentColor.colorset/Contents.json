@@ -1,7 +1,6 @@
 {
   "colors" : [
     {
-      "filename" : "LightLogo.jpg",
       "idiom" : "universal"
     },
     {
@@ -11,7 +10,6 @@
           "value" : "dark"
         }
       ],
-      "filename" : "DarkLogo.jpg",
       "idiom" : "universal"
     }
   ],

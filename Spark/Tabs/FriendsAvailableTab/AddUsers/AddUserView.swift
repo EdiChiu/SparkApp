@@ -11,6 +11,8 @@ import FirebaseFirestore
 struct AddUserView: View {
     @StateObject private var viewModel = AddUserViewModel()
     @State private var searchText: String = ""
+    @State private var showPopup: Bool = false
+    @State private var popupMessage: String = ""
 
     var body: some View {
         NavigationView {
@@ -65,9 +67,10 @@ struct AddUserView: View {
                                     }
 
                                     Spacer()
-
                                     Button(action: {
                                         viewModel.addFriend(to: user.uid)
+                                        popupMessage = "\(user.userName) has been added to your friends list!"
+                                        showPopup = true
                                     }) {
                                         Text("Add")
                                             .font(.body)
@@ -78,7 +81,6 @@ struct AddUserView: View {
                                             .cornerRadius(8)
                                             .shadow(radius: 2)
                                     }
-                                    .buttonStyle(PlainButtonStyle())
                                 }
                                 .padding()
                                 .background(Color.white)
@@ -91,6 +93,26 @@ struct AddUserView: View {
                 }
                 .background(Color(.systemGroupedBackground))
                 .frame(maxHeight: .infinity)
+                //used to display message if user is added
+                if showPopup {
+                    VStack {
+                        Text(popupMessage)
+                            .padding()
+                            .background(Color.black.opacity(0.8))
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                            .shadow(radius: 5)
+                            .transition(.opacity)
+                            .onAppear {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                    withAnimation {
+                                        showPopup = false
+                                    }
+                                }
+                            }
+                    }
+                    .padding(.bottom, 30)
+                }
             }
             .padding(.top)
             .background(Color(.systemBackground))

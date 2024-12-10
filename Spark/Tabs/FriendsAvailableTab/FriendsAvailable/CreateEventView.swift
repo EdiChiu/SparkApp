@@ -195,34 +195,34 @@ struct CreateEventScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         
     }
-    //Functions used to connect go Firebase
-    func sendNotifications(invitedTokens: [String], eventTitle: String) {
-        for token in invitedTokens {
-            sendNotification(to: token, title: "You're Invited!", body: "Join the event: \(eventTitle)")
-        }
-    }
-    func sendNotification(to token: String, title: String, body: String) {
-        guard let url = URL(string: "https://your-cloud-function-url") else { return }
-
-        let payload: [String: Any] = [
-            "token": token,
-            "title": title,
-            "body": body
-        ]
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONSerialization.data(withJSONObject: payload)
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("Error sending notification: \(error)")
-            } else {
-                print("Notification sent to token: \(token)")
-            }
-        }.resume()
-    }
+//    //Functions used to connect go Firebase
+//    func sendNotifications(invitedTokens: [String], eventTitle: String) {
+//        for token in invitedTokens {
+//            sendNotification(to: token, title: "You're Invited!", body: "Join the event: \(eventTitle)")
+//        }
+//    }
+//    func sendNotification(to token: String, title: String, body: String) {
+//        guard let url = URL(string: "https://your-cloud-function-url") else { return }
+//
+//        let payload: [String: Any] = [
+//            "token": token,
+//            "title": title,
+//            "body": body
+//        ]
+//
+//        var request = URLRequest(url: url)
+//        request.httpMethod = "POST"
+//        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+//        request.httpBody = try? JSONSerialization.data(withJSONObject: payload)
+//
+//        URLSession.shared.dataTask(with: request) { data, response, error in
+//            if let error = error {
+//                print("Error sending notification: \(error)")
+//            } else {
+//                print("Notification sent to token: \(token)")
+//            }
+//        }.resume()
+//    }
     
     private func createEvent() {
             let duration = (durationHours * 3600) + (durationMinutes * 60)
@@ -249,3 +249,4 @@ struct CreateEventScreen: View {
             durationMinutes = 0
         }
 }
+

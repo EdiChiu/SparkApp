@@ -10,7 +10,8 @@ import SwiftUI
 struct FriendsAvailableScreen: View {
     @StateObject private var viewModel = FriendsAvailableViewModel()
     @State private var selectedFriends: [String] = [] // Store selected friend UIDs
-
+    @State private var searchText: String = ""
+    
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -36,7 +37,8 @@ struct FriendsAvailableScreen: View {
                 Text("Friends Available")
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(.primary)
-                    .padding(.top, 10)
+                    .padding(.top)
+                
 
                 // Filter Buttons
                 HStack(spacing: 15) {
@@ -75,19 +77,34 @@ struct FriendsAvailableScreen: View {
                     }
                 }
                 .padding()
+                
+                // Search Bar
+                TextField("Search Friends", text: $viewModel.searchQuery)
+                    .padding(10)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(8)
+                    .padding(.horizontal, 30)
+                
+                if !searchText.isEmpty {
+                    Button(action: { searchText = "" }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.gray)
+                            .padding(.trailing, 5)
+                    }
+                }
 
                 // Friend List
                 if viewModel.isLoading {
                     ProgressView("Loading Friends...")
                         .padding(.top, 20)
-                } else if viewModel.friends.isEmpty {
+                } else if viewModel.filteredFriends().isEmpty {
                     Text("No friends available.")
                         .padding(.top, 20)
                         .foregroundColor(.secondary)
                 } else {
                     ScrollView {
                         VStack(spacing: 15) {
-                            ForEach(viewModel.friends, id: \.uid) { friend in
+                            ForEach(viewModel.filteredFriends(), id: \.uid) { friend in
                                 SelectableFriendRow(
                                     name: friend.name,
                                     statusColor: colorForStatus(friend.status),
@@ -130,6 +147,9 @@ struct FriendsAvailableScreen: View {
                 .disabled(selectedFriends.isEmpty) // Disable if no friends selected
                 .padding(.bottom, 20)
             }
+//            .onChange(of: searchText) { _ in
+//                viewModel.friends(by: searchText)
+//            }
             .background(Color(.systemBackground).edgesIgnoringSafeArea(.all))
             .onAppear {
                 viewModel.fetchFriends()

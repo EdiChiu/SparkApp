@@ -170,9 +170,7 @@ struct CreateEventScreen: View {
 
                 // Submit Button
                 Button(action: {
-                    let duration = (durationHours * 3600) + (durationMinutes * 60)
-                    print("Event Created: \(eventName), Duration: \(duration) seconds, \(location), \(description)")
-                    print("Invited Friends: \(selectedFriends)")
+                    createEvent()
                 }) {
                     Text("Create Event")
                         .foregroundColor(.white)

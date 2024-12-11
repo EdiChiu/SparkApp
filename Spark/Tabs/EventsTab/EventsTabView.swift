@@ -55,20 +55,27 @@ struct EventCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(event.title)
-                .font(.headline)
-                .fontWeight(.bold)
+            // Title and "Pending" badge
+            HStack {
+                Text(event.title)
+                    .font(.headline)
+                    .fontWeight(.bold)
 
-            // Display "Pending" only if there are still pending participants
-            if !event.pendingParticipants.isEmpty {
-                Text("Pending")
-                    .font(.caption)
-                    .padding(5)
-                    .background(Color.yellow.opacity(0.2))
-                    .cornerRadius(8)
+                Spacer()
+
+                // Show "Pending" button if there are pending participants
+                if !event.pendingParticipants.isEmpty {
+                    Text("Pending")
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .padding(5)
+                        .background(Color.yellow.opacity(0.2))
+                        .foregroundColor(.yellow)
+                        .cornerRadius(8)
+                }
             }
 
-            // Display location and duration
+            // Location and duration
             if !event.location.isEmpty {
                 Text("Location: \(event.location)")
                     .font(.subheadline)
@@ -81,7 +88,7 @@ struct EventCard: View {
                 .font(.subheadline)
                 .foregroundColor(.gray)
 
-            // Show Accept/Deny buttons for pending participants
+            // Accept/Deny buttons for pending participants
             if event.pendingParticipants.contains(Auth.auth().currentUser?.uid ?? ""), !hasResponded {
                 HStack {
                     Button(action: {
@@ -89,17 +96,22 @@ struct EventCard: View {
                         hasResponded = true
                     }) {
                         Text("Accept")
-                            .padding()
+                            .font(.caption)
+                            .padding(.horizontal, 15)
+                            .padding(.vertical, 6)
                             .background(Color.green)
                             .cornerRadius(8)
                             .foregroundColor(.white)
                     }
+
                     Button(action: {
                         eventsViewModel.denyEvent(event: event)
                         hasResponded = true
                     }) {
                         Text("Deny")
-                            .padding()
+                            .font(.caption)
+                            .padding(.horizontal, 15)
+                            .padding(.vertical, 6)
                             .background(Color.red)
                             .cornerRadius(8)
                             .foregroundColor(.white)
@@ -108,11 +120,14 @@ struct EventCard: View {
             }
         }
         .padding()
+        .frame(maxWidth: .infinity, alignment: .leading) // Full-width card
         .background(Color.white)
         .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 4)
+        .padding(.horizontal) // Add spacing between cards and screen edges
     }
 }
+
 struct EventDetailView: View {
     let event: UserEvent
     @EnvironmentObject var eventsViewModel: EventsViewModel

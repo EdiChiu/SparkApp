@@ -18,6 +18,7 @@ class FriendsAvailableViewModel: ObservableObject {
 
     @Published var friends: [Friend] = [] // Store friends as structs containing uid, name, and status
     @Published var isLoading: Bool = false
+    @Published var searchQuery: String = ""
 
     private var db = Firestore.firestore()
     private var currentUserID: String
@@ -160,4 +161,12 @@ class FriendsAvailableViewModel: ObservableObject {
     func filterFriends(by status: String) -> [Friend] {
         return friends.filter { $0.status.lowercased() == status.lowercased() }
     }
+    
+    func filteredFriends() -> [Friend] {
+            if searchQuery.isEmpty {
+                return friends // Return all friends if the search query is empty
+            } else {
+                return friends.filter { $0.name.lowercased().contains(searchQuery.lowercased()) }
+            }
+        }
 }

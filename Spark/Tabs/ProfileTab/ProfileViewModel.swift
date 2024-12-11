@@ -115,6 +115,24 @@ class ProfileViewModel: ObservableObject {
         }
     }
     
+    func deleteProfileAndCleanup(userId: String) async throws {
+        // Reference to Firestore
+        let userDocRef = db.collection("users").document(userId)
+        
+        // Delete the user's profile
+        try await userDocRef.delete()
+        
+        // Remove references from other users' friend lists
+        let usersSnapshot = try await db.collection("users").getDocuments()
+        for document in usersSnapshot.documents {
+            var friends = document.data()["friends"] as? [String] ?? []
+            if friends.contains(userId) {
+                friends.removeAll { $0 == userId }
+                try await db.collection("users").document(document.documentID).updateData(["friends": friends])
+            }
+        }
+    }
+    
     func saveUserProfile() async throws {
         // Save the user's basic profile data
         try await db.collection("users").document(Auth.auth().currentUser!.uid).setData([
@@ -129,6 +147,23 @@ class ProfileViewModel: ObservableObject {
         // Fetch and save calendar events
         fetchUpcomingMonthEvents()  // Fetch events for a month when the profile is saved
     }
+    
+    func fetchUserProfile() async throws {
+            guard let currentUser = Auth.auth().currentUser else {
+                throw NSError(domain: "No User Logged In", code: 401, userInfo: nil)
+            }
+
+            let userDocRef = db.collection("users").document(currentUser.uid)
+            let snapshot = try await userDocRef.getDocument()
+            guard let data = snapshot.data() else { return }
+
+            DispatchQueue.main.async {
+                self.userName = data["userName"] as? String ?? "Unknown"
+                self.firstName = data["firstName"] as? String ?? "Unknown"
+                self.lastName = data["lastName"] as? String ?? "Unknown"
+                self.email = data["email"] as? String ?? "Unknown"
+            }
+        }
     
     deinit {
         NotificationCenter.default.removeObserver(self, name: .EKEventStoreChanged, object: eventStore)

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct CreateEventScreen: View {
     @State private var eventName: String = ""
@@ -15,6 +16,7 @@ struct CreateEventScreen: View {
     @State private var durationMinutes: Int = 0
     var selectedFriends: [String] // Array of selected friend UIDs
     @EnvironmentObject var viewModel: FriendsAvailableViewModel
+    @EnvironmentObject var eventsViewModel: EventsViewModel
 
     // Computed property to check if the form is valid
     private var isFormComplete: Bool {
@@ -168,9 +170,7 @@ struct CreateEventScreen: View {
 
                 // Submit Button
                 Button(action: {
-                    let duration = (durationHours * 3600) + (durationMinutes * 60)
-                    print("Event Created: \(eventName), Duration: \(duration) seconds, \(location), \(description)")
-                    print("Invited Friends: \(selectedFriends)")
+                    createEvent()
                 }) {
                     Text("Create Event")
                         .foregroundColor(.white)
@@ -186,9 +186,65 @@ struct CreateEventScreen: View {
             }
             .padding(.horizontal, 20)
             .padding(.top, 10)
+            .padding(.bottom, 80)
         }
         .background(Color(.systemGroupedBackground))
         .edgesIgnoringSafeArea(.bottom)
         .navigationBarTitleDisplayMode(.inline)
+        
     }
+//    //Functions used to connect go Firebase
+//    func sendNotifications(invitedTokens: [String], eventTitle: String) {
+//        for token in invitedTokens {
+//            sendNotification(to: token, title: "You're Invited!", body: "Join the event: \(eventTitle)")
+//        }
+//    }
+//    func sendNotification(to token: String, title: String, body: String) {
+//        guard let url = URL(string: "https://your-cloud-function-url") else { return }
+//
+//        let payload: [String: Any] = [
+//            "token": token,
+//            "title": title,
+//            "body": body
+//        ]
+//
+//        var request = URLRequest(url: url)
+//        request.httpMethod = "POST"
+//        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+//        request.httpBody = try? JSONSerialization.data(withJSONObject: payload)
+//
+//        URLSession.shared.dataTask(with: request) { data, response, error in
+//            if let error = error {
+//                print("Error sending notification: \(error)")
+//            } else {
+//                print("Notification sent to token: \(token)")
+//            }
+//        }.resume()
+//    }
+    
+    private func createEvent() {
+            let duration = (durationHours * 3600) + (durationMinutes * 60)
+            let newEvent = UserEvent(
+                id: UUID().uuidString,
+                title: eventName,
+                location: location,
+                description: description,
+                duration: duration,
+                creatorUID: Auth.auth().currentUser?.uid ?? "",
+                participantsUIDs: selectedFriends,
+                status: .pending
+            )
+
+            eventsViewModel.addEvent(event: newEvent)
+            resetForm()
+        }
+
+        private func resetForm() {
+            eventName = ""
+            location = ""
+            description = ""
+            durationHours = 0
+            durationMinutes = 0
+        }
 }
+

@@ -11,17 +11,17 @@ import FirebaseFirestore
 struct AddUserView: View {
     @StateObject private var viewModel = AddUserViewModel()
     @State private var searchText: String = ""
+    @State private var showPopup: Bool = false
+    @State private var popupMessage: String = ""
 
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                // Header
                 Text("Add Friends")
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .padding(.top, 10)
 
-                // Search Bar
                 VStack(spacing: 8) {
                     HStack {
                         TextField("Search by Username...", text: $searchText)
@@ -42,10 +42,8 @@ struct AddUserView: View {
                     .onChange(of: searchText) { _ in
                         viewModel.filterUsers(by: searchText)
                     }
-
                 }
 
-                // Filtered List of Users
                 ScrollView {
                     LazyVStack(spacing: 15) {
                         if viewModel.filteredUsers.isEmpty {
@@ -65,20 +63,30 @@ struct AddUserView: View {
                                     }
 
                                     Spacer()
-
-                                    Button(action: {
-                                        viewModel.addFriend(to: user.uid)
-                                    }) {
-                                        Text("Add")
+                                    if viewModel.currentUserFriends.contains(user.uid) {
+                                        Text("Added")
                                             .font(.body)
-                                            .foregroundColor(.white)
+                                            .foregroundColor(.gray)
                                             .padding(.vertical, 8)
                                             .padding(.horizontal, 16)
-                                            .background(Color.blue)
+                                            .background(Color.gray.opacity(0.2))
                                             .cornerRadius(8)
-                                            .shadow(radius: 2)
+                                    } else {
+                                        Button(action: {
+                                            viewModel.addFriend(to: user.uid)
+                                            popupMessage = "\(user.userName) has been added to your friends list!"
+                                            showPopup = true
+                                        }) {
+                                            Text("Add")
+                                                .font(.body)
+                                                .foregroundColor(.white)
+                                                .padding(.vertical, 8)
+                                                .padding(.horizontal, 16)
+                                                .background(Color.blue)
+                                                .cornerRadius(8)
+                                                .shadow(radius: 2)
+                                        }
                                     }
-                                    .buttonStyle(PlainButtonStyle())
                                 }
                                 .padding()
                                 .background(Color.white)
@@ -91,17 +99,37 @@ struct AddUserView: View {
                 }
                 .background(Color(.systemGroupedBackground))
                 .frame(maxHeight: .infinity)
+
+                if showPopup {
+                    VStack {
+                        Text(popupMessage)
+                            .padding()
+                            .background(Color.black.opacity(0.8))
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                            .shadow(radius: 5)
+                            .transition(.opacity)
+                            .onAppear {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                    withAnimation {
+                                        showPopup = false
+                                    }
+                                }
+                            }
+                    }
+                    .padding(.bottom, 30)
+                }
             }
             .padding(.top)
             .background(Color(.systemBackground))
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 viewModel.fetchAllUsers()
+                viewModel.fetchCurrentUserFriends() // Fetch the user's current friends
             }
         }
     }
 }
-
 // MARK: - Preview
 struct AddUserView_Previews: PreviewProvider {
     static var previews: some View {

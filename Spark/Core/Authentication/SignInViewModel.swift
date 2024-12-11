@@ -36,7 +36,7 @@ final class SignInViewModel: ObservableObject {
         }
     }
     
-    func signIn() async {
+    func signIn() async throws {
         guard !email.isEmpty, !password.isEmpty else {
             errorMessage = "Email and password fields cannot be empty."
             return

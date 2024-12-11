@@ -21,8 +21,9 @@ struct FriendsAvailableScreen: View {
                     Image("ExtendedLogo")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 100, height: 100)
+                        .frame(width: 150, height: 150)
                         .offset(x: 15)
+                        .padding()
                     Spacer()
                     NavigationLink(destination: AddUserView()) {
                         Image(systemName: "person.crop.circle.badge.plus")
@@ -37,7 +38,8 @@ struct FriendsAvailableScreen: View {
                 Text("Friends Available")
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(.primary)
-                    .padding(.top)
+                    .padding()
+                    .offset(y: -60)
                 
 
                 // Filter Buttons
@@ -77,6 +79,7 @@ struct FriendsAvailableScreen: View {
                     }
                 }
                 .padding()
+                .offset(y: -70)
                 
                 // Search Bar
                 TextField("Search Friends", text: $viewModel.searchQuery)
@@ -84,6 +87,7 @@ struct FriendsAvailableScreen: View {
                     .background(Color(.systemGray6))
                     .cornerRadius(8)
                     .padding(.horizontal, 30)
+                    .offset(y: -60)
                 
                 if !searchText.isEmpty {
                     Button(action: { searchText = "" }) {
@@ -99,10 +103,12 @@ struct FriendsAvailableScreen: View {
                 if viewModel.isLoading {
                     ProgressView("Loading Friends...")
                         .padding(.top, 20)
+                        .offset(y: -60)
                 } else if viewModel.filteredFriends().isEmpty {
                     Text("No friends available.")
                         .padding(.top, 20)
                         .foregroundColor(.secondary)
+                        .offset(y: -60)
                 } else {
                     ScrollView {
                         VStack(spacing: 15) {
@@ -123,6 +129,7 @@ struct FriendsAvailableScreen: View {
                         }
                         .padding(.horizontal)
                     }
+                    .offset(y: -60)
                 }
 
                 Spacer()
@@ -149,9 +156,6 @@ struct FriendsAvailableScreen: View {
                 .disabled(selectedFriends.isEmpty) // Disable if no friends selected
                 .padding(.bottom, 20)
             }
-//            .onChange(of: searchText) { _ in
-//                viewModel.friends(by: searchText)
-//            }
             .background(Color(.systemBackground).edgesIgnoringSafeArea(.all))
             .onAppear {
                 viewModel.fetchFriends()

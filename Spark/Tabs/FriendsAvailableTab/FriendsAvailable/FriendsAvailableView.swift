@@ -246,7 +246,6 @@ struct FilteredFriendsListView: View {
             Spacer()
         }
         .padding()
-        .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemBackground))
     }

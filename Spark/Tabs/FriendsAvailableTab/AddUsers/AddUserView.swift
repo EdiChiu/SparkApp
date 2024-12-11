@@ -20,7 +20,6 @@ struct AddUserView: View {
                 Text("Add Friends")
                     .font(.largeTitle)
                     .fontWeight(.bold)
-                    .padding(.top, 10)
 
                 VStack(spacing: 8) {
                     HStack {

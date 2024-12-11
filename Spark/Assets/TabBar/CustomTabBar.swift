@@ -22,7 +22,7 @@ struct CustomTabBar: View {
                 }
                 .tag(0)
 
-            CurrentEventsView()
+            EventsTabView()
                 .tabItem {
                     VStack {
                         Image(systemName: "calendar")

@@ -76,6 +76,7 @@
 				SharedData.swift,
 				SparkApp.swift,
 				Tabs/EventsTab/EventsModel.swift,
+				Tabs/EventsTab/EventsTabView.swift,
 				Tabs/EventsTab/EventsViewModel.swift,
 				Tabs/FriendsAvailableTab/AddUsers/AddUserView.swift,
 				Tabs/FriendsAvailableTab/AddUsers/AddUserViewModel.swift,

@@ -31,7 +31,7 @@ struct EventsTabView: View {
 
                             // Show pendingEvents with Accept/Deny buttons
                             ForEach(eventsViewModel.pendingEvents) { event in
-                                EventCard(event: event, isPending: true)
+                                EventCard(event: event)
                                     .environmentObject(eventsViewModel)
                             }
                         }
@@ -50,41 +50,30 @@ struct EventsTabView: View {
 
 struct EventCard: View {
     let event: UserEvent
-    var isPending: Bool = false
     @EnvironmentObject var eventsViewModel: EventsViewModel
     @State private var hasResponded: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text(event.title)
-                    .font(.headline)
-                    .fontWeight(.bold)
+            Text(event.title)
+                .font(.headline)
+                .fontWeight(.bold)
 
-                Spacer()
-
-                if !isPending {
-                    if event.status == .pending {
-                        Text("Pending")
-                            .font(.caption)
-                            .padding(5)
-                            .background(Color.yellow.opacity(0.2))
-                            .foregroundColor(.yellow)
-                            .cornerRadius(8)
-                    } else if event.status == .accepted {
-                        Text("Accepted")
-                            .font(.caption)
-                            .padding(5)
-                            .background(Color.green.opacity(0.2))
-                            .foregroundColor(.green)
-                            .cornerRadius(8)
-                    }
-                }
+            // Display "Pending" only if there are still pending participants
+            if !event.pendingParticipants.isEmpty {
+                Text("Pending")
+                    .font(.caption)
+                    .padding(5)
+                    .background(Color.yellow.opacity(0.2))
+                    .cornerRadius(8)
             }
 
-            Text("Location: \(event.location)")
-                .font(.subheadline)
-                .foregroundColor(.gray)
+            // Display location and duration
+            if !event.location.isEmpty {
+                Text("Location: \(event.location)")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+            }
 
             let hours = event.duration / 3600
             let minutes = (event.duration % 3600) / 60
@@ -92,31 +81,30 @@ struct EventCard: View {
                 .font(.subheadline)
                 .foregroundColor(.gray)
 
-            if isPending && !hasResponded {
+            // Show Accept/Deny buttons for pending participants
+            if event.pendingParticipants.contains(Auth.auth().currentUser?.uid ?? ""), !hasResponded {
                 HStack {
                     Button(action: {
-                        eventsViewModel.respondToEvent(event: event, accepted: true)
+                        eventsViewModel.acceptEvent(event: event)
                         hasResponded = true
                     }) {
                         Text("Accept")
-                            .foregroundColor(.white)
                             .padding()
                             .background(Color.green)
                             .cornerRadius(8)
+                            .foregroundColor(.white)
                     }
-
                     Button(action: {
-                        eventsViewModel.respondToEvent(event: event, accepted: false)
+                        eventsViewModel.denyEvent(event: event)
                         hasResponded = true
                     }) {
                         Text("Deny")
-                            .foregroundColor(.white)
                             .padding()
                             .background(Color.red)
                             .cornerRadius(8)
+                            .foregroundColor(.white)
                     }
                 }
-                .padding(.top, 10)
             }
         }
         .padding()
@@ -125,12 +113,13 @@ struct EventCard: View {
         .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 4)
     }
 }
-
 struct EventDetailView: View {
     let event: UserEvent
     @EnvironmentObject var eventsViewModel: EventsViewModel
     @State private var creatorName: String = "Loading..."
-    @State private var participantsNames: [String] = []
+    @State private var acceptedNames: [String] = []
+    @State private var deniedNames: [String] = []
+    @State private var pendingNames: [String] = []
 
     var body: some View {
         ScrollView {
@@ -167,13 +156,37 @@ struct EventDetailView: View {
                 Text("Creator: \(creatorName)")
                     .font(.headline)
 
-                // Participants
-                Text("Participants:")
-                    .font(.headline)
-                
-                ForEach(participantsNames, id: \.self) { name in
-                    Text(name)
-                        .font(.body)
+                Divider()
+
+                // Participants grouped by status
+                if !acceptedNames.isEmpty {
+                    Text("Accepted Participants:")
+                        .font(.headline)
+                    ForEach(acceptedNames, id: \.self) { name in
+                        Text(name)
+                            .font(.body)
+                            .foregroundColor(.green)
+                    }
+                }
+
+                if !pendingNames.isEmpty {
+                    Text("Pending Participants:")
+                        .font(.headline)
+                    ForEach(pendingNames, id: \.self) { name in
+                        Text(name)
+                            .font(.body)
+                            .foregroundColor(.yellow)
+                    }
+                }
+
+                if !deniedNames.isEmpty {
+                    Text("Denied Participants:")
+                        .font(.headline)
+                    ForEach(deniedNames, id: \.self) { name in
+                        Text(name)
+                            .font(.body)
+                            .foregroundColor(.red)
+                    }
                 }
             }
             .padding()
@@ -190,9 +203,15 @@ struct EventDetailView: View {
                 }
             }
 
-            // Fetch participants' names
-            eventsViewModel.fetchParticipantsNames(uids: event.participantsUIDs) { names in
-                participantsNames = names.values.sorted()
+            // Fetch participants grouped by status
+            eventsViewModel.fetchParticipantsByStatus(
+                acceptedUIDs: event.acceptedParticipants,
+                deniedUIDs: event.deniedParticipants,
+                pendingUIDs: event.pendingParticipants
+            ) { accepted, denied, pending in
+                acceptedNames = accepted
+                deniedNames = denied
+                pendingNames = pending
             }
         }
     }

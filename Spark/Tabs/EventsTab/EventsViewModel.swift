@@ -1,170 +1,9 @@
-////
-////  EventsViewModel.swift
-////  Spark
-////
-////  Created by Edison Chiu on 12/9/24.
-////
 //
-//import Foundation
-//import FirebaseFirestore
-//import FirebaseAuth
+//  EventsViewModel.swift
+//  Spark
 //
-//class EventsViewModel: ObservableObject {
-//    @Published var userEvents: [UserEvent] = []
-//    @Published var pendingEvents: [UserEvent] = []
-//
-//    private let db = Firestore.firestore()
-//
-//    func fetchEvents() {
-//        guard let currentUser = Auth.auth().currentUser else { return }
-//
-//        let userDocRef = db.collection("users").document(currentUser.uid)
-//        userDocRef.addSnapshotListener { [weak self] snapshot, error in
-//            if let error = error {
-//                print("Error fetching events: \(error.localizedDescription)")
-//                return
-//            }
-//
-//            guard let data = snapshot?.data() else { return }
-//
-//            // Parse events from Firestore
-//            self?.userEvents = self?.parseEvents(from: data["userEvents"]) ?? []
-//            self?.pendingEvents = self?.parseEvents(from: data["pendingEvents"]) ?? []
-//        }
-//    }
-//
-//    private func parseEvents(from data: Any?) -> [UserEvent] {
-//        guard let eventDictionaries = data as? [[String: Any]] else { return [] }
-//
-//        return eventDictionaries.compactMap { dict in
-//            guard
-//                let id = dict["id"] as? String,
-//                let title = dict["title"] as? String,
-//                let location = dict["location"] as? String,
-//                let description = dict["description"] as? String,
-//                let duration = dict["duration"] as? Int,
-//                let creatorUID = dict["creatorUID"] as? String,
-//                let participantsUIDs = dict["participantsUIDs"] as? [String],
-//                let statusRaw = dict["status"] as? String,
-//                let status = EventStatus(rawValue: statusRaw)
-//            else {
-//                return nil
-//            }
-//
-//            return UserEvent(
-//                id: id,
-//                title: title,
-//                location: location,
-//                description: description,
-//                duration: duration,
-//                creatorUID: creatorUID,
-//                participantsUIDs: participantsUIDs,
-//                status: status
-//            )
-//        }
-//    }
-//
-//    func addEvent(event: UserEvent) {
-//        guard let currentUser = Auth.auth().currentUser else { return }
-//
-//        let userDocRef = db.collection("users").document(currentUser.uid)
-//        let eventData = createEventData(from: event)
-//
-//        userDocRef.getDocument { snapshot, error in
-//            if let error = error {
-//                print("Error fetching user document: \(error.localizedDescription)")
-//                return
-//            }
-//
-//            if let data = snapshot?.data(), data["userEvents"] != nil {
-//                // If the `userEvents` field exists, update it
-//                userDocRef.updateData([
-//                    "userEvents": FieldValue.arrayUnion([eventData])
-//                ]) { error in
-//                    if let error = error {
-//                        print("Error adding event to existing userEvents: \(error.localizedDescription)")
-//                    } else {
-//                        print("Event successfully added to existing userEvents.")
-//                    }
-//                }
-//            } else {
-//                // If the `userEvents` field doesn't exist, create it
-//                userDocRef.setData([
-//                    "userEvents": [eventData]
-//                ], merge: true) { error in
-//                    if let error = error {
-//                        print("Error initializing userEvents and adding event: \(error.localizedDescription)")
-//                    } else {
-//                        print("userEvents initialized and event successfully added.")
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    func addPendingEvent(event: UserEvent, toUserID userID: String) {
-//        let userDocRef = db.collection("users").document(userID)
-//        let eventData = createEventData(from: event)
-//
-//        userDocRef.updateData([
-//            "pendingEvents": FieldValue.arrayUnion([eventData])
-//        ]) { error in
-//            if let error = error {
-//                print("Error adding event to pendingEvents: \(error.localizedDescription)")
-//            } else {
-//                print("Event successfully added to pendingEvents.")
-//            }
-//        }
-//    }
-//
-//    func acceptEvent(event: UserEvent) {
-//        guard let currentUser = Auth.auth().currentUser else { return }
-//
-//        let userDocRef = db.collection("users").document(currentUser.uid)
-//        let eventData = createEventData(from: event)
-//
-//        userDocRef.updateData([
-//            "pendingEvents": FieldValue.arrayRemove([eventData]),
-//            "userEvents": FieldValue.arrayUnion([eventData])
-//        ]) { error in
-//            if let error = error {
-//                print("Error accepting event: \(error.localizedDescription)")
-//            } else {
-//                print("Event accepted and moved to userEvents.")
-//            }
-//        }
-//    }
-//
-//    func denyEvent(event: UserEvent) {
-//        guard let currentUser = Auth.auth().currentUser else { return }
-//
-//        let userDocRef = db.collection("users").document(currentUser.uid)
-//        let eventData = createEventData(from: event)
-//
-//        userDocRef.updateData([
-//            "pendingEvents": FieldValue.arrayRemove([eventData])
-//        ]) { error in
-//            if let error = error {
-//                print("Error denying event: \(error.localizedDescription)")
-//            } else {
-//                print("Event denied and removed from pendingEvents.")
-//            }
-//        }
-//    }
-//
-//    private func createEventData(from event: UserEvent) -> [String: Any] {
-//        return [
-//            "id": event.id,
-//            "title": event.title,
-//            "location": event.location,
-//            "description": event.description,
-//            "duration": event.duration,
-//            "creatorUID": event.creatorUID,
-//            "participantsUIDs": event.participantsUIDs,
-//            "status": event.status.rawValue
-//        ]
-//    }
-//}
+//  Created by Edison Chiu on 12/9/24.
+
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
@@ -195,7 +34,9 @@ class EventsViewModel: ObservableObject {
     }
 
     private func parseEvents(from data: Any?) -> [UserEvent] {
-        guard let eventDictionaries = data as? [[String: Any]] else { return [] }
+        guard let eventDictionaries = data as? [[String: Any]] else {
+            return []
+        }
 
         return eventDictionaries.compactMap { dict in
             guard
@@ -206,8 +47,9 @@ class EventsViewModel: ObservableObject {
                 let duration = dict["duration"] as? Int,
                 let creatorUID = dict["creatorUID"] as? String,
                 let participantsUIDs = dict["participantsUIDs"] as? [String],
-                let statusRaw = dict["status"] as? String,
-                let status = EventStatus(rawValue: statusRaw)
+                let acceptedParticipants = dict["acceptedParticipants"] as? [String],
+                let deniedParticipants = dict["deniedParticipants"] as? [String],
+                let pendingParticipants = dict["pendingParticipants"] as? [String]
             else {
                 return nil
             }
@@ -220,7 +62,9 @@ class EventsViewModel: ObservableObject {
                 duration: duration,
                 creatorUID: creatorUID,
                 participantsUIDs: participantsUIDs,
-                status: status
+                acceptedParticipants: acceptedParticipants,
+                deniedParticipants: deniedParticipants,
+                pendingParticipants: pendingParticipants
             )
         }
     }
@@ -228,7 +72,12 @@ class EventsViewModel: ObservableObject {
     func addEvent(event: UserEvent) {
         guard let currentUser = Auth.auth().currentUser else { return }
 
-        let eventData = createEventData(from: event)
+        var updatedEvent = event
+        updatedEvent.pendingParticipants = event.participantsUIDs.filter { $0 != currentUser.uid }
+        updatedEvent.acceptedParticipants = []
+        updatedEvent.deniedParticipants = []
+
+        let eventData = createEventData(from: updatedEvent)
 
         // Add event to creator's Firestore data
         db.collection("users").document(currentUser.uid).updateData([
@@ -242,7 +91,7 @@ class EventsViewModel: ObservableObject {
         }
 
         // Add event to participants' Firestore data
-        for participantUID in event.participantsUIDs where participantUID != currentUser.uid {
+        for participantUID in updatedEvent.pendingParticipants {
             db.collection("users").document(participantUID).updateData([
                 "pendingEvents": FieldValue.arrayUnion([eventData])
             ]) { error in
@@ -256,34 +105,87 @@ class EventsViewModel: ObservableObject {
     func acceptEvent(event: UserEvent) {
         guard let currentUser = Auth.auth().currentUser else { return }
 
-        let eventData = createEventData(from: event)
+        var updatedEvent = event
+        updatedEvent.pendingParticipants.removeAll { $0 == currentUser.uid }
+        updatedEvent.acceptedParticipants.append(currentUser.uid)
 
-        // Move event from pending to accepted for participant
+        let eventData = createEventData(from: updatedEvent)
+
         db.collection("users").document(currentUser.uid).updateData([
-            "pendingEvents": FieldValue.arrayRemove([eventData]),
-            "userEvents": FieldValue.arrayUnion([eventData])
+            "pendingEvents": FieldValue.arrayRemove([createEventData(from: event)])
         ]) { error in
             if let error = error {
-                print("Error accepting event: \(error.localizedDescription)")
+                print("Error removing from pendingEvents: \(error.localizedDescription)")
+            } else {
+                self.db.collection("users").document(currentUser.uid).updateData([
+                    "userEvents": FieldValue.arrayUnion([eventData])
+                ]) { error in
+                    if let error = error {
+                        print("Error adding to userEvents: \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
+
+        db.collection("users").document(event.creatorUID).updateData([
+            "userEvents": FieldValue.arrayRemove([createEventData(from: event)])
+        ]) { error in
+            if let error = error {
+                print("Error removing from creator's userEvents: \(error.localizedDescription)")
+            } else {
+                self.db.collection("users").document(event.creatorUID).updateData([
+                    "userEvents": FieldValue.arrayUnion([eventData])
+                ]) { error in
+                    if let error = error {
+                        print("Error updating creator's userEvents: \(error.localizedDescription)")
+                    }
+                }
             }
         }
     }
-
+    
     func denyEvent(event: UserEvent) {
         guard let currentUser = Auth.auth().currentUser else { return }
 
-        let eventData = createEventData(from: event)
+        var updatedEvent = event
+        updatedEvent.pendingParticipants.removeAll { $0 == currentUser.uid }
+        updatedEvent.deniedParticipants.append(currentUser.uid)
 
-        // Remove event from pending for participant
+        let eventData = createEventData(from: updatedEvent)
+
         db.collection("users").document(currentUser.uid).updateData([
-            "pendingEvents": FieldValue.arrayRemove([eventData])
+            "pendingEvents": FieldValue.arrayRemove([createEventData(from: event)])
         ]) { error in
             if let error = error {
-                print("Error denying event: \(error.localizedDescription)")
+                print("Error removing from pendingEvents: \(error.localizedDescription)")
+            } else {
+                self.db.collection("users").document(currentUser.uid).updateData([
+                    "userEvents": FieldValue.arrayUnion([eventData])
+                ]) { error in
+                    if let error = error {
+                        print("Error adding to userEvents: \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
+
+        db.collection("users").document(event.creatorUID).updateData([
+            "userEvents": FieldValue.arrayRemove([createEventData(from: event)])
+        ]) { error in
+            if let error = error {
+                print("Error removing from creator's userEvents: \(error.localizedDescription)")
+            } else {
+                self.db.collection("users").document(event.creatorUID).updateData([
+                    "userEvents": FieldValue.arrayUnion([eventData])
+                ]) { error in
+                    if let error = error {
+                        print("Error updating creator's userEvents: \(error.localizedDescription)")
+                    }
+                }
             }
         }
     }
-
+    
     private func createEventData(from event: UserEvent) -> [String: Any] {
         return [
             "id": event.id,
@@ -293,7 +195,9 @@ class EventsViewModel: ObservableObject {
             "duration": event.duration,
             "creatorUID": event.creatorUID,
             "participantsUIDs": event.participantsUIDs,
-            "status": event.status.rawValue
+            "pendingParticipants": event.pendingParticipants,
+            "acceptedParticipants": event.acceptedParticipants,
+            "deniedParticipants": event.deniedParticipants
         ]
     }
     
@@ -333,27 +237,6 @@ class EventsViewModel: ObservableObject {
             completion(namesDictionary)
         }
     }
-    
-    func updateEventStatus(for event: UserEvent) {
-        let creatorDocRef = db.collection("users").document(event.creatorUID)
-        
-        creatorDocRef.getDocument { snapshot, error in
-            guard let data = snapshot?.data(), var userEvents = data["userEvents"] as? [[String: Any]] else { return }
-
-            if let index = userEvents.firstIndex(where: { $0["id"] as? String == event.id }) {
-                // Update status if all participants have accepted
-                if event.participantsUIDs.allSatisfy({ uid in
-                    self.checkParticipantAcceptance(eventID: event.id, uid: uid)
-                }) {
-                    userEvents[index]["status"] = EventStatus.accepted.rawValue
-                } else {
-                    userEvents[index]["status"] = EventStatus.pending.rawValue
-                }
-
-                creatorDocRef.updateData(["userEvents": userEvents])
-            }
-        }
-    }
 
     private func checkParticipantAcceptance(eventID: String, uid: String) -> Bool {
         let userDocRef = db.collection("users").document(uid)
@@ -389,6 +272,52 @@ class EventsViewModel: ObservableObject {
             } else {
                 print(accepted ? "Event accepted." : "Event denied.")
             }
+        }
+    }
+    
+    func fetchParticipantsByStatus(
+        acceptedUIDs: [String],
+        deniedUIDs: [String],
+        pendingUIDs: [String],
+        completion: @escaping ([String], [String], [String]) -> Void
+    ) {
+        var acceptedNames: [String] = []
+        var deniedNames: [String] = []
+        var pendingNames: [String] = []
+        let dispatchGroup = DispatchGroup()
+
+        for uid in acceptedUIDs {
+            dispatchGroup.enter()
+            fetchUserFullName(uid: uid) { name in
+                if let name = name {
+                    acceptedNames.append(name)
+                }
+                dispatchGroup.leave()
+            }
+        }
+
+        for uid in deniedUIDs {
+            dispatchGroup.enter()
+            fetchUserFullName(uid: uid) { name in
+                if let name = name {
+                    deniedNames.append(name)
+                }
+                dispatchGroup.leave()
+            }
+        }
+
+        for uid in pendingUIDs {
+            dispatchGroup.enter()
+            fetchUserFullName(uid: uid) { name in
+                if let name = name {
+                    pendingNames.append(name)
+                }
+                dispatchGroup.leave()
+            }
+        }
+
+        dispatchGroup.notify(queue: .main) {
+            completion(acceptedNames, deniedNames, pendingNames)
         }
     }
 }

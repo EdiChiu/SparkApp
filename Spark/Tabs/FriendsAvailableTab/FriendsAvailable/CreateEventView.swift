@@ -235,6 +235,7 @@ struct CreateEventScreen: View {
             description: description,
             duration: duration,
             creatorUID: currentUserUID,
+            creationTime: Date(),
             participantsUIDs: selectedFriends,
             acceptedParticipants: [],
             deniedParticipants: [],

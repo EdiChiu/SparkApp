@@ -26,9 +26,11 @@ class EventsViewModel: ObservableObject {
             guard let data = snapshot?.data() else { return }
 
             DispatchQueue.main.async {
-                // Fetch userEvents and pendingEvents
-                self?.userEvents = self?.parseEvents(from: data["userEvents"]) ?? []
-                self?.pendingEvents = self?.parseEvents(from: data["pendingEvents"]) ?? []
+                // Parse and sort events by creationTime descending
+                self?.userEvents = (self?.parseEvents(from: data["userEvents"]) ?? [])
+                    .sorted { $0.creationTime > $1.creationTime }
+                self?.pendingEvents = (self?.parseEvents(from: data["pendingEvents"]) ?? [])
+                    .sorted { $0.creationTime > $1.creationTime }
             }
         }
     }
@@ -49,10 +51,13 @@ class EventsViewModel: ObservableObject {
                 let participantsUIDs = dict["participantsUIDs"] as? [String],
                 let acceptedParticipants = dict["acceptedParticipants"] as? [String],
                 let deniedParticipants = dict["deniedParticipants"] as? [String],
-                let pendingParticipants = dict["pendingParticipants"] as? [String]
+                let pendingParticipants = dict["pendingParticipants"] as? [String],
+                let creationTimestamp = dict["creationTime"] as? Timestamp
             else {
                 return nil
             }
+            
+            let creationTime = creationTimestamp.dateValue()
 
             return UserEvent(
                 id: id,
@@ -61,6 +66,7 @@ class EventsViewModel: ObservableObject {
                 description: description,
                 duration: duration,
                 creatorUID: creatorUID,
+                creationTime: creationTime,
                 participantsUIDs: participantsUIDs,
                 acceptedParticipants: acceptedParticipants,
                 deniedParticipants: deniedParticipants,
@@ -85,8 +91,6 @@ class EventsViewModel: ObservableObject {
         ]) { error in
             if let error = error {
                 print("Error adding event for creator: \(error.localizedDescription)")
-            } else {
-                print("Event added for creator.")
             }
         }
 
@@ -101,7 +105,7 @@ class EventsViewModel: ObservableObject {
             }
         }
     }
-
+    
     func acceptEvent(event: UserEvent) {
         guard let currentUser = Auth.auth().currentUser else { return }
 
@@ -195,6 +199,7 @@ class EventsViewModel: ObservableObject {
             "duration": event.duration,
             "creatorUID": event.creatorUID,
             "participantsUIDs": event.participantsUIDs,
+            "creationTime": Timestamp(date: event.creationTime),
             "pendingParticipants": event.pendingParticipants,
             "acceptedParticipants": event.acceptedParticipants,
             "deniedParticipants": event.deniedParticipants

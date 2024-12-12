@@ -92,6 +92,7 @@ struct SignUpView: View {
                     )
                     .foregroundColor(.white)
             }
+            .padding(.top, 20)
             Button(action: {
                 onAuthFlowChange(.signIn) // Navigate to Sign In view
             }) {

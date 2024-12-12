@@ -68,9 +68,7 @@ struct SignInView: View {
                 }
             
             //Forgot Password Button
-            Button(action: {
-     
-            }) {
+            NavigationLink(destination: ForgotPasswordView()) {
                 Text("Forgot Password?")
                     .font(.system(size: 14))
                     .foregroundColor(.purple)

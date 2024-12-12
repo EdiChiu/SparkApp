@@ -69,6 +69,7 @@
 				Core/Settings/SettingsView.swift,
 				Core/Settings/SettingsViewModel.swift,
 				Core/Subviews/AuthenticationView.swift,
+				Core/Subviews/ForgotPasswordView.swift,
 				Core/Subviews/SignInView.swift,
 				Core/Subviews/SignUpView.swift,
 				"GoogleService-Info.plist",

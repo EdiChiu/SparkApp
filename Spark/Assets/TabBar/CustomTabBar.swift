@@ -50,6 +50,7 @@ struct CustomTabBar_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
             CustomTabBar(authFlow: .constant(.mainApp))
+                .environmentObject(EventsViewModel())
         }
     }
 }

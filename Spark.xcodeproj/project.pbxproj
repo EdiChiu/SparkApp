@@ -69,6 +69,7 @@
 				Core/Settings/SettingsView.swift,
 				Core/Settings/SettingsViewModel.swift,
 				Core/Subviews/AuthenticationView.swift,
+				Core/Subviews/ForgotPasswordView.swift,
 				Core/Subviews/SignInView.swift,
 				Core/Subviews/SignUpView.swift,
 				"GoogleService-Info.plist",
@@ -87,6 +88,7 @@
 				Tabs/ProfileTab/CalendarImplementation/CalendarViewController.swift,
 				Tabs/ProfileTab/CalendarImplementation/CurrentEventsView.swift,
 				Tabs/ProfileTab/CalendarImplementation/EKWrapper.swift,
+				Tabs/ProfileTab/PrivacyView.swift,
 				Tabs/ProfileTab/ProfileView.swift,
 				Tabs/ProfileTab/ProfileViewModel.swift,
 				Tabs/ProfileTab/UserModel.swift,
@@ -538,9 +540,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ecc.Spark;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -570,9 +576,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ecc.Spark;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

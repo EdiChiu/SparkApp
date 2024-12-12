@@ -29,14 +29,14 @@ struct FriendsAvailableScreen: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 40, height: 40)
-                            .foregroundColor(.primary)
+                            .foregroundColor(.black) // Fixed color for consistency
                     }
                 }
                 .padding()
 
                 Text("Friends Available")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.primary)
+                    .foregroundColor(.black) // Fixed text color
                     .padding()
                     .offset(y: -60)
 
@@ -87,7 +87,7 @@ struct FriendsAvailableScreen: View {
                 } else if viewModel.filteredFriends().isEmpty {
                     Text("No friends available.")
                         .padding(.top, 20)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.gray)
                         .offset(y: -60)
                 } else {
                     ScrollView {
@@ -139,7 +139,7 @@ struct FriendsAvailableScreen: View {
                 .disabled(viewModel.selectedFriends.isEmpty) // Disable if no friends selected
                 .padding(.bottom, 20)
             }
-            .background(Color(.systemBackground).edgesIgnoringSafeArea(.all))
+            .background(Color.white.edgesIgnoringSafeArea(.all)) // Fixed white background
             .onAppear {
                 viewModel.fetchFriends()
             }
@@ -156,7 +156,6 @@ struct FriendsAvailableScreen: View {
         }
     }
 }
-
 struct SelectableFriendRow: View {
     var name: String
     var statusColor: Color

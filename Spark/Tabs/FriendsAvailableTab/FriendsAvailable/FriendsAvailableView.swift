@@ -156,6 +156,7 @@ struct FriendsAvailableScreen: View {
                 .disabled(selectedFriends.isEmpty) // Disable if no friends selected
                 .padding(.bottom, 20)
             }
+            //Spacer()
             .background(Color(.systemBackground).edgesIgnoringSafeArea(.all))
             .onAppear {
                 viewModel.fetchFriends()

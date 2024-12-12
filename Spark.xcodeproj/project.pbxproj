@@ -88,6 +88,7 @@
 				Tabs/ProfileTab/CalendarImplementation/CalendarViewController.swift,
 				Tabs/ProfileTab/CalendarImplementation/CurrentEventsView.swift,
 				Tabs/ProfileTab/CalendarImplementation/EKWrapper.swift,
+				Tabs/ProfileTab/PrivacyView.swift,
 				Tabs/ProfileTab/ProfileView.swift,
 				Tabs/ProfileTab/ProfileViewModel.swift,
 				Tabs/ProfileTab/UserModel.swift,

@@ -45,11 +45,8 @@ struct ProfileView: View {
                     NavigationLink(destination: SettingsView(authFlow: $authFlow)) {
                         SettingsRow(label: "Account", icon: "person")
                     }
-                    NavigationLink(destination: Text("Privacy Settings")) {
+                    NavigationLink(destination: PrivacyView()) {
                         SettingsRow(label: "Privacy", icon: "lock")
-                    }
-                    NavigationLink(destination: Text("Notifications")) {
-                        SettingsRow(label: "Notifications", icon: "bell")
                     }
                     NavigationLink(destination: CurrentEventsView()) {
                         SettingsRow(label: "Calendar", icon: "calendar")

@@ -24,6 +24,7 @@ struct ProfileView: View {
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .padding(.top, 40)
+                    .foregroundColor(Color.primary)
 
                 // User Details Section
                 VStack(alignment: .leading, spacing: 10) {
@@ -35,7 +36,7 @@ struct ProfileView: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 15)
-                        .fill(Color.white)
+                        .fill(Color(.systemBackground))
                         .shadow(color: .gray.opacity(0.2), radius: 5, x: 0, y: 2)
                 )
                 .padding(.horizontal)
@@ -81,10 +82,11 @@ struct DetailRow: View {
         HStack {
             Text(label)
                 .font(.headline)
-                .foregroundColor(.gray)
+                .foregroundColor(Color.secondary)
             Spacer()
             Text(value)
                 .font(.body)
+                .foregroundColor(Color.primary)
         }
         .padding(.vertical, 5)
     }
@@ -102,15 +104,15 @@ struct SettingsRow: View {
                 .frame(width: 30) // Fixed width for icons
             Text(label)
                 .font(.headline)
-                .foregroundColor(.black)
+                .foregroundColor(Color.primary)
             Spacer()
             Image(systemName: "chevron.right")
-                .foregroundColor(.gray)
+                .foregroundColor(Color.secondary)
         }
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 10)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
                 .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 1)
         )
     }

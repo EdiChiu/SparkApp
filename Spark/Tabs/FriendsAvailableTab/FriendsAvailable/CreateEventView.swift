@@ -223,28 +223,34 @@ struct CreateEventScreen: View {
 //    }
     
     private func createEvent() {
-            let duration = (durationHours * 3600) + (durationMinutes * 60)
-            let newEvent = UserEvent(
-                id: UUID().uuidString,
-                title: eventName,
-                location: location,
-                description: description,
-                duration: duration,
-                creatorUID: Auth.auth().currentUser?.uid ?? "",
-                participantsUIDs: selectedFriends,
-                status: .pending
-            )
+        let duration = (durationHours * 3600) + (durationMinutes * 60)
 
-            eventsViewModel.addEvent(event: newEvent)
-            resetForm()
-        }
+        // Initialize pendingParticipants to include all selected friends
+        let currentUserUID = Auth.auth().currentUser?.uid ?? ""
 
-        private func resetForm() {
-            eventName = ""
-            location = ""
-            description = ""
-            durationHours = 0
-            durationMinutes = 0
-        }
+        let newEvent = UserEvent(
+            id: UUID().uuidString,
+            title: eventName,
+            location: location,
+            description: description,
+            duration: duration,
+            creatorUID: currentUserUID,
+            participantsUIDs: selectedFriends,
+            acceptedParticipants: [],
+            deniedParticipants: [],
+            pendingParticipants: selectedFriends
+        )
+
+        eventsViewModel.addEvent(event: newEvent)
+        resetForm()
+    }
+
+    private func resetForm() {
+        eventName = ""
+        location = ""
+        description = ""
+        durationHours = 0
+        durationMinutes = 0
+    }
 }
 

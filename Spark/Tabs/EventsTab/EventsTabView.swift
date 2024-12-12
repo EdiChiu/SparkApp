@@ -6,115 +6,76 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct EventsTabView: View {
     @EnvironmentObject var eventsViewModel: EventsViewModel
-    @State private var selectedTab: Int = 0
 
     var body: some View {
-        NavigationView { // Wrap the whole view in NavigationView
-            VStack(spacing: 0) {
-                Picker("", selection: $selectedTab) {
-                    Text("My Events").tag(0)
-                    Text("Pending Invitations").tag(1)
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding()
-                .background(Color(.systemGray6))
+        NavigationView {
+            VStack {
+                if eventsViewModel.userEvents.isEmpty && eventsViewModel.pendingEvents.isEmpty {
+                    Text("No upcoming events.")
+                        .foregroundColor(.gray)
+                        .padding(.top, 50)
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 15) {
+                            // Show userEvents
+                            ForEach(eventsViewModel.userEvents) { event in
+                                NavigationLink(destination: EventDetailView(event: event)) {
+                                    EventCard(event: event)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
 
-                Group {
-                    if selectedTab == 0 {
-                        userEventsView
-                    } else {
-                        pendingEventsView
+                            // Show pendingEvents with Accept/Deny buttons
+                            ForEach(eventsViewModel.pendingEvents) { event in
+                                EventCard(event: event)
+                                    .environmentObject(eventsViewModel)
+                            }
+                        }
+                        .padding()
                     }
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .onAppear {
                 eventsViewModel.fetchEvents()
             }
-        }
-    }
-
-    // MARK: - My Events View
-    private var userEventsView: some View {
-        VStack {
-            if eventsViewModel.userEvents.isEmpty {
-                Text("No upcoming events.")
-                    .foregroundColor(.gray)
-                    .padding(.top, 50)
-            } else {
-                ScrollView {
-                    LazyVStack(spacing: 15) {
-                        ForEach(eventsViewModel.userEvents) { event in
-                            NavigationLink(destination: EventDetailView(event: event)) {
-                                EventCard(event: event)
-                            }
-                            .buttonStyle(PlainButtonStyle()) // Avoids navigation animation interfering with EventCard styling
-                        }
-                    }
-                    .padding()
-                }
-            }
-        }
-    }
-
-    // MARK: - Pending Invitations View
-    private var pendingEventsView: some View {
-        VStack {
-            if eventsViewModel.pendingEvents.isEmpty {
-                Text("No pending invitations.")
-                    .foregroundColor(.gray)
-                    .padding(.top, 50)
-            } else {
-                ScrollView {
-                    LazyVStack(spacing: 15) {
-                        ForEach(eventsViewModel.pendingEvents) { event in
-                            HStack {
-                                EventCard(event: event)
-                                Spacer()
-                                VStack {
-                                    Button(action: {
-                                        eventsViewModel.acceptEvent(event: event)
-                                    }) {
-                                        Text("Accept")
-                                            .foregroundColor(.white)
-                                            .padding(8)
-                                            .background(Color.green)
-                                            .cornerRadius(8)
-                                    }
-                                    Button(action: {
-                                        eventsViewModel.denyEvent(event: event)
-                                    }) {
-                                        Text("Decline")
-                                            .foregroundColor(.white)
-                                            .padding(8)
-                                            .background(Color.red)
-                                            .cornerRadius(8)
-                                    }
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
-                    }
-                    .padding()
-                }
-            }
+            .navigationTitle("My Events")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
 
-// MARK: - Event Card View
 struct EventCard: View {
     let event: UserEvent
+    @EnvironmentObject var eventsViewModel: EventsViewModel
+    @State private var hasResponded: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(event.title)
-                .font(.headline)
-                .fontWeight(.bold)
+            // Title and "Pending" badge
+            HStack {
+                Text(event.title)
+                    .font(.headline)
+                    .fontWeight(.bold)
 
+                Spacer()
+
+                // Show "Pending" button if there are pending participants
+                if !event.pendingParticipants.isEmpty {
+                    Text("Pending")
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .padding(5)
+                        .background(Color.yellow.opacity(0.2))
+                        .foregroundColor(.yellow)
+                        .cornerRadius(8)
+                }
+            }
+
+            // Location and duration
             if !event.location.isEmpty {
                 Text("Location: \(event.location)")
                     .font(.subheadline)
@@ -126,78 +87,147 @@ struct EventCard: View {
             Text("Duration: \(hours) hrs \(minutes) mins")
                 .font(.subheadline)
                 .foregroundColor(.gray)
+
+            // Accept/Deny buttons for pending participants
+            if event.pendingParticipants.contains(Auth.auth().currentUser?.uid ?? ""), !hasResponded {
+                HStack {
+                    Button(action: {
+                        eventsViewModel.acceptEvent(event: event)
+                        hasResponded = true
+                    }) {
+                        Text("Accept")
+                            .font(.caption)
+                            .padding(.horizontal, 15)
+                            .padding(.vertical, 6)
+                            .background(Color.green)
+                            .cornerRadius(8)
+                            .foregroundColor(.white)
+                    }
+
+                    Button(action: {
+                        eventsViewModel.denyEvent(event: event)
+                        hasResponded = true
+                    }) {
+                        Text("Deny")
+                            .font(.caption)
+                            .padding(.horizontal, 15)
+                            .padding(.vertical, 6)
+                            .background(Color.red)
+                            .cornerRadius(8)
+                            .foregroundColor(.white)
+                    }
+                }
+            }
         }
         .padding()
-        .frame(maxWidth: .infinity, alignment: .leading) // Makes the card rectangular
+        .frame(maxWidth: .infinity, alignment: .leading) // Full-width card
         .background(Color.white)
         .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 4)
+        .padding(.horizontal) // Add spacing between cards and screen edges
     }
 }
 
 struct EventDetailView: View {
     let event: UserEvent
+    @EnvironmentObject var eventsViewModel: EventsViewModel
+    @State private var creatorName: String = "Loading..."
+    @State private var acceptedNames: [String] = []
+    @State private var deniedNames: [String] = []
+    @State private var pendingNames: [String] = []
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                VStack(alignment: .leading, spacing: 15) {
-                    // Event Title
-                    Text(event.title)
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .multilineTextAlignment(.leading)
+                // Event title
+                Text(event.title)
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
 
-                    // Location
-                    if !event.location.isEmpty {
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text("Location")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                            Text(event.location)
-                                .font(.body)
-                                .foregroundColor(.secondary)
-                        }
-                    }
+                // Event location
+                if !event.location.isEmpty {
+                    Text("Location: \(event.location)")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
 
-                    // Duration
-                    let hours = event.duration / 3600
-                    let minutes = (event.duration % 3600) / 60
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text("Duration")
-                            .font(.headline)
-                            .foregroundColor(.primary)
-                        Text("\(hours) hrs \(minutes) mins")
+                // Event duration
+                let hours = event.duration / 3600
+                let minutes = (event.duration % 3600) / 60
+                Text("Duration: \(hours) hrs \(minutes) mins")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+
+                // Event description
+                if !event.description.isEmpty {
+                    Text("Description: \(event.description)")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+
+                Divider()
+
+                // Creator's name
+                Text("Creator: \(creatorName)")
+                    .font(.headline)
+
+                Divider()
+
+                // Participants grouped by status
+                if !acceptedNames.isEmpty {
+                    Text("Accepted Participants:")
+                        .font(.headline)
+                    ForEach(acceptedNames, id: \.self) { name in
+                        Text(name)
                             .font(.body)
-                            .foregroundColor(.secondary)
-                    }
-
-                    // Description
-                    if !event.description.isEmpty {
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text("Description")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                            Text(event.description)
-                                .font(.body)
-                                .foregroundColor(.secondary)
-                                .lineSpacing(5)
-                        }
+                            .foregroundColor(.green)
                     }
                 }
-                .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(12)
-                .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 4)
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal)
 
-                Spacer()
+                if !pendingNames.isEmpty {
+                    Text("Pending Participants:")
+                        .font(.headline)
+                    ForEach(pendingNames, id: \.self) { name in
+                        Text(name)
+                            .font(.body)
+                            .foregroundColor(.yellow)
+                    }
+                }
+
+                if !deniedNames.isEmpty {
+                    Text("Denied Participants:")
+                        .font(.headline)
+                    ForEach(deniedNames, id: \.self) { name in
+                        Text(name)
+                            .font(.body)
+                            .foregroundColor(.red)
+                    }
+                }
             }
-            .padding(.vertical)
+            .padding()
         }
-        .background(Color(.systemGroupedBackground))
         .navigationTitle("Event Details")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            // Fetch creator's full name
+            eventsViewModel.fetchUserFullName(uid: event.creatorUID) { name in
+                if let name = name {
+                    creatorName = name
+                } else {
+                    creatorName = "Unknown"
+                }
+            }
+
+            // Fetch participants grouped by status
+            eventsViewModel.fetchParticipantsByStatus(
+                acceptedUIDs: event.acceptedParticipants,
+                deniedUIDs: event.deniedParticipants,
+                pendingUIDs: event.pendingParticipants
+            ) { accepted, denied, pending in
+                acceptedNames = accepted
+                deniedNames = denied
+                pendingNames = pending
+            }
+        }
     }
 }

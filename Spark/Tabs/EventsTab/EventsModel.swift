@@ -14,12 +14,8 @@ struct UserEvent: Identifiable, Hashable {
     let description: String
     let duration: Int // Duration in seconds
     let creatorUID: String
-    let participantsUIDs: [String]
-    var status: EventStatus
-}
-
-enum EventStatus: String {
-    case pending
-    case accepted
-    case denied
+    let participantsUIDs: [String] // All participants
+    var acceptedParticipants: [String] // UIDs of participants who accepted
+    var deniedParticipants: [String] // UIDs of participants who denied
+    var pendingParticipants: [String] // UIDs of participants who haven't responded
 }

@@ -22,7 +22,7 @@ struct EventsTabView: View {
                     ScrollView {
                         LazyVStack(spacing: 15) {
                             // Show userEvents
-                            ForEach(eventsViewModel.userEvents) { event in
+                            ForEach(eventsViewModel.userEvents, id: \.id) { event in
                                 NavigationLink(destination: EventDetailView(event: event)) {
                                     EventCard(event: event)
                                 }
@@ -30,7 +30,7 @@ struct EventsTabView: View {
                             }
 
                             // Show pendingEvents with Accept/Deny buttons
-                            ForEach(eventsViewModel.pendingEvents) { event in
+                            ForEach(eventsViewModel.pendingEvents, id: \.id) { event in
                                 EventCard(event: event)
                                     .environmentObject(eventsViewModel)
                             }
@@ -81,10 +81,8 @@ struct EventCard: View {
                     .font(.subheadline)
                     .foregroundColor(.gray)
             }
-
-            let hours = event.duration / 3600
-            let minutes = (event.duration % 3600) / 60
-            Text("Duration: \(hours) hrs \(minutes) mins")
+            
+            Text("Created: \(event.creationTime.formattedDate())")
                 .font(.subheadline)
                 .foregroundColor(.gray)
 
@@ -150,6 +148,11 @@ struct EventDetailView: View {
                         .font(.subheadline)
                         .foregroundColor(.gray)
                 }
+                
+                // Event Creation Time
+                Text("Created: \(event.creationTime.formattedDate())")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
 
                 // Event duration
                 let hours = event.duration / 3600
@@ -229,5 +232,15 @@ struct EventDetailView: View {
                 pendingNames = pending
             }
         }
+    }
+}
+
+// MARK: - Date Extension
+extension Date {
+    func formattedDate() -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: self)
     }
 }

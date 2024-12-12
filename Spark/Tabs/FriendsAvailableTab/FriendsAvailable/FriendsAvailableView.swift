@@ -9,9 +9,8 @@ import SwiftUI
 
 struct FriendsAvailableScreen: View {
     @StateObject private var viewModel = FriendsAvailableViewModel()
-    @State private var selectedFriends: [String] = [] // Store selected friend UIDs
     @State private var searchText: String = ""
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -40,7 +39,6 @@ struct FriendsAvailableScreen: View {
                     .foregroundColor(.primary)
                     .padding()
                     .offset(y: -60)
-                
 
                 // Filter Buttons
                 HStack(spacing: 15) {
@@ -50,7 +48,7 @@ struct FriendsAvailableScreen: View {
                             status: "Available",
                             viewModel: viewModel,
                             statusColor: .green,
-                            selectedFriends: $selectedFriends
+                            selectedFriends: $viewModel.selectedFriends
                         )
                     ) {
                         AvailabilityFilterButton(label: "Available", color: .green)
@@ -61,7 +59,7 @@ struct FriendsAvailableScreen: View {
                             status: "Free Soon",
                             viewModel: viewModel,
                             statusColor: .yellow,
-                            selectedFriends: $selectedFriends
+                            selectedFriends: $viewModel.selectedFriends
                         )
                     ) {
                         AvailabilityFilterButton(label: "Free Soon", color: .yellow)
@@ -72,7 +70,7 @@ struct FriendsAvailableScreen: View {
                             status: "Busy",
                             viewModel: viewModel,
                             statusColor: .red,
-                            selectedFriends: $selectedFriends
+                            selectedFriends: $viewModel.selectedFriends
                         )
                     ) {
                         AvailabilityFilterButton(label: "Busy", color: .red)
@@ -80,25 +78,7 @@ struct FriendsAvailableScreen: View {
                 }
                 .padding()
                 .offset(y: -70)
-                
-                // Search Bar
-                TextField("Search Friends", text: $viewModel.searchQuery)
-                    .padding(10)
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
-                    .padding(.horizontal, 30)
-                    .offset(y: -60)
-                
-                if !searchText.isEmpty {
-                    Button(action: { searchText = "" }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.gray)
-                            .padding(.trailing, 5)
-                    }
-                }
-                Spacer()
-                    .frame(height:20)
-                
+
                 // Friend List
                 if viewModel.isLoading {
                     ProgressView("Loading Friends...")
@@ -116,13 +96,16 @@ struct FriendsAvailableScreen: View {
                                 SelectableFriendRow(
                                     name: friend.name,
                                     statusColor: colorForStatus(friend.status),
-                                    isSelected: selectedFriends.contains(friend.uid),
+                                    isSelected: viewModel.selectedFriends.contains(friend.uid),
                                     toggleSelection: {
-                                        if let index = selectedFriends.firstIndex(of: friend.uid) {
-                                            selectedFriends.remove(at: index) // Deselect
+                                        if let index = viewModel.selectedFriends.firstIndex(of: friend.uid) {
+                                            viewModel.selectedFriends.remove(at: index) // Deselect
                                         } else {
-                                            selectedFriends.append(friend.uid) // Select
+                                            viewModel.selectedFriends.append(friend.uid) // Select
                                         }
+                                    },
+                                    onDelete: {
+                                        viewModel.removeFriend(friend: friend)
                                     }
                                 )
                             }
@@ -133,7 +116,7 @@ struct FriendsAvailableScreen: View {
                 }
 
                 // Create Event Button
-                NavigationLink(destination: CreateEventScreen(selectedFriends: selectedFriends)
+                NavigationLink(destination: CreateEventScreen(selectedFriends: viewModel.selectedFriends)
                                 .environmentObject(viewModel)) {
                     HStack {
                         Text("Create Event")
@@ -149,10 +132,8 @@ struct FriendsAvailableScreen: View {
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal)
                     .padding(.vertical, 10)
-                    .opacity(selectedFriends.isEmpty ? 0.5 : 1.0) // Adjust opacity
+                    .opacity(viewModel.selectedFriends.isEmpty ? 0.5 : 1.0) // Adjust opacity
                 }
-                .disabled(selectedFriends.isEmpty) // Disable if no friends selected
-                //.padding(.bottom, 20)
             }
             .offset(y: -20)
             .background(Color(.systemBackground).edgesIgnoringSafeArea(.all))
@@ -163,7 +144,6 @@ struct FriendsAvailableScreen: View {
         .accentColor(Color.blue)
     }
 
-    // Helper function to determine color based on friend status
     private func colorForStatus(_ status: String) -> Color {
         switch status.lowercased() {
         case "available": return .green
@@ -179,32 +159,75 @@ struct SelectableFriendRow: View {
     var statusColor: Color
     var isSelected: Bool
     var toggleSelection: () -> Void
+    var onDelete: () -> Void
+
+    @State private var offset: CGFloat = 0.0
+    @GestureState private var isDragging: Bool = false
 
     var body: some View {
-        HStack {
-            // Selection indicator
-            Circle()
-                .stroke(isSelected ? Color.blue : Color.gray, lineWidth: 2)
-                .background(isSelected ? Circle().fill(Color.blue) : nil)
-                .frame(width: 18, height: 18)
-                .onTapGesture {
-                    toggleSelection()
+        ZStack {
+            // Background layer with delete button
+            HStack {
+                Spacer()
+                Button(action: {
+                    onDelete()
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 24))
+                        .foregroundColor(.red)
+                        .padding()
                 }
+            }
+            //.background(Color.red.opacity(0.2))
+            .cornerRadius(15)
 
-            // Friend name and status
-            Text(name)
-                .font(.system(size: 18, weight: .bold))
-                .foregroundColor(.primary)
-            Spacer()
-            Circle()
-                .fill(statusColor)
-                .frame(width: 16, height: 16)
+            // Foreground layer with friend row content
+            HStack {
+                Circle()
+                    .stroke(isSelected ? Color.blue : Color.gray, lineWidth: 2)
+                    .background(isSelected ? Circle().fill(Color.blue) : nil)
+                    .frame(width: 18, height: 18)
+                    .onTapGesture {
+                        toggleSelection()
+                    }
+
+                Text(name)
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(.primary)
+
+                Spacer()
+
+                Circle()
+                    .fill(statusColor)
+                    .frame(width: 16, height: 16)
+            }
+            .padding()
+            .background(Color.white)
+            .cornerRadius(15)
+            .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+            .offset(x: offset)
+            .gesture(
+                DragGesture()
+                    .updating($isDragging, body: { (value, state, _) in
+                        state = true
+                    })
+                    .onChanged { value in
+                        // Allow swiping only to the left
+                        if value.translation.width < 0 {
+                            offset = value.translation.width
+                        }
+                    }
+                    .onEnded { value in
+                        // Show the delete button if swiped past a threshold, otherwise reset
+                        if value.translation.width < -100 {
+                            offset = -100
+                        } else {
+                            offset = 0
+                        }
+                    }
+            )
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 15)
-                .stroke(Color.primary.opacity(0.2), lineWidth: 1)
-        )
+        .animation(.easeInOut, value: offset)
     }
 }
 
@@ -224,17 +247,20 @@ struct FilteredFriendsListView: View {
 
             ScrollView {
                 VStack(spacing: 15) {
-                    ForEach(viewModel.filterFriends(by: status), id: \.name) { friend in
+                    ForEach(viewModel.filterFriends(by: status), id: \.uid) { friend in
                         SelectableFriendRow(
                             name: friend.name,
                             statusColor: statusColor,
-                            isSelected: selectedFriends.contains(friend.name),
+                            isSelected: selectedFriends.contains(friend.uid),
                             toggleSelection: {
-                                if let index = selectedFriends.firstIndex(of: friend.name) {
+                                if let index = selectedFriends.firstIndex(of: friend.uid) {
                                     selectedFriends.remove(at: index)
                                 } else {
-                                    selectedFriends.append(friend.name)
+                                    selectedFriends.append(friend.uid)
                                 }
+                            },
+                            onDelete: {
+                                viewModel.removeFriend(friend: friend)
                             }
                         )
                     }

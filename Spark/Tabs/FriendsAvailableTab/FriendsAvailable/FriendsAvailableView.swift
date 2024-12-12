@@ -9,9 +9,8 @@ import SwiftUI
 
 struct FriendsAvailableScreen: View {
     @StateObject private var viewModel = FriendsAvailableViewModel()
-    @State private var selectedFriends: [String] = [] // Store selected friend UIDs
     @State private var searchText: String = ""
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -40,7 +39,6 @@ struct FriendsAvailableScreen: View {
                     .foregroundColor(.primary)
                     .padding()
                     .offset(y: -60)
-                
 
                 // Filter Buttons
                 HStack(spacing: 15) {
@@ -50,7 +48,7 @@ struct FriendsAvailableScreen: View {
                             status: "Available",
                             viewModel: viewModel,
                             statusColor: .green,
-                            selectedFriends: $selectedFriends
+                            selectedFriends: $viewModel.selectedFriends
                         )
                     ) {
                         AvailabilityFilterButton(label: "Available", color: .green)
@@ -61,7 +59,7 @@ struct FriendsAvailableScreen: View {
                             status: "Free Soon",
                             viewModel: viewModel,
                             statusColor: .yellow,
-                            selectedFriends: $selectedFriends
+                            selectedFriends: $viewModel.selectedFriends
                         )
                     ) {
                         AvailabilityFilterButton(label: "Free Soon", color: .yellow)
@@ -72,7 +70,7 @@ struct FriendsAvailableScreen: View {
                             status: "Busy",
                             viewModel: viewModel,
                             statusColor: .red,
-                            selectedFriends: $selectedFriends
+                            selectedFriends: $viewModel.selectedFriends
                         )
                     ) {
                         AvailabilityFilterButton(label: "Busy", color: .red)
@@ -80,25 +78,7 @@ struct FriendsAvailableScreen: View {
                 }
                 .padding()
                 .offset(y: -70)
-                
-                // Search Bar
-                TextField("Search Friends", text: $viewModel.searchQuery)
-                    .padding(10)
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
-                    .padding(.horizontal, 30)
-                    .offset(y: -60)
-                
-                if !searchText.isEmpty {
-                    Button(action: { searchText = "" }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.gray)
-                            .padding(.trailing, 5)
-                    }
-                }
-                Spacer()
-                    .frame(height:20)
-                
+
                 // Friend List
                 if viewModel.isLoading {
                     ProgressView("Loading Friends...")
@@ -116,12 +96,12 @@ struct FriendsAvailableScreen: View {
                                 SelectableFriendRow(
                                     name: friend.name,
                                     statusColor: colorForStatus(friend.status),
-                                    isSelected: selectedFriends.contains(friend.uid),
+                                    isSelected: viewModel.selectedFriends.contains(friend.uid),
                                     toggleSelection: {
-                                        if let index = selectedFriends.firstIndex(of: friend.uid) {
-                                            selectedFriends.remove(at: index) // Deselect
+                                        if let index = viewModel.selectedFriends.firstIndex(of: friend.uid) {
+                                            viewModel.selectedFriends.remove(at: index) // Deselect
                                         } else {
-                                            selectedFriends.append(friend.uid) // Select
+                                            viewModel.selectedFriends.append(friend.uid) // Select
                                         }
                                     }
                                 )
@@ -135,7 +115,7 @@ struct FriendsAvailableScreen: View {
                 Spacer()
 
                 // Create Event Button
-                NavigationLink(destination: CreateEventScreen(selectedFriends: selectedFriends)
+                NavigationLink(destination: CreateEventScreen(selectedFriends: viewModel.selectedFriends)
                                 .environmentObject(viewModel)) {
                     HStack {
                         Text("Create Event")
@@ -151,9 +131,9 @@ struct FriendsAvailableScreen: View {
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal)
                     .padding(.vertical, 10)
-                    .opacity(selectedFriends.isEmpty ? 0.5 : 1.0) // Adjust opacity
+                    .opacity(viewModel.selectedFriends.isEmpty ? 0.5 : 1.0) // Adjust opacity
                 }
-                .disabled(selectedFriends.isEmpty) // Disable if no friends selected
+                .disabled(viewModel.selectedFriends.isEmpty) // Disable if no friends selected
                 .padding(.bottom, 20)
             }
             .background(Color(.systemBackground).edgesIgnoringSafeArea(.all))
@@ -164,7 +144,6 @@ struct FriendsAvailableScreen: View {
         .accentColor(Color.blue)
     }
 
-    // Helper function to determine color based on friend status
     private func colorForStatus(_ status: String) -> Color {
         switch status.lowercased() {
         case "available": return .green

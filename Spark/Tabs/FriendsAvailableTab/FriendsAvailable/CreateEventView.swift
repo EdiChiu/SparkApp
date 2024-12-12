@@ -222,6 +222,8 @@ struct CreateEventScreen: View {
 //        }.resume()
 //    }
     
+    @Environment(\.presentationMode) var presentationMode
+
     private func createEvent() {
         let duration = (durationHours * 3600) + (durationMinutes * 60)
 
@@ -244,8 +246,10 @@ struct CreateEventScreen: View {
 
         eventsViewModel.addEvent(event: newEvent)
         resetForm()
+        viewModel.resetSelectedFriends() // Reset the friends selection
+        presentationMode.wrappedValue.dismiss() // Navigate back to FriendsAvailableView
     }
-
+    
     private func resetForm() {
         eventName = ""
         location = ""

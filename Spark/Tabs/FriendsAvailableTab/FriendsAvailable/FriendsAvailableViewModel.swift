@@ -19,6 +19,7 @@ class FriendsAvailableViewModel: ObservableObject {
     @Published var friends: [Friend] = [] // Store friends as structs containing uid, name, and status
     @Published var isLoading: Bool = false
     @Published var searchQuery: String = ""
+    @Published var selectedFriends: [String] = []
 
     private var db = Firestore.firestore()
     private var currentUserID: String
@@ -168,5 +169,9 @@ class FriendsAvailableViewModel: ObservableObject {
             } else {
                 return friends.filter { $0.name.lowercased().contains(searchQuery.lowercased()) }
             }
-        }
+    }
+    
+    func resetSelectedFriends() {
+        selectedFriends.removeAll() // Clear the selected friends
+    }
 }

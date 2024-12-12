@@ -171,6 +171,23 @@ class FriendsAvailableViewModel: ObservableObject {
             }
     }
     
+    func removeFriend(friend: Friend) {
+        guard let index = friends.firstIndex(where: { $0.uid == friend.uid }) else { return }
+
+        db.collection("users").document(currentUserID).updateData([
+            "friends": FieldValue.arrayRemove([friend.uid])
+        ]) { error in
+            if let error = error {
+                print("Error removing friend \(friend.uid): \(error.localizedDescription)")
+            } else {
+                DispatchQueue.main.async {
+                    self.friends.remove(at: index)
+                    print("Friend \(friend.uid) successfully removed.")
+                }
+            }
+        }
+    }
+    
     func resetSelectedFriends() {
         selectedFriends.removeAll() // Clear the selected friends
     }

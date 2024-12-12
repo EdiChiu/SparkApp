@@ -14,6 +14,7 @@ struct UserEvent: Identifiable, Hashable {
     let description: String
     let duration: Int // Duration in seconds
     let creatorUID: String
+    let creationTime: Date // Add this property
     let participantsUIDs: [String] // All participants
     var acceptedParticipants: [String] // UIDs of participants who accepted
     var deniedParticipants: [String] // UIDs of participants who denied

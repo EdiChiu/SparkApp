@@ -29,14 +29,14 @@ struct FriendsAvailableScreen: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 40, height: 40)
-                            .foregroundColor(.black) // Fixed color for consistency
+                            .foregroundColor(.black) // Fixed color
                     }
                 }
                 .padding()
 
                 Text("Friends Available")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.black) // Fixed text color
+                    .foregroundColor(.black) // Fixed color
                     .padding()
                     .offset(y: -60)
 
@@ -139,7 +139,7 @@ struct FriendsAvailableScreen: View {
                 .disabled(viewModel.selectedFriends.isEmpty) // Disable if no friends selected
                 .padding(.bottom, 20)
             }
-            .background(Color.white.edgesIgnoringSafeArea(.all)) // Fixed white background
+            .background(Color.white.edgesIgnoringSafeArea(.all)) // Enforce white background
             .onAppear {
                 viewModel.fetchFriends()
             }
@@ -156,6 +156,7 @@ struct FriendsAvailableScreen: View {
         }
     }
 }
+
 struct SelectableFriendRow: View {
     var name: String
     var statusColor: Color
@@ -180,7 +181,7 @@ struct SelectableFriendRow: View {
                         .padding()
                 }
             }
-            //.background(Color.red.opacity(0.2))
+            .background(Color.white) // Ensures consistent light background
             .cornerRadius(15)
 
             // Foreground layer with friend row content
@@ -195,7 +196,7 @@ struct SelectableFriendRow: View {
 
                 Text(name)
                     .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(.primary)
+                    .foregroundColor(.black) // Fixed color for text
 
                 Spacer()
 
@@ -204,9 +205,9 @@ struct SelectableFriendRow: View {
                     .frame(width: 16, height: 16)
             }
             .padding()
-            .background(Color.white)
+            .background(Color.white) // Fixed background color
             .cornerRadius(15)
-            .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+            .shadow(color: Color.gray.opacity(0.2), radius: 4, x: 0, y: 2)
             .offset(x: offset)
             .gesture(
                 DragGesture()
@@ -241,44 +242,49 @@ struct FilteredFriendsListView: View {
     @Binding var selectedFriends: [String]
 
     var body: some View {
-        VStack(spacing: 15) {
-            Text(title)
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding(.top)
+        ZStack {
+            // Background color for the entire screen
+            Color.white
+                .edgesIgnoringSafeArea(.all) // Ensure the background covers the full screen
 
-            ScrollView {
-                VStack(spacing: 15) {
-                    ForEach(viewModel.filterFriends(by: status), id: \.uid) { friend in
-                        SelectableFriendRow(
-                            name: friend.name,
-                            statusColor: statusColor,
-                            isSelected: selectedFriends.contains(friend.uid),
-                            toggleSelection: {
-                                if let index = selectedFriends.firstIndex(of: friend.uid) {
-                                    selectedFriends.remove(at: index)
-                                } else {
-                                    selectedFriends.append(friend.uid)
+            VStack(spacing: 15) {
+                Text(title)
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundColor(.black)
+                    .padding(.top)
+
+                ScrollView {
+                    VStack(spacing: 15) {
+                        ForEach(viewModel.filterFriends(by: status), id: \.uid) { friend in
+                            SelectableFriendRow(
+                                name: friend.name,
+                                statusColor: statusColor,
+                                isSelected: selectedFriends.contains(friend.uid),
+                                toggleSelection: {
+                                    if let index = selectedFriends.firstIndex(of: friend.uid) {
+                                        selectedFriends.remove(at: index)
+                                    } else {
+                                        selectedFriends.append(friend.uid)
+                                    }
+                                },
+                                onDelete: {
+                                    viewModel.removeFriend(friend: friend)
                                 }
-                            },
-                            onDelete: {
-                                viewModel.removeFriend(friend: friend)
-                            }
-                        )
+                            )
+                        }
                     }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
-            }
 
-            Spacer()
+                Spacer()
+            }
+            .padding()
         }
-        .padding()
         .navigationBarTitleDisplayMode(.inline)
-        .background(Color(.systemBackground))
     }
 }
 
-// Availability Filter Button
 struct AvailabilityFilterButton: View {
     var label: String
     var color: Color
@@ -294,10 +300,10 @@ struct AvailabilityFilterButton: View {
         .padding(8)
         .background(Color.gray.opacity(0.2))
         .cornerRadius(10)
+        .shadow(color: Color.gray.opacity(0.2), radius: 2, x: 0, y: 1)
     }
 }
 
-// Friend Row
 struct FriendRow: View {
     var name: String
     var statusColor: Color
@@ -306,7 +312,7 @@ struct FriendRow: View {
         HStack {
             Text(name)
                 .font(.system(size: 18, weight: .bold))
-                .foregroundColor(.primary) // Dynamically adjusts for readability
+                .foregroundColor(.black) // Fixed color for text
             Spacer()
             Circle()
                 .fill(statusColor)
@@ -315,7 +321,7 @@ struct FriendRow: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 15)
-                .stroke(Color.primary.opacity(0.2), lineWidth: 1) // Dynamic border color
+                .stroke(Color.gray.opacity(0.2), lineWidth: 1) // Fixed border color
         )
     }
 }

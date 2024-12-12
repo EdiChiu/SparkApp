@@ -15,11 +15,16 @@ struct AddUserView: View {
     @State private var popupMessage: String = ""
 
     var body: some View {
-        NavigationView {
+        ZStack {
+            // Background color for the entire screen
+            Color.white
+                .edgesIgnoringSafeArea(.all)
+
             VStack(spacing: 20) {
                 Text("Add Friends")
                     .font(.largeTitle)
                     .fontWeight(.bold)
+                    .foregroundColor(.black) // Fixed color for title
 
                 VStack(spacing: 8) {
                     HStack {
@@ -56,6 +61,7 @@ struct AddUserView: View {
                                         Text(user.userName)
                                             .font(.headline)
                                             .fontWeight(.bold)
+                                            .foregroundColor(.black) // Fixed color for username
                                         Text("\(user.firstName) \(user.lastName)")
                                             .font(.subheadline)
                                             .foregroundColor(.gray)
@@ -88,7 +94,7 @@ struct AddUserView: View {
                                     }
                                 }
                                 .padding()
-                                .background(Color.white)
+                                .background(Color.white) // Fixed card background color
                                 .cornerRadius(12)
                                 .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
                             }
@@ -96,7 +102,6 @@ struct AddUserView: View {
                     }
                     .padding(.horizontal)
                 }
-                .background(Color(.systemGroupedBackground))
                 .frame(maxHeight: .infinity)
 
                 if showPopup {
@@ -120,15 +125,15 @@ struct AddUserView: View {
                 }
             }
             .padding(.top)
-            .background(Color(.systemBackground))
-            .navigationBarTitleDisplayMode(.inline)
-            .onAppear {
-                viewModel.fetchAllUsers()
-                viewModel.fetchCurrentUserFriends() // Fetch the user's current friends
-            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            viewModel.fetchAllUsers()
+            viewModel.fetchCurrentUserFriends() // Fetch the user's current friends
         }
     }
 }
+
 // MARK: - Preview
 struct AddUserView_Previews: PreviewProvider {
     static var previews: some View {

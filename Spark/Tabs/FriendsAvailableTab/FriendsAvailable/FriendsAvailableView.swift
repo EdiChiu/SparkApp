@@ -115,8 +115,6 @@ struct FriendsAvailableScreen: View {
                     .offset(y: -60)
                 }
 
-                Spacer()
-
                 // Create Event Button
                 NavigationLink(destination: CreateEventScreen(selectedFriends: viewModel.selectedFriends)
                                 .environmentObject(viewModel)) {
@@ -136,9 +134,8 @@ struct FriendsAvailableScreen: View {
                     .padding(.vertical, 10)
                     .opacity(viewModel.selectedFriends.isEmpty ? 0.5 : 1.0) // Adjust opacity
                 }
-                .disabled(viewModel.selectedFriends.isEmpty) // Disable if no friends selected
-                .padding(.bottom, 20)
             }
+            .offset(y: -20)
             .background(Color(.systemBackground).edgesIgnoringSafeArea(.all))
             .onAppear {
                 viewModel.fetchFriends()

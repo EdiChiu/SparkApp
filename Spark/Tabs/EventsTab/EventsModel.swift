@@ -12,11 +12,9 @@ struct UserEvent: Identifiable, Hashable {
     let title: String
     let location: String
     let description: String
-    let duration: Int // Duration in seconds
     let creatorUID: String
-    let creationTime: Date // Add this property
-    let participantsUIDs: [String] // All participants
-    var acceptedParticipants: [String] // UIDs of participants who accepted
-    var deniedParticipants: [String] // UIDs of participants who denied
-    var pendingParticipants: [String] // UIDs of participants who haven't responded
+    let startTime: Date
+    let endTime: Date
+    let creationTime: Date
+    let participantsUIDs: [String] // UIDs of the selected friends
 }

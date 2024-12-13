@@ -10,6 +10,7 @@ import SwiftUI
 struct CustomTabBar: View {
     @State private var selectedTab: Int = 0
     @Binding var authFlow: RootView.AuthFlow
+    @EnvironmentObject var eventsViewModel: EventsViewModel
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -23,6 +24,7 @@ struct CustomTabBar: View {
                 .tag(0)
 
             EventsTabView()
+                .environmentObject(eventsViewModel)
                 .tabItem {
                     VStack {
                         Image(systemName: "calendar")

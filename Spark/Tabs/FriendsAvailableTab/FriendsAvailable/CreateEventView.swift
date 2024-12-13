@@ -12,19 +12,22 @@ struct CreateEventScreen: View {
     @State private var eventName: String = ""
     @State private var location: String = ""
     @State private var description: String = ""
-    @State private var durationHours: Int = 0
-    @State private var durationMinutes: Int = 0
+    @State private var startTime: Date = Date() // Default to current time
+    @State private var endTime: Date = Calendar.current.date(byAdding: .hour, value: 1, to: Date())! // Default to 1 hour later
     var selectedFriends: [String] // Array of selected friend UIDs
     @EnvironmentObject var viewModel: FriendsAvailableViewModel
     @EnvironmentObject var eventsViewModel: EventsViewModel
 
-    // Computed property to check if the form is valid
+    @Environment(\.presentationMode) var presentationMode
+
+    @State private var currentViewController: UIViewController?
+
     private var isFormComplete: Bool {
         !eventName.isEmpty &&
         !location.isEmpty &&
         !description.isEmpty &&
-        (durationHours > 0 || durationMinutes > 0) &&
-        !selectedFriends.isEmpty
+        !selectedFriends.isEmpty &&
+        startTime < endTime // Ensure start time is before end time
     }
 
     var body: some View {
@@ -85,43 +88,25 @@ struct CreateEventScreen: View {
                         .lineLimit(4)
                 }
 
-                // Duration Pickers
-                VStack(spacing: 10) {
-                    Text("Duration")
+                // Start and End Time
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Start Time")
                         .font(.headline)
                         .foregroundColor(.gray)
-                        .frame(maxWidth: .infinity, alignment: .center)
+                    DatePicker("Select Start Time", selection: $startTime, displayedComponents: [.date, .hourAndMinute])
+                        .labelsHidden()
+                        .padding()
+                        .background(Color.gray.opacity(0.15))
+                        .cornerRadius(12)
 
-                    HStack(spacing: 30) {
-                        VStack(spacing: 5) {
-                            Text("Hours")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                            Picker("Hours", selection: $durationHours) {
-                                ForEach(0..<24, id: \.self) { hour in
-                                    Text("\(hour)").tag(hour)
-                                }
-                            }
-                            .frame(width: 60, height: 100)
-                            .clipped()
-                            .pickerStyle(WheelPickerStyle())
-                        }
-
-                        VStack(spacing: 5) {
-                            Text("Minutes")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                            Picker("Minutes", selection: $durationMinutes) {
-                                ForEach(0..<60, id: \.self) { minute in
-                                    Text("\(minute)").tag(minute)
-                                }
-                            }
-                            .frame(width: 60, height: 100)
-                            .clipped()
-                            .pickerStyle(WheelPickerStyle())
-                        }
-                    }
-                    .padding(.horizontal, 10)
+                    Text("End Time")
+                        .font(.headline)
+                        .foregroundColor(.gray)
+                    DatePicker("Select End Time", selection: $endTime, displayedComponents: [.date, .hourAndMinute])
+                        .labelsHidden()
+                        .padding()
+                        .background(Color.gray.opacity(0.15))
+                        .cornerRadius(12)
                 }
 
                 // Selected Friends List
@@ -148,17 +133,6 @@ struct CreateEventScreen: View {
                                         }
                                         .padding()
                                         .background(Color.orange.opacity(0.15))
-                                        .cornerRadius(12)
-                                    } else {
-                                        HStack {
-                                            Text(friendUID)
-                                                .font(.body)
-                                                .italic()
-                                                .foregroundColor(.secondary)
-                                            Spacer()
-                                        }
-                                        .padding()
-                                        .background(Color.gray.opacity(0.15))
                                         .cornerRadius(12)
                                     }
                                 }
@@ -187,19 +161,23 @@ struct CreateEventScreen: View {
             .padding(.horizontal, 20)
             .padding(.top, 10)
             .padding(.bottom, 80)
+
+            // Embed the view controller resolver to capture the UIViewController
+            ViewControllerResolver { viewController in
+                self.currentViewController = viewController
+            }
         }
         .background(Color(.systemGroupedBackground))
         .edgesIgnoringSafeArea(.bottom)
         .navigationBarTitleDisplayMode(.inline)
-        
     }
-    
-    @Environment(\.presentationMode) var presentationMode
 
     private func createEvent() {
-        let duration = (durationHours * 3600) + (durationMinutes * 60)
+        guard let currentViewController = currentViewController else {
+            print("ViewController not available")
+            return
+        }
 
-        // Initialize pendingParticipants to include all selected friends
         let currentUserUID = Auth.auth().currentUser?.uid ?? ""
 
         let newEvent = UserEvent(
@@ -207,27 +185,37 @@ struct CreateEventScreen: View {
             title: eventName,
             location: location,
             description: description,
-            duration: duration,
             creatorUID: currentUserUID,
+            startTime: startTime,
+            endTime: endTime,
             creationTime: Date(),
-            participantsUIDs: selectedFriends,
-            acceptedParticipants: [],
-            deniedParticipants: [],
-            pendingParticipants: selectedFriends
+            participantsUIDs: selectedFriends
         )
 
-        eventsViewModel.addEvent(event: newEvent)
+        eventsViewModel.addEvent(event: newEvent, viewController: currentViewController)
         resetForm()
         viewModel.resetSelectedFriends() // Reset the friends selection
-        presentationMode.wrappedValue.dismiss() // Navigate back to FriendsAvailableView
+        presentationMode.wrappedValue.dismiss()
     }
-    
+
     private func resetForm() {
         eventName = ""
         location = ""
         description = ""
-        durationHours = 0
-        durationMinutes = 0
+        startTime = Date()
+        endTime = Calendar.current.date(byAdding: .hour, value: 1, to: Date())!
     }
 }
+struct ViewControllerResolver: UIViewControllerRepresentable {
+    var onResolve: (UIViewController) -> Void
 
+    func makeUIViewController(context: Context) -> UIViewController {
+        let viewController = UIViewController()
+        DispatchQueue.main.async {
+            self.onResolve(viewController)
+        }
+        return viewController
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+}

@@ -10,6 +10,20 @@ import FirebaseAuth
 
 struct EventsTabView: View {
     @EnvironmentObject var eventsViewModel: EventsViewModel
+    @Environment(\.colorScheme) var colorScheme
+    
+    init() {
+        // Configure navigation bar appearance
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor.systemBackground
+        appearance.titleTextAttributes = [
+            .foregroundColor: UIColor.label 
+        ]
+
+        UINavigationBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+    }
 
     var body: some View {
         NavigationView {
@@ -60,6 +74,7 @@ struct EventCard: View {
                 Text(event.title)
                     .font(.headline)
                     .fontWeight(.bold)
+                    .foregroundStyle(Color.black)
 
                 Spacer()
 
@@ -244,3 +259,8 @@ extension Date {
         return formatter.string(from: self)
     }
 }
+
+//#Preview
+//{
+//    EventsTabView()
+//}

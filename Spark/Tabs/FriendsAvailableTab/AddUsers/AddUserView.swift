@@ -56,6 +56,7 @@ struct AddUserView: View {
                                         Text(user.userName)
                                             .font(.headline)
                                             .fontWeight(.bold)
+                                            .foregroundColor(.black)
                                         Text("\(user.firstName) \(user.lastName)")
                                             .font(.subheadline)
                                             .foregroundColor(.gray)
@@ -88,7 +89,7 @@ struct AddUserView: View {
                                     }
                                 }
                                 .padding()
-                                .background(Color("CardBackground"))
+                                .background(Color.white)
                                 .cornerRadius(12)
                                 .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
                             }

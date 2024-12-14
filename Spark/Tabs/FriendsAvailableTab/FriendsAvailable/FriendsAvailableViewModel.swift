@@ -188,6 +188,30 @@ class FriendsAvailableViewModel: ObservableObject {
         }
     }
     
+    func saveParticipantsUIDsToFirestore() {
+        guard let currentUserID = Auth.auth().currentUser?.uid else {
+            print("Error: No current user logged in.")
+            return
+        }
+
+        guard !selectedFriends.isEmpty else {
+            print("Error: No selected friends to save.")
+            return
+        }
+
+        // Save selected friends as participantsUIDs to Firestore
+        db.collection("users").document(currentUserID).setData([
+            "participantsUIDs": selectedFriends
+        ], merge: true) { error in
+            if let error = error {
+                print("Error saving participantsUIDs: \(error.localizedDescription)")
+            } else {
+                print("Successfully saved participantsUIDs: \(self.selectedFriends)")
+                self.resetSelectedFriends() // Clear the selected friends
+            }
+        }
+    }
+    
     func resetSelectedFriends() {
         selectedFriends.removeAll() // Clear the selected friends
     }

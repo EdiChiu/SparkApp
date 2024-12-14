@@ -6,10 +6,14 @@
 //
 
 import SwiftUI
+import EventKitUI
 
 struct FriendsAvailableScreen: View {
     @StateObject private var viewModel = FriendsAvailableViewModel()
     @State private var searchText: String = ""
+    @EnvironmentObject var eventsViewModel: EventsViewModel
+    @State private var showEventEditor = false
+    @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         NavigationStack {
@@ -116,8 +120,10 @@ struct FriendsAvailableScreen: View {
                 }
 
                 // Create Event Button
-                NavigationLink(destination: CreateEventScreen(selectedFriends: viewModel.selectedFriends)
-                                .environmentObject(viewModel)) {
+                Button(action: {
+                    viewModel.saveParticipantsUIDsToFirestore()
+                    presentEventEditor()
+                }) {
                     HStack {
                         Text("Create Event")
                             .font(.system(size: 21, weight: .bold))
@@ -134,6 +140,7 @@ struct FriendsAvailableScreen: View {
                     .padding(.vertical, 10)
                     .opacity(viewModel.selectedFriends.isEmpty ? 0.5 : 1.0) // Adjust opacity
                 }
+                .disabled(viewModel.selectedFriends.isEmpty) // Disable if no friends selected
             }
             .background(Color.white.edgesIgnoringSafeArea(.all)) // Enforce white background
             .offset(y: -20)
@@ -142,6 +149,46 @@ struct FriendsAvailableScreen: View {
             }
         }
         .accentColor(Color.blue)
+    }
+
+    private func presentEventEditor() {
+        let eventStore = EKEventStore()
+
+        eventStore.requestAccess(to: .event) { granted, error in
+            if granted {
+                DispatchQueue.main.async {
+                    let event = EKEvent(eventStore: eventStore)
+                    event.title = "New Event"
+                    event.startDate = Date()
+                    event.endDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date())
+                    event.calendar = eventStore.defaultCalendarForNewEvents
+
+                    let eventEditVC = EKEventEditViewController()
+                    eventEditVC.event = event
+                    eventEditVC.eventStore = eventStore
+                    eventEditVC.editViewDelegate = eventsViewModel
+
+                    if let rootVC = UIApplication.shared.windows.first?.rootViewController {
+                        rootVC.present(eventEditVC, animated: true) {
+                            // Reset form and navigate back after the event editor is dismissed
+                            if let savedEvent = eventEditVC.event {
+                                handleEventSaved(savedEvent)
+                            }
+                        }
+                    }
+                }
+            } else if let error = error {
+                print("Error requesting calendar access: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    private func handleEventSaved(_ event: EKEvent) {
+        // Reset the selected friends
+        viewModel.resetSelectedFriends()
+
+        // Navigate back to the previous view
+        presentationMode.wrappedValue.dismiss()
     }
 
     private func colorForStatus(_ status: String) -> Color {
@@ -153,7 +200,6 @@ struct FriendsAvailableScreen: View {
         }
     }
 }
-
 struct SelectableFriendRow: View {
     var name: String
     var statusColor: Color

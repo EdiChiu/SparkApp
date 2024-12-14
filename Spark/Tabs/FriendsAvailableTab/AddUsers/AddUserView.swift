@@ -56,6 +56,7 @@ struct AddUserView: View {
                                         Text(user.userName)
                                             .font(.headline)
                                             .fontWeight(.bold)
+                                            .foregroundColor(.black)
                                         Text("\(user.firstName) \(user.lastName)")
                                             .font(.subheadline)
                                             .foregroundColor(.gray)

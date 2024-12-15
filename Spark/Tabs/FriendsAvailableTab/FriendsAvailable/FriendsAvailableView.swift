@@ -118,6 +118,9 @@ struct FriendsAvailableScreen: View {
                                         } else {
                                             selectedFriends.append(friend.uid) // Select
                                         }
+                                    },
+                                    onDelete: {
+                                        viewModel.removeFriend(friend: friend) // Call the ViewModel's method to remove the friend
                                     }
                                 )
                             }
@@ -159,7 +162,7 @@ struct FriendsAvailableScreen: View {
         }
         .accentColor(Color.blue)
     }
-    
+
     private func presentEventEditor() {
         let eventStore = EKEventStore()
         eventStore.requestAccess(to: .event) { granted, error in
@@ -211,35 +214,76 @@ struct SelectableFriendRow: View {
     var statusColor: Color
     var isSelected: Bool
     var toggleSelection: () -> Void
+    var onDelete: () -> Void
+
+    @State private var offset: CGFloat = 0.0
+    @GestureState private var isDragging: Bool = false
 
     var body: some View {
-        HStack {
-            // Selection indicator
-            Circle()
-                .stroke(isSelected ? Color.blue : Color.gray, lineWidth: 2)
-                .background(isSelected ? Circle().fill(Color.blue) : nil)
-                .frame(width: 18, height: 18)
-                .onTapGesture {
-                    toggleSelection()
+        ZStack {
+            // Background layer with delete button
+            HStack {
+                Spacer()
+                Button(action: {
+                    onDelete()
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 24))
+                        .foregroundColor(.red)
+                        .padding()
                 }
+            }
+            .cornerRadius(15)
 
-            // Friend name and status
-            Text(name)
-                .font(.system(size: 18, weight: .bold))
-                .foregroundColor(.primary)
-            Spacer()
-            Circle()
-                .fill(statusColor)
-                .frame(width: 16, height: 16)
+            // Foreground layer with friend row content
+            HStack {
+                Circle()
+                    .stroke(isSelected ? Color.blue : Color.gray, lineWidth: 2)
+                    .background(isSelected ? Circle().fill(Color.blue) : nil)
+                    .frame(width: 18, height: 18)
+                    .onTapGesture {
+                        toggleSelection()
+                    }
+
+                Text(name)
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(.black)
+
+                Spacer()
+
+                Circle()
+                    .fill(statusColor)
+                    .frame(width: 16, height: 16)
+            }
+            .padding()
+            .background(Color.white)
+            .cornerRadius(15)
+            .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+            .offset(x: offset)
+            .gesture(
+                DragGesture()
+                    .updating($isDragging, body: { (value, state, _) in
+                        state = true
+                    })
+                    .onChanged { value in
+                        // Allow swiping only to the left
+                        if value.translation.width < 0 {
+                            offset = value.translation.width
+                        }
+                    }
+                    .onEnded { value in
+                        // Show the delete button if swiped past a threshold, otherwise reset
+                        if value.translation.width < -100 {
+                            offset = -100
+                        } else {
+                            offset = 0
+                        }
+                    }
+            )
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 15)
-                .stroke(Color.primary.opacity(0.2), lineWidth: 1)
-        )
+        .animation(.easeInOut, value: offset)
     }
 }
-
 struct FilteredFriendsListView: View {
     let title: String
     let status: String
@@ -256,17 +300,20 @@ struct FilteredFriendsListView: View {
 
             ScrollView {
                 VStack(spacing: 15) {
-                    ForEach(viewModel.filterFriends(by: status), id: \.name) { friend in
+                    ForEach(viewModel.filterFriends(by: status), id: \.uid) { friend in
                         SelectableFriendRow(
                             name: friend.name,
                             statusColor: statusColor,
-                            isSelected: selectedFriends.contains(friend.name),
+                            isSelected: selectedFriends.contains(friend.uid),
                             toggleSelection: {
-                                if let index = selectedFriends.firstIndex(of: friend.name) {
-                                    selectedFriends.remove(at: index)
+                                if let index = selectedFriends.firstIndex(of: friend.uid) {
+                                    selectedFriends.remove(at: index) // Deselect
                                 } else {
-                                    selectedFriends.append(friend.name)
+                                    selectedFriends.append(friend.uid) // Select
                                 }
+                            },
+                            onDelete: {
+                                viewModel.removeFriend(friend: friend) // Provide the `onDelete` action
                             }
                         )
                     }

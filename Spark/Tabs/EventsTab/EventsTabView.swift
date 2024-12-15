@@ -64,6 +64,7 @@ struct EventCard: View {
             Text(event.title)
                 .font(.headline)
                 .fontWeight(.bold)
+                .foregroundColor(.black)
 
             // Event Location
             if !event.location.isEmpty {

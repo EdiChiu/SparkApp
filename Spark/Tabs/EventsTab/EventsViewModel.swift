@@ -269,13 +269,28 @@ class EventsViewModel: NSObject, ObservableObject, EKEventEditViewDelegate {
         guard let currentUser = Auth.auth().currentUser else { return }
 
         let eventData = createEventData(from: event)
+
+        // Add the event to the creator's Firestore document
         db.collection("users").document(currentUser.uid).updateData([
             "userEvents": FieldValue.arrayUnion([eventData])
         ]) { error in
             if let error = error {
-                print("Error adding event to Firestore: \(error.localizedDescription)")
+                print("Error adding event to Firestore for creator: \(error.localizedDescription)")
             } else {
-                print("Event successfully added to Firestore.")
+                print("Event successfully added to creator's Firestore.")
+            }
+        }
+
+        // Add the event to the participants' Firestore documents
+        for participantUID in event.participantsUIDs {
+            db.collection("users").document(participantUID).updateData([
+                "pendingEvents": FieldValue.arrayUnion([eventData]) // Assuming a `pendingEvents` field
+            ]) { error in
+                if let error = error {
+                    print("Error adding event to Firestore for participant \(participantUID): \(error.localizedDescription)")
+                } else {
+                    print("Event successfully added to participant \(participantUID)'s Firestore.")
+                }
             }
         }
     }

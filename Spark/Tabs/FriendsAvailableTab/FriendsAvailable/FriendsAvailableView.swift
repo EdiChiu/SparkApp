@@ -189,7 +189,10 @@ struct FriendsAvailableScreen: View {
                         eventEditVC.editViewDelegate = eventsViewModel
 
                         if let rootVC = UIApplication.shared.windows.first?.rootViewController {
-                            rootVC.present(eventEditVC, animated: true)
+                            rootVC.present(eventEditVC, animated: true) {
+                                // Clear selected friends after the editor is dismissed
+                                selectedFriends.removeAll()
+                            }
                         }
                     }
                 }
@@ -198,7 +201,6 @@ struct FriendsAvailableScreen: View {
             }
         }
     }
-
     private func colorForStatus(_ status: String) -> Color {
         switch status.lowercased() {
         case "available": return .green

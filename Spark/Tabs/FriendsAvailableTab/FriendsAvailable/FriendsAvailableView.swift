@@ -2,16 +2,19 @@
 //  FriendsAvailableView.swift
 //  Spark
 //
-//  Created by 3 GO Participant on 11/18/24.
+//  Created by Edison Chiu on 11/18/24.
 //
 
 import SwiftUI
+import EventKit
+import EventKitUI
 
 struct FriendsAvailableScreen: View {
     @StateObject private var viewModel = FriendsAvailableViewModel()
     @State private var selectedFriends: [String] = [] // Store selected friend UIDs
     @State private var searchText: String = ""
-    
+    @EnvironmentObject var eventsViewModel: EventsViewModel
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -40,7 +43,6 @@ struct FriendsAvailableScreen: View {
                     .foregroundColor(.primary)
                     .padding()
                     .offset(y: -60)
-                
 
                 // Filter Buttons
                 HStack(spacing: 15) {
@@ -80,7 +82,7 @@ struct FriendsAvailableScreen: View {
                 }
                 .padding()
                 .offset(y: -70)
-                
+
                 // Search Bar
                 TextField("Search Friends", text: $viewModel.searchQuery)
                     .padding(10)
@@ -88,17 +90,10 @@ struct FriendsAvailableScreen: View {
                     .cornerRadius(8)
                     .padding(.horizontal, 30)
                     .offset(y: -60)
-                
-                if !searchText.isEmpty {
-                    Button(action: { searchText = "" }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.gray)
-                            .padding(.trailing, 5)
-                    }
-                }
+
                 Spacer()
-                    .frame(height:20)
-                
+                    .frame(height: 20)
+
                 // Friend List
                 if viewModel.isLoading {
                     ProgressView("Loading Friends...")
@@ -135,8 +130,9 @@ struct FriendsAvailableScreen: View {
                 Spacer()
 
                 // Create Event Button
-                NavigationLink(destination: CreateEventScreen(selectedFriends: selectedFriends)
-                                .environmentObject(viewModel)) {
+                Button(action: {
+                    presentEventEditor()
+                }) {
                     HStack {
                         Text("Create Event")
                             .font(.system(size: 21, weight: .bold))
@@ -151,12 +147,11 @@ struct FriendsAvailableScreen: View {
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal)
                     .padding(.vertical, 10)
-                    .opacity(selectedFriends.isEmpty ? 0.5 : 1.0) // Adjust opacity
+                    .opacity(selectedFriends.isEmpty ? 0.5 : 1.0)
                 }
-                .disabled(selectedFriends.isEmpty) // Disable if no friends selected
+                .disabled(selectedFriends.isEmpty)
                 .padding(.bottom, 20)
             }
-            //Spacer()
             .background(Color(.systemBackground).edgesIgnoringSafeArea(.all))
             .onAppear {
                 viewModel.fetchFriends()
@@ -164,8 +159,43 @@ struct FriendsAvailableScreen: View {
         }
         .accentColor(Color.blue)
     }
+    
+    private func presentEventEditor() {
+        let eventStore = EKEventStore()
+        eventStore.requestAccess(to: .event) { granted, error in
+            if granted, error == nil {
+                DispatchQueue.main.async {
+                    let event = EKEvent(eventStore: eventStore)
+                    event.title = "New Event"
+                    event.location = "Enter location here"
+                    event.startDate = Date()
+                    event.endDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date())
+                    event.calendar = eventStore.defaultCalendarForNewEvents
 
-    // Helper function to determine color based on friend status
+                    // Use the view model to resolve friend names
+                    viewModel.resolveFriendNames(from: selectedFriends) { fullNames in
+                        event.notes = """
+                        Attendees: \(fullNames.joined(separator: ", "))
+
+                        IMPORTANT: To ensure your selected friends are invited, please manually add them to the event under the 'Invitees' section in this editor by clicking the blue plus button.
+                        """
+
+                        let eventEditVC = EKEventEditViewController()
+                        eventEditVC.event = event
+                        eventEditVC.eventStore = eventStore
+                        eventEditVC.editViewDelegate = eventsViewModel
+
+                        if let rootVC = UIApplication.shared.windows.first?.rootViewController {
+                            rootVC.present(eventEditVC, animated: true)
+                        }
+                    }
+                }
+            } else {
+                print("Access to calendar was denied or an error occurred: \(error?.localizedDescription ?? "Unknown error")")
+            }
+        }
+    }
+
     private func colorForStatus(_ status: String) -> Color {
         switch status.lowercased() {
         case "available": return .green

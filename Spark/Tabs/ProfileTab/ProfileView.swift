@@ -36,6 +36,8 @@ struct ProfileView: View {
                     Toggle("Do Not Disturb", isOn: $viewModel.dnd)
                         .toggleStyle(SwitchToggleStyle(tint: .orange))
                         .padding(.vertical, 5)
+                        .foregroundColor(Color.secondary)
+                        .font(.headline)
                         .onChange(of: viewModel.dnd) { newValue in
                             Task {
                                 try? await viewModel.updateDNDStatus(isDND: newValue)

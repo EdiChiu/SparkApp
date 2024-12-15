@@ -2,16 +2,19 @@
 //  FriendsAvailableView.swift
 //  Spark
 //
-//  Created by 3 GO Participant on 11/18/24.
+//  Created by Edison Chiu on 11/18/24.
 //
 
 import SwiftUI
+import EventKit
+import EventKitUI
 
 struct FriendsAvailableScreen: View {
     @StateObject private var viewModel = FriendsAvailableViewModel()
     @State private var selectedFriends: [String] = [] // Store selected friend UIDs
     @State private var searchText: String = ""
-    
+    @EnvironmentObject var eventsViewModel: EventsViewModel
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -40,7 +43,6 @@ struct FriendsAvailableScreen: View {
                     .foregroundColor(.primary)
                     .padding()
                     .offset(y: -60)
-                
 
                 // Filter Buttons
                 HStack(spacing: 15) {
@@ -80,7 +82,7 @@ struct FriendsAvailableScreen: View {
                 }
                 .padding()
                 .offset(y: -70)
-                
+
                 // Search Bar
                 TextField("Search Friends", text: $viewModel.searchQuery)
                     .padding(10)
@@ -88,17 +90,10 @@ struct FriendsAvailableScreen: View {
                     .cornerRadius(8)
                     .padding(.horizontal, 30)
                     .offset(y: -60)
-                
-                if !searchText.isEmpty {
-                    Button(action: { searchText = "" }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.gray)
-                            .padding(.trailing, 5)
-                    }
-                }
+
                 Spacer()
-                    .frame(height:20)
-                
+                    .frame(height: 20)
+
                 // Friend List
                 if viewModel.isLoading {
                     ProgressView("Loading Friends...")
@@ -123,6 +118,9 @@ struct FriendsAvailableScreen: View {
                                         } else {
                                             selectedFriends.append(friend.uid) // Select
                                         }
+                                    },
+                                    onDelete: {
+                                        viewModel.removeFriend(friend: friend) // Call the ViewModel's method to remove the friend
                                     }
                                 )
                             }
@@ -135,8 +133,9 @@ struct FriendsAvailableScreen: View {
                 Spacer()
 
                 // Create Event Button
-                NavigationLink(destination: CreateEventScreen(selectedFriends: selectedFriends)
-                                .environmentObject(viewModel)) {
+                Button(action: {
+                    presentEventEditor()
+                }) {
                     HStack {
                         Text("Create Event")
                             .font(.system(size: 21, weight: .bold))
@@ -151,12 +150,11 @@ struct FriendsAvailableScreen: View {
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal)
                     .padding(.vertical, 10)
-                    .opacity(selectedFriends.isEmpty ? 0.5 : 1.0) // Adjust opacity
+                    .opacity(selectedFriends.isEmpty ? 0.5 : 1.0)
                 }
-                .disabled(selectedFriends.isEmpty) // Disable if no friends selected
+                .disabled(selectedFriends.isEmpty)
                 .padding(.bottom, 20)
             }
-            //Spacer()
             .background(Color(.systemBackground).edgesIgnoringSafeArea(.all))
             .onAppear {
                 viewModel.fetchFriends()
@@ -165,7 +163,42 @@ struct FriendsAvailableScreen: View {
         .accentColor(Color.blue)
     }
 
-    // Helper function to determine color based on friend status
+    private func presentEventEditor() {
+        let eventStore = EKEventStore()
+        eventStore.requestAccess(to: .event) { granted, error in
+            if granted, error == nil {
+                DispatchQueue.main.async {
+                    let event = EKEvent(eventStore: eventStore)
+                    event.title = "New Event"
+                    event.location = "Enter location here"
+                    event.startDate = Date()
+                    event.endDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date())
+                    event.calendar = eventStore.defaultCalendarForNewEvents
+
+                    // Use the view model to resolve friend names
+                    viewModel.resolveFriendNames(from: selectedFriends) { fullNames in
+                        event.notes = """
+                        Attendees: \(fullNames.joined(separator: ", "))
+
+                        IMPORTANT: To ensure your selected friends are invited, please manually add them to the event under the 'Invitees' section in this editor by clicking the blue plus button.
+                        """
+
+                        let eventEditVC = EKEventEditViewController()
+                        eventEditVC.event = event
+                        eventEditVC.eventStore = eventStore
+                        eventEditVC.editViewDelegate = eventsViewModel
+
+                        if let rootVC = UIApplication.shared.windows.first?.rootViewController {
+                            rootVC.present(eventEditVC, animated: true)
+                        }
+                    }
+                }
+            } else {
+                print("Access to calendar was denied or an error occurred: \(error?.localizedDescription ?? "Unknown error")")
+            }
+        }
+    }
+
     private func colorForStatus(_ status: String) -> Color {
         switch status.lowercased() {
         case "available": return .green
@@ -181,35 +214,76 @@ struct SelectableFriendRow: View {
     var statusColor: Color
     var isSelected: Bool
     var toggleSelection: () -> Void
+    var onDelete: () -> Void
+
+    @State private var offset: CGFloat = 0.0
+    @GestureState private var isDragging: Bool = false
 
     var body: some View {
-        HStack {
-            // Selection indicator
-            Circle()
-                .stroke(isSelected ? Color.blue : Color.gray, lineWidth: 2)
-                .background(isSelected ? Circle().fill(Color.blue) : nil)
-                .frame(width: 18, height: 18)
-                .onTapGesture {
-                    toggleSelection()
+        ZStack {
+            // Background layer with delete button
+            HStack {
+                Spacer()
+                Button(action: {
+                    onDelete()
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 24))
+                        .foregroundColor(.red)
+                        .padding()
                 }
+            }
+            .cornerRadius(15)
 
-            // Friend name and status
-            Text(name)
-                .font(.system(size: 18, weight: .bold))
-                .foregroundColor(.primary)
-            Spacer()
-            Circle()
-                .fill(statusColor)
-                .frame(width: 16, height: 16)
+            // Foreground layer with friend row content
+            HStack {
+                Circle()
+                    .stroke(isSelected ? Color.blue : Color.gray, lineWidth: 2)
+                    .background(isSelected ? Circle().fill(Color.blue) : nil)
+                    .frame(width: 18, height: 18)
+                    .onTapGesture {
+                        toggleSelection()
+                    }
+
+                Text(name)
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(.black)
+
+                Spacer()
+
+                Circle()
+                    .fill(statusColor)
+                    .frame(width: 16, height: 16)
+            }
+            .padding()
+            .background(Color.white)
+            .cornerRadius(15)
+            .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+            .offset(x: offset)
+            .gesture(
+                DragGesture()
+                    .updating($isDragging, body: { (value, state, _) in
+                        state = true
+                    })
+                    .onChanged { value in
+                        // Allow swiping only to the left
+                        if value.translation.width < 0 {
+                            offset = value.translation.width
+                        }
+                    }
+                    .onEnded { value in
+                        // Show the delete button if swiped past a threshold, otherwise reset
+                        if value.translation.width < -100 {
+                            offset = -100
+                        } else {
+                            offset = 0
+                        }
+                    }
+            )
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 15)
-                .stroke(Color.primary.opacity(0.2), lineWidth: 1)
-        )
+        .animation(.easeInOut, value: offset)
     }
 }
-
 struct FilteredFriendsListView: View {
     let title: String
     let status: String
@@ -226,17 +300,20 @@ struct FilteredFriendsListView: View {
 
             ScrollView {
                 VStack(spacing: 15) {
-                    ForEach(viewModel.filterFriends(by: status), id: \.name) { friend in
+                    ForEach(viewModel.filterFriends(by: status), id: \.uid) { friend in
                         SelectableFriendRow(
                             name: friend.name,
                             statusColor: statusColor,
-                            isSelected: selectedFriends.contains(friend.name),
+                            isSelected: selectedFriends.contains(friend.uid),
                             toggleSelection: {
-                                if let index = selectedFriends.firstIndex(of: friend.name) {
-                                    selectedFriends.remove(at: index)
+                                if let index = selectedFriends.firstIndex(of: friend.uid) {
+                                    selectedFriends.remove(at: index) // Deselect
                                 } else {
-                                    selectedFriends.append(friend.name)
+                                    selectedFriends.append(friend.uid) // Select
                                 }
+                            },
+                            onDelete: {
+                                viewModel.removeFriend(friend: friend) // Provide the `onDelete` action
                             }
                         )
                     }

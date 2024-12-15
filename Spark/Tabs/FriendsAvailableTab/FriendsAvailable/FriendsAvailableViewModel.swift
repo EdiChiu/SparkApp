@@ -188,6 +188,34 @@ class FriendsAvailableViewModel: ObservableObject {
         }
     }
     
+    func resolveFriendNames(from uids: [String], completion: @escaping ([String]) -> Void) {
+        guard !uids.isEmpty else {
+            completion([])
+            return
+        }
+
+        let group = DispatchGroup()
+        var resolvedNames: [String] = []
+
+        for uid in uids {
+            group.enter()
+            db.collection("users").document(uid).getDocument { document, error in
+                if let document = document, document.exists {
+                    if let data = document.data(),
+                       let firstName = data["firstName"] as? String,
+                       let lastName = data["lastName"] as? String {
+                        resolvedNames.append("\(firstName) \(lastName)")
+                    }
+                }
+                group.leave()
+            }
+        }
+
+        group.notify(queue: .main) {
+            completion(resolvedNames)
+        }
+    }
+    
     func resetSelectedFriends() {
         selectedFriends.removeAll() // Clear the selected friends
     }

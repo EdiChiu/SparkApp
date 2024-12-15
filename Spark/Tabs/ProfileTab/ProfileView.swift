@@ -32,6 +32,15 @@ struct ProfileView: View {
                     DetailRow(label: "Last Name", value: viewModel.lastName)
                     DetailRow(label: "Email", value: viewModel.email)
                     DetailRow(label: "Username", value: viewModel.userName)
+                    // DND Toggle
+                    Toggle("Do Not Disturb", isOn: $viewModel.dnd)
+                        .toggleStyle(SwitchToggleStyle(tint: .orange))
+                        .padding(.vertical, 5)
+                        .onChange(of: viewModel.dnd) { newValue in
+                            Task {
+                                try? await viewModel.updateDNDStatus(isDND: newValue)
+                            }
+                        }
                 }
                 .padding()
                 .background(

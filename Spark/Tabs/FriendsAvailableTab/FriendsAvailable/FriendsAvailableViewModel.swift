@@ -106,6 +106,11 @@ class FriendsAvailableViewModel: ObservableObject {
         let currentDate = Date()
         let calendar = Calendar.current
 
+        // Check if user has DND enabled
+        if let dnd = events["dnd"] as? Bool, dnd == true {
+            return "Busy"
+        }
+
         for (_, eventData) in events {
             if let startDate = (eventData["startDate"] as? Timestamp)?.dateValue(),
                let endDate = (eventData["endDate"] as? Timestamp)?.dateValue() {

@@ -11,6 +11,7 @@ class ProfileViewModel: ObservableObject {
     @Published var userName: String = ""
     @Published var email: String = ""
     @Published var friends: [String] = []
+    @Published var dnd: Bool = false
     private var eventStore = EKEventStore()
     private let db = Firestore.firestore()
     
@@ -149,21 +150,30 @@ class ProfileViewModel: ObservableObject {
     }
     
     func fetchUserProfile() async throws {
-            guard let currentUser = Auth.auth().currentUser else {
-                throw NSError(domain: "No User Logged In", code: 401, userInfo: nil)
-            }
-
-            let userDocRef = db.collection("users").document(currentUser.uid)
-            let snapshot = try await userDocRef.getDocument()
-            guard let data = snapshot.data() else { return }
-
-            DispatchQueue.main.async {
-                self.userName = data["userName"] as? String ?? "Unknown"
-                self.firstName = data["firstName"] as? String ?? "Unknown"
-                self.lastName = data["lastName"] as? String ?? "Unknown"
-                self.email = data["email"] as? String ?? "Unknown"
-            }
+        guard let currentUser = Auth.auth().currentUser else {
+            throw NSError(domain: "No User Logged In", code: 401, userInfo: nil)
         }
+
+        let userDocRef = db.collection("users").document(currentUser.uid)
+        let snapshot = try await userDocRef.getDocument()
+        guard let data = snapshot.data() else { return }
+
+        DispatchQueue.main.async {
+            self.userName = data["userName"] as? String ?? "Unknown"
+            self.firstName = data["firstName"] as? String ?? "Unknown"
+            self.lastName = data["lastName"] as? String ?? "Unknown"
+            self.email = data["email"] as? String ?? "Unknown"
+            self.dnd = data["dnd"] as? Bool ?? false // Fetch DND
+        }
+    }
+
+    // Update DND status in Firestore
+    func updateDNDStatus(isDND: Bool) async throws {
+        guard let currentUser = Auth.auth().currentUser else { return }
+        let userDocRef = db.collection("users").document(currentUser.uid)
+        try await userDocRef.updateData(["dnd": isDND])
+        print("DND status updated to \(isDND)")
+    }
     
     deinit {
         NotificationCenter.default.removeObserver(self, name: .EKEventStoreChanged, object: eventStore)

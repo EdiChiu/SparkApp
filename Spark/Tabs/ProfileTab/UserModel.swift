@@ -13,6 +13,7 @@ struct UserProfile: Codable {
     var userName: String
     var email: String
     var status: String
+    var dnd: Bool
     var calendarEvents: [CalendarEvent] = []
     var friends: [String] = []
 }

@@ -271,15 +271,14 @@ struct SelectableFriendRow: View {
             .cornerRadius(15)
             .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
             .offset(x: offset)
-            .gesture(
+            .simultaneousGesture(
                 DragGesture()
-                    .updating($isDragging, body: { (value, state, _) in
-                        state = true
-                    })
                     .onChanged { value in
-                        // Allow swiping only to the left
-                        if value.translation.width < 0 {
-                            offset = value.translation.width
+                        // Allow swiping only to the left, with a minimum gesture threshold
+                        if abs(value.translation.width) > abs(value.translation.height) {
+                            if value.translation.width < 0 {
+                                offset = value.translation.width
+                            }
                         }
                     }
                     .onEnded { value in
@@ -295,6 +294,7 @@ struct SelectableFriendRow: View {
         .animation(.easeInOut, value: offset)
     }
 }
+
 struct FilteredFriendsListView: View {
     let title: String
     let status: String

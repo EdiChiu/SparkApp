@@ -86,9 +86,12 @@ class FriendsAvailableViewModel: ObservableObject {
             group.enter()
             db.collection("users").document(friendID).getDocument { [weak self] document, _ in
                 if let document = document, document.exists {
-                    if let data = document.data(),
-                       let events = data["calendarEvents"] as? [String: [String: Any]] {
-                        let status = self?.determineStatus(events: events) ?? "Available"
+                    if let data = document.data() {
+                        let dnd = data["dnd"] as? Bool ?? false
+                        let events = data["calendarEvents"] as? [String: [String: Any]] ?? [:]
+                        let status = self?.determineStatus(dnd: dnd, events: events) ?? "Available"
+                        
+                        // Update the friend's status in Firestore
                         self?.db.collection("users").document(friendID).updateData(["status": status])
                     }
                 }
@@ -100,18 +103,17 @@ class FriendsAvailableViewModel: ObservableObject {
             self.fetchFriendsDetails(friendIDs: friendIDs)
         }
     }
-
     /// Determines a friend's status based on calendar events or DND settings.
-    private func determineStatus(events: [String: [String: Any]]) -> String {
+    private func determineStatus(dnd: Bool, events: [String: [String: Any]]) -> String {
         let currentDate = Date()
         let calendar = Calendar.current
 
-        // Check if the DND setting is enabled first
-        if let dndEnabled = events["dnd"] as? Bool, dndEnabled {
-            return "Busy" // Force status to "Busy" if DND is enabled
+        // Check if DND is enabled
+        if dnd {
+            return "Busy"
         }
 
-        // Evaluate calendar events if DND is not enabled
+        // Check calendar events if DND is not enabled
         for (_, eventData) in events {
             if let startDate = (eventData["startDate"] as? Timestamp)?.dateValue(),
                let endDate = (eventData["endDate"] as? Timestamp)?.dateValue() {
@@ -126,7 +128,6 @@ class FriendsAvailableViewModel: ObservableObject {
 
         return "Available" // Default status
     }
-
     /// Fetches detailed information (name and status) for the list of friend IDs.
     private func fetchFriendsDetails(friendIDs: [String]) {
         var fetchedFriends: [Friend] = []

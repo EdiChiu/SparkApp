@@ -4,13 +4,22 @@
 //
 //  Created by Diego Lagunas on 12/11/24.
 //
+//  Description:
+//  This file defines the PrivacyView, a SwiftUI view that presents the app's privacy policy,
+//  data usage, permissions, and contact information in a clean and readable layout.
+//
 
 import SwiftUI
 
+// MARK: - PrivacyView
+
+/// A view that displays the privacy policy, permissions, and contact information for the Spark app.
 struct PrivacyView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                
+                // Title Section
                 Text("Privacy Policy")
                     .font(.largeTitle)
                     .fontWeight(.bold)
@@ -64,13 +73,15 @@ struct PrivacyView: View {
                         .foregroundColor(.blue)
                 }
                 
-                Spacer()
+                Spacer() // Pushes content up
             }
             .padding()
         }
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.inline) // Keeps navigation title inline for better UI
     }
 }
+
+// MARK: - Preview
 
 struct PrivacyView_Previews: PreviewProvider {
     static var previews: some View {
@@ -79,4 +90,3 @@ struct PrivacyView_Previews: PreviewProvider {
         }
     }
 }
-

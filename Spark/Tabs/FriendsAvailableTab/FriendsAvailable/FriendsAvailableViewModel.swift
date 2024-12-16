@@ -4,63 +4,73 @@
 //
 //  Created by Edison Chiu on 12/6/24.
 //
+//  This file defines the FriendsAvailableViewModel, responsible for fetching friends,
+//  determining their availability, handling search queries, and managing Firestore updates.
+//
 
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
 
 class FriendsAvailableViewModel: ObservableObject {
-    struct Friend {
-        let uid: String
-        let name: String
-        let status: String
-    }
-
-    @Published var friends: [Friend] = [] // Store friends as structs containing uid, name, and status
+    
+    // MARK: - Published Properties (For UI Binding)
+    
+    /// List of friends fetched from Firestore
+    @Published var friends: [Friend] = []
+    
+    /// Loading indicator for data fetching
     @Published var isLoading: Bool = false
+    
+    /// Search query input for filtering friends
     @Published var searchQuery: String = ""
+    
+    /// Selected friends (for event invitations or other purposes)
     @Published var selectedFriends: [String] = []
 
+    // MARK: - Private Properties
+    
+    /// Firestore database reference
     private var db = Firestore.firestore()
+    
+    /// Current user's ID
     private var currentUserID: String
 
+    // MARK: - Initialization
+    
+    /// Initializes the view model and retrieves the current user's ID.
     init() {
         self.currentUserID = Auth.auth().currentUser?.uid ?? ""
     }
 
+    // MARK: - Fetching Friends
+    
+    /// Fetches the list of friends for the current user.
     func fetchFriends() {
         guard !currentUserID.isEmpty else {
-            print("No current user ID available.")
             self.isLoading = false
             return
         }
 
         self.isLoading = true
-        print("Fetching friends for user ID: \(currentUserID)")
 
         db.collection("users").document(currentUserID).getDocument { [weak self] (document, error) in
-            if let error = error {
-                print("Error fetching user document: \(error.localizedDescription)")
-                self?.isLoading = false
-            } else if let document = document, document.exists {
-                print("User document fetched successfully. Data: \(document.data() ?? [:])")
+            if let document = document, document.exists {
                 if let rawData = document.data(), let friendIDs = rawData["friends"] as? [String] {
-                    print("Friend IDs: \(friendIDs)")
                     self?.updateFriendsStatus(friendIDs: friendIDs)
                 } else {
-                    print("No friends to fetch.")
                     DispatchQueue.main.async {
                         self?.friends = []
                         self?.isLoading = false
                     }
                 }
             } else {
-                print("User document does not exist.")
                 self?.isLoading = false
             }
         }
     }
-
+    
+    /// Updates the status of each friend based on their events or DND setting.
     private func updateFriendsStatus(friendIDs: [String]) {
         guard !friendIDs.isEmpty else {
             DispatchQueue.main.async {
@@ -74,23 +84,15 @@ class FriendsAvailableViewModel: ObservableObject {
 
         for friendID in friendIDs {
             group.enter()
-            db.collection("users").document(friendID).getDocument { [weak self] document, error in
-                if let error = error {
-                    print("Error fetching friend \(friendID): \(error.localizedDescription)")
-                } else if let document = document, document.exists {
-                    if let data = document.data(),
-                       let events = data["calendarEvents"] as? [String: [String: Any]] {
-                        
-                        let status = self?.determineStatus(events: events) ?? "Available"
+            db.collection("users").document(friendID).getDocument { [weak self] document, _ in
+                if let document = document, document.exists {
+                    if let data = document.data() {
+                        let dnd = data["dnd"] as? Bool ?? false
+                        let events = data["calendarEvents"] as? [String: [String: Any]] ?? [:]
+                        let status = self?.determineStatus(dnd: dnd, events: events) ?? "Available"
                         
                         // Update the friend's status in Firestore
-                        self?.db.collection("users").document(friendID).updateData(["status": status]) { error in
-                            if let error = error {
-                                print("Error updating status for \(friendID): \(error.localizedDescription)")
-                            } else {
-                                print("Status updated for \(friendID): \(status)")
-                            }
-                        }
+                        self?.db.collection("users").document(friendID).updateData(["status": status])
                     }
                 }
                 group.leave()
@@ -101,11 +103,17 @@ class FriendsAvailableViewModel: ObservableObject {
             self.fetchFriendsDetails(friendIDs: friendIDs)
         }
     }
-
-    private func determineStatus(events: [String: [String: Any]]) -> String {
+    /// Determines a friend's status based on calendar events or DND settings.
+    private func determineStatus(dnd: Bool, events: [String: [String: Any]]) -> String {
         let currentDate = Date()
         let calendar = Calendar.current
 
+        // Check if DND is enabled
+        if dnd {
+            return "Busy"
+        }
+
+        // Check calendar events if DND is not enabled
         for (_, eventData) in events {
             if let startDate = (eventData["startDate"] as? Timestamp)?.dateValue(),
                let endDate = (eventData["endDate"] as? Timestamp)?.dateValue() {
@@ -117,35 +125,24 @@ class FriendsAvailableViewModel: ObservableObject {
                 }
             }
         }
-        return "Available"
+
+        return "Available" // Default status
     }
-
+    /// Fetches detailed information (name and status) for the list of friend IDs.
     private func fetchFriendsDetails(friendIDs: [String]) {
-        guard !friendIDs.isEmpty else {
-            DispatchQueue.main.async {
-                self.friends = []
-                self.isLoading = false
-            }
-            return
-        }
-
         var fetchedFriends: [Friend] = []
         let group = DispatchGroup()
 
         for friendID in friendIDs {
             group.enter()
-            db.collection("users").document(friendID).getDocument { document, error in
-                if let error = error {
-                    print("Error fetching friend \(friendID): \(error.localizedDescription)")
-                } else if let document = document, document.exists {
+            db.collection("users").document(friendID).getDocument { document, _ in
+                if let document = document, document.exists {
                     if let data = document.data(),
                        let firstName = data["firstName"] as? String,
                        let lastName = data["lastName"] as? String,
                        let status = data["status"] as? String {
                         let fullName = "\(firstName) \(lastName)"
                         fetchedFriends.append(Friend(uid: friendID, name: fullName, status: status))
-                    } else {
-                        print("Friend \(friendID) is missing firstName, lastName, or status.")
                     }
                 }
                 group.leave()
@@ -153,41 +150,45 @@ class FriendsAvailableViewModel: ObservableObject {
         }
 
         group.notify(queue: .main) {
-            self.friends = fetchedFriends.sorted(by: { $0.name < $1.name }) // Optional: Sort by name
+            self.friends = fetchedFriends.sorted(by: { $0.name < $1.name })
             self.isLoading = false
-            print("All friends fetched: \(self.friends)")
         }
     }
 
+    // MARK: - Search and Filter Functions
+    
+    /// Filters friends by a specific status (e.g., "Available" or "Busy").
     func filterFriends(by status: String) -> [Friend] {
         return friends.filter { $0.status.lowercased() == status.lowercased() }
     }
     
+    /// Filters friends based on the search query input.
     func filteredFriends() -> [Friend] {
-            if searchQuery.isEmpty {
-                return friends // Return all friends if the search query is empty
-            } else {
-                return friends.filter { $0.name.lowercased().contains(searchQuery.lowercased()) }
-            }
+        if searchQuery.isEmpty {
+            return friends
+        } else {
+            return friends.filter { $0.name.lowercased().contains(searchQuery.lowercased()) }
+        }
     }
+
+    // MARK: - Managing Friends List
     
+    /// Removes a friend from the current user's friend list.
     func removeFriend(friend: Friend) {
         guard let index = friends.firstIndex(where: { $0.uid == friend.uid }) else { return }
 
         db.collection("users").document(currentUserID).updateData([
             "friends": FieldValue.arrayRemove([friend.uid])
         ]) { error in
-            if let error = error {
-                print("Error removing friend \(friend.uid): \(error.localizedDescription)")
-            } else {
+            if error == nil {
                 DispatchQueue.main.async {
                     self.friends.remove(at: index)
-                    print("Friend \(friend.uid) successfully removed.")
                 }
             }
         }
     }
     
+    /// Resolves a list of friend UIDs into full names.
     func resolveFriendNames(from uids: [String], completion: @escaping ([String]) -> Void) {
         guard !uids.isEmpty else {
             completion([])
@@ -199,13 +200,12 @@ class FriendsAvailableViewModel: ObservableObject {
 
         for uid in uids {
             group.enter()
-            db.collection("users").document(uid).getDocument { document, error in
-                if let document = document, document.exists {
-                    if let data = document.data(),
-                       let firstName = data["firstName"] as? String,
-                       let lastName = data["lastName"] as? String {
-                        resolvedNames.append("\(firstName) \(lastName)")
-                    }
+            db.collection("users").document(uid).getDocument { document, _ in
+                if let document = document, document.exists,
+                   let data = document.data(),
+                   let firstName = data["firstName"] as? String,
+                   let lastName = data["lastName"] as? String {
+                    resolvedNames.append("\(firstName) \(lastName)")
                 }
                 group.leave()
             }
@@ -216,7 +216,8 @@ class FriendsAvailableViewModel: ObservableObject {
         }
     }
     
+    /// Clears the list of selected friends.
     func resetSelectedFriends() {
-        selectedFriends.removeAll() // Clear the selected friends
+        selectedFriends.removeAll()
     }
 }

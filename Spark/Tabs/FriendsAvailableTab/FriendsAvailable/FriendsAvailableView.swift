@@ -17,7 +17,6 @@ import EventKitUI
 struct FriendsAvailableScreen: View {
     @StateObject private var viewModel = FriendsAvailableViewModel()
     @State private var selectedFriends: [String] = [] // Store selected friend UIDs
-    @State private var searchText: String = ""
     @EnvironmentObject var eventsViewModel: EventsViewModel
 
     var body: some View {
@@ -32,6 +31,7 @@ struct FriendsAvailableScreen: View {
                         .frame(width: 150, height: 150)
                         .offset(x: 15)
                         .padding()
+                        .padding(.top, -20)
                     Spacer()
                     NavigationLink(destination: AddUserView()) {
                         Image(systemName: "person.crop.circle.badge.plus")
@@ -39,6 +39,7 @@ struct FriendsAvailableScreen: View {
                             .scaledToFit()
                             .frame(width: 40, height: 40)
                             .foregroundColor(.primary)
+                            .padding(.top, -20)
                     }
                 }
                 .padding()
@@ -46,8 +47,8 @@ struct FriendsAvailableScreen: View {
                 Text("Friends Available")
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(.primary)
-                    .padding()
-                    .offset(y: -60)
+                    .padding(.bottom, 10)
+                    .padding(.top, -35)
 
                 // Filter Buttons
                 HStack(spacing: 15) {
@@ -85,8 +86,7 @@ struct FriendsAvailableScreen: View {
                         AvailabilityFilterButton(label: "Busy", color: .red)
                     }
                 }
-                .padding()
-                .offset(y: -70)
+                .padding(.bottom, 20) // Reduced space below filter buttons
 
                 // Search Bar
                 TextField("Search Friends", text: $viewModel.searchQuery)
@@ -94,48 +94,44 @@ struct FriendsAvailableScreen: View {
                     .background(Color(.systemGray6))
                     .cornerRadius(8)
                     .padding(.horizontal, 30)
-                    .offset(y: -60)
+                    .padding(.bottom, 20) // Reduced padding below search bar
 
-                Spacer()
-                    .frame(height: 20)
-
-                // Friend List
-                if viewModel.isLoading {
-                    ProgressView("Loading Friends...")
-                        .padding(.top, 20)
-                        .offset(y: -60)
-                } else if viewModel.filteredFriends().isEmpty {
-                    Text("No friends available.")
-                        .padding(.top, 20)
-                        .foregroundColor(.secondary)
-                        .offset(y: -60)
-                } else {
-                    ScrollView {
-                        VStack(spacing: 15) {
-                            ForEach(viewModel.filteredFriends(), id: \.uid) { friend in
-                                SelectableFriendRow(
-                                    name: friend.name,
-                                    statusColor: colorForStatus(friend.status),
-                                    isSelected: selectedFriends.contains(friend.uid),
-                                    toggleSelection: {
-                                        if let index = selectedFriends.firstIndex(of: friend.uid) {
-                                            selectedFriends.remove(at: index) // Deselect
-                                        } else {
-                                            selectedFriends.append(friend.uid) // Select
+                // GeometryReader to dynamically adjust the friend list height
+                GeometryReader { geometry in
+                    if viewModel.isLoading {
+                        ProgressView("Loading Friends...")
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    } else if viewModel.filteredFriends().isEmpty {
+                        Text("No friends available.")
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                            .foregroundColor(.secondary)
+                    } else {
+                        ScrollView {
+                            VStack(spacing: 15) {
+                                ForEach(viewModel.filteredFriends(), id: \.uid) { friend in
+                                    SelectableFriendRow(
+                                        name: friend.name,
+                                        statusColor: colorForStatus(friend.status),
+                                        isSelected: selectedFriends.contains(friend.uid),
+                                        toggleSelection: {
+                                            if let index = selectedFriends.firstIndex(of: friend.uid) {
+                                                selectedFriends.remove(at: index) // Deselect
+                                            } else {
+                                                selectedFriends.append(friend.uid) // Select
+                                            }
+                                        },
+                                        onDelete: {
+                                            viewModel.removeFriend(friend: friend)
                                         }
-                                    },
-                                    onDelete: {
-                                        viewModel.removeFriend(friend: friend) // Call the ViewModel's method to remove the friend
-                                    }
-                                )
+                                    )
+                                }
                             }
+                            .padding(.horizontal)
+                            .frame(minHeight: geometry.size.height * 0.85) // Make ScrollView extend further
                         }
-                        .padding(.horizontal)
                     }
-                    .offset(y: -60)
                 }
-
-                Spacer()
+                .frame(maxHeight: .infinity) // Allow GeometryReader to expand
 
                 // Create Event Button
                 Button(action: {
@@ -154,8 +150,8 @@ struct FriendsAvailableScreen: View {
                     .cornerRadius(25)
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal)
-                    .padding(.vertical, 10)
                     .opacity(selectedFriends.isEmpty ? 0.5 : 1.0)
+                    .padding(.top, 10)
                 }
                 .disabled(selectedFriends.isEmpty)
                 .padding(.bottom, 20)
@@ -167,7 +163,6 @@ struct FriendsAvailableScreen: View {
         }
         .accentColor(Color.blue)
     }
-
     // MARK: - Helper Methods
     private func presentEventEditor() {
         let eventStore = EKEventStore()
@@ -181,7 +176,6 @@ struct FriendsAvailableScreen: View {
                     event.endDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date())
                     event.calendar = eventStore.defaultCalendarForNewEvents
 
-                    // Use the view model to resolve friend names
                     viewModel.resolveFriendNames(from: selectedFriends) { fullNames in
                         event.notes = """
                         Attendees: \(fullNames.joined(separator: ", "))
@@ -196,17 +190,15 @@ struct FriendsAvailableScreen: View {
 
                         if let rootVC = UIApplication.shared.windows.first?.rootViewController {
                             rootVC.present(eventEditVC, animated: true) {
-                                // Clear selected friends after the editor is dismissed
                                 selectedFriends.removeAll()
                             }
                         }
                     }
                 }
-            } else {
-                print("Access to calendar was denied or an error occurred: \(error?.localizedDescription ?? "Unknown error")")
             }
         }
     }
+
     private func colorForStatus(_ status: String) -> Color {
         switch status.lowercased() {
         case "available": return .green

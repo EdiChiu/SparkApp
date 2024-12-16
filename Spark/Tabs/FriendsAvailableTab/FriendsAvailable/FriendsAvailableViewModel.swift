@@ -106,6 +106,12 @@ class FriendsAvailableViewModel: ObservableObject {
         let currentDate = Date()
         let calendar = Calendar.current
 
+        // Check if the DND setting is enabled first
+        if let dndEnabled = events["dnd"] as? Bool, dndEnabled {
+            return "Busy" // Force status to "Busy" if DND is enabled
+        }
+
+        // Evaluate calendar events if DND is not enabled
         for (_, eventData) in events {
             if let startDate = (eventData["startDate"] as? Timestamp)?.dateValue(),
                let endDate = (eventData["endDate"] as? Timestamp)?.dateValue() {
@@ -117,7 +123,8 @@ class FriendsAvailableViewModel: ObservableObject {
                 }
             }
         }
-        return "Available"
+
+        return "Available" // Default status
     }
 
     /// Fetches detailed information (name and status) for the list of friend IDs.

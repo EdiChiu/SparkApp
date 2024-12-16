@@ -4,6 +4,11 @@
 //
 //  Created by Edison Chiu on 11/18/24.
 //
+//  Description:
+//  This file displays the "Friends Available" screen where users can view,
+//  filter, and select friends based on their availability. Users can also create
+//  calendar events and invite selected friends.
+//
 
 import SwiftUI
 import EventKit
@@ -163,6 +168,7 @@ struct FriendsAvailableScreen: View {
         .accentColor(Color.blue)
     }
 
+    // MARK: - Helper Methods
     private func presentEventEditor() {
         let eventStore = EKEventStore()
         eventStore.requestAccess(to: .event) { granted, error in
@@ -210,6 +216,9 @@ struct FriendsAvailableScreen: View {
         }
     }
 }
+
+
+// MARK: - Supporting Views
 
 struct SelectableFriendRow: View {
     var name: String
@@ -372,6 +381,8 @@ struct FriendRow: View {
         )
     }
 }
+
+// MARK: - Preview
 
 struct FriendsAvailableScreen_Previews: PreviewProvider {
     static var previews: some View {

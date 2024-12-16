@@ -15,6 +15,12 @@ class EventsViewModel: NSObject, ObservableObject, EKEventEditViewDelegate {
     @Published var userEvents: [UserEvent] = []
     private let db = Firestore.firestore()
     private let eventStore = EKEventStore()
+    private var participantsUID: [String] = []
+    
+    // set participantsUID
+    func setParticipants(_ participants: [String]) {
+        self.participantsUID = participants
+    }
 
     // Fetch events from Firestore
     func fetchEvents() {
@@ -129,7 +135,7 @@ class EventsViewModel: NSObject, ObservableObject, EKEventEditViewDelegate {
                 duration: Int(savedEvent.endDate.timeIntervalSince(savedEvent.startDate)),
                 creatorUID: Auth.auth().currentUser?.uid ?? "",
                 creationTime: Date(),
-                participantsUIDs: [] // Update logic for participants if needed
+                participantsUIDs: participantsUID 
             )
 
             // Save event to Firestore

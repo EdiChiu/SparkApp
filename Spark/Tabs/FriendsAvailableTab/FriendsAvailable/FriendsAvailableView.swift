@@ -135,6 +135,7 @@ struct FriendsAvailableScreen: View {
 
                 // Create Event Button
                 Button(action: {
+                    eventsViewModel.setParticipants(selectedFriends)
                     presentEventEditor()
                 }) {
                     HStack {

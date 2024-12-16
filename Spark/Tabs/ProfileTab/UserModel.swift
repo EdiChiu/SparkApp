@@ -42,6 +42,7 @@ struct UserProfile: Codable {
     
     /// List of friend UIDs associated with the user
     var friends: [String] = []
+
 }
 
 // MARK: - CalendarEvent Model

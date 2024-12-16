@@ -284,7 +284,7 @@ class EventsViewModel: NSObject, ObservableObject, EKEventEditViewDelegate {
         // Add the event to the participants' Firestore documents
         for participantUID in event.participantsUIDs {
             db.collection("users").document(participantUID).updateData([
-                "pendingEvents": FieldValue.arrayUnion([eventData]) // Assuming a `pendingEvents` field
+                "userEvents": FieldValue.arrayUnion([eventData]) 
             ]) { error in
                 if let error = error {
                     print("Error adding event to Firestore for participant \(participantUID): \(error.localizedDescription)")

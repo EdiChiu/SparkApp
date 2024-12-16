@@ -65,14 +65,14 @@ struct FriendsAvailableScreen: View {
                     }
                     NavigationLink(
                         destination: FilteredFriendsListView(
-                            title: "Free Soon Friends",
+                            title: "Busy Soon Friends",
                             status: "Free Soon",
                             viewModel: viewModel,
                             statusColor: .yellow,
                             selectedFriends: $selectedFriends
                         )
                     ) {
-                        AvailabilityFilterButton(label: "Free Soon", color: .yellow)
+                        AvailabilityFilterButton(label: "Busy Soon", color: .yellow)
                     }
                     NavigationLink(
                         destination: FilteredFriendsListView(

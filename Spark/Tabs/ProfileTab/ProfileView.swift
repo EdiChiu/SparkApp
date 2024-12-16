@@ -4,13 +4,21 @@
 //
 //  Created by Edison Chiu on 11/15/24.
 //
+//  Description:
+//  This file defines the `ProfileView` SwiftUI view, responsible for displaying the user's profile
+//  information, settings, and a toggle for "Do Not Disturb" (DND) mode. It fetches data from the
+//  `ProfileViewModel` and interacts with Firestore for user updates.
+//
 
 import SwiftUI
 import FirebaseFirestore
 
+// MARK: - ProfileView
+
+/// A SwiftUI view that displays the user's profile details and settings.
 struct ProfileView: View {
-    @StateObject private var viewModel = ProfileViewModel()
-    @Binding var authFlow: RootView.AuthFlow
+    @StateObject private var viewModel = ProfileViewModel() // View model to manage profile data
+    @Binding var authFlow: RootView.AuthFlow // Binding to manage app navigation flow
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -32,7 +40,8 @@ struct ProfileView: View {
                     DetailRow(label: "Last Name", value: viewModel.lastName)
                     DetailRow(label: "Email", value: viewModel.email)
                     DetailRow(label: "Username", value: viewModel.userName)
-                    // DND Toggle
+                    
+                    // Do Not Disturb Toggle
                     Toggle("Do Not Disturb", isOn: $viewModel.dnd)
                         .toggleStyle(SwitchToggleStyle(tint: .orange))
                         .padding(.vertical, 5)
@@ -72,7 +81,8 @@ struct ProfileView: View {
             }
         }
     }
-    
+
+    /// Fetches the user's profile data asynchronously.
     private func fetchUserProfile() {
         Task {
             do {
@@ -84,7 +94,13 @@ struct ProfileView: View {
     }
 }
 
-// Custom Detail Row for User Info
+// MARK: - DetailRow
+
+/// A reusable row for displaying user details.
+///
+/// - Parameters:
+///   - label: The title or label of the detail.
+///   - value: The value or content of the detail.
 struct DetailRow: View {
     let label: String
     let value: String
@@ -103,7 +119,13 @@ struct DetailRow: View {
     }
 }
 
-// Custom Row for Settings Navigation Links
+// MARK: - SettingsRow
+
+/// A reusable row for displaying navigation links in the settings section.
+///
+/// - Parameters:
+///   - label: The title or label of the row.
+///   - icon: The system image name for the icon.
 struct SettingsRow: View {
     let label: String
     let icon: String
@@ -128,6 +150,9 @@ struct SettingsRow: View {
         )
     }
 }
+
+// MARK: - Preview
+
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
